@@ -1,0 +1,90 @@
+﻿@*
+    Default Side Navbar
+*@
+@{
+    var categories    = ViewBag.Categories as List<Category>;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!-- SideNavBar -->
+<aside class="bg-surface text-primary border-r border-outline-variant flat no shadows fixed left-0 top-navbar_height h-[calc(100vh-theme(spacing.navbar_height))] w-sidebar_width flex flex-col p-stack_md gap-stack_sm overflow-y-auto hidden md:flex shrink-0 z-40">
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-3 py-2 mb-2">
+        <div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center shrink-0 border border-outline-variant">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">mail</span>
+        </div>
+        <div class="flex flex-col overflow-hidden">
+            <span class="font-headline-sm text-headline-sm font-bold text-primary truncate">B-Mail Çalışma Alanı</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant truncate">Kurumsal İletişim</span>
+        </div>
+    </div>
+    <!-- CTA -->
+    <button id="compose-btn" class="w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-3 px-4 rounded-xl flex items-center justify-center gap-2 mb-4 hover:bg-secondary transition-colors duration-200 cursor-pointer active:opacity-80 shadow-sm">
+        <span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">edit</span>
+        Yeni Mail
+    </button>
+    <!-- Main Tabs -->
+    <nav class="flex flex-col gap-1 flex-1 font-label-md text-label-md">
+        <!-- Gelen Kutusu -->
+        <a href="/Message/Inbox" class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer active:opacity-80 duration-200 ease-in-out @(currentAction == "Inbox" ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:bg-surface-container-low")">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inbox</span>
+            <span class="flex-1">Gelen Kutusu</span>
+            <span class="bg-surface text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">@ViewBag.TotalInbox</span>
+        </a>
+        <!-- Gönderilenler -->
+        <a href="/Message/SentMails" class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer active:opacity-80 duration-200 ease-in-out @(currentAction == "SentMails" ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:bg-surface-container-low")">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+            <span class="flex-1">Gönderilenler</span>
+            <span class="bg-surface text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">@ViewBag.TotalSentMail</span>
+        </a>
+        <!-- Taslaklar -->
+        <a href="/Message/Drafts" class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer active:opacity-80 duration-200 ease-in-out @(currentAction == "Drafts" ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:bg-surface-container-low")">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">drafts</span>
+            <span class="flex-1">Taslaklar</span>
+            <span class="bg-surface text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">@ViewBag.TotalDraft</span>
+        </a>
+        <!-- Önemliler -->
+        <a href="/Message/ImportantMessages" class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer active:opacity-80 duration-200 ease-in-out @(currentAction == "ImportantMessages" ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:bg-surface-container-low")">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">label_important</span>
+            <span class="flex-1">Önemliler</span>
+            <span class="bg-surface text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">@ViewBag.TotalImportantMail</span>
+        </a>
+        <!-- Çöp Kutusu -->
+        <a href="/Message/Trash" class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer active:opacity-80 duration-200 ease-in-out @(currentAction == "Trash" ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:bg-surface-container-low")">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">delete</span>
+            <span class="flex-1">Çöp Kutusu</span>
+            <span class="bg-surface text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">@ViewBag.TotalDeletedMail</span>
+        </a>
+        <!-- Kategoriler Ana Menüsü -->
+        <a href="/Category/Index" class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer active:opacity-80 duration-200 ease-in-out @(currentAction == "Index" ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:bg-surface-container-low")">
+            <span class="material-symbols-outlined">folder</span>
+            <span class="flex-1">Kategoriler</span>
+            <span class="bg-surface text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">@ViewBag.TotalCategory</span>
+        </a>
+        <!-- Kategori listesi -->
+        <div class="mt-2">
+            <p class="px-3 mb-2 text-[11px] font-semibold tracking-wide text-on-surface-variant">KATEGORİLER</p>
+            @foreach (var category in Model.Categories)
+            {
+                <a asp-controller="Message" asp-action="Category" asp-route-id="@category.ID" class="flex items-center gap-3 px-3 py-2 rounded-lgtext-sm text-on-surface-variant hover:bg-surface-container-low transition-all duration-200 @(ViewBag.ActiveCategoryID == category.ID ? "bg-primary-container" : "")">
+                <span class="material-symbols-outlined text-[18px]">label</span>
+                    <span>@category.Name</span>
+                </a>
+            }
+        </div>
+    </nav>
+    <!-- Footer Tabs -->
+    <div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1 font-label-md text-label-md">
+        <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all cursor-pointer active:opacity-80 duration-200 ease-in-out group" href="#">
+            <span class="material-symbols-outlined group-hover:bg-surface-container-low transition-all">group</span>
+            <span>Kullanıcılar</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all cursor-pointer active:opacity-80 duration-200 ease-in-out group" href="#">
+            <span class="material-symbols-outlined group-hover:bg-surface-container-low transition-all">shield_person</span>
+            <span>Roller</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all cursor-pointer active:opacity-80 duration-200 ease-in-out group" href="#">
+            <span class="material-symbols-outlined group-hover:bg-surface-container-low transition-all">bar_chart</span>
+            <span>İstatistikler</span>
+        </a>
+    </div>
+</aside>

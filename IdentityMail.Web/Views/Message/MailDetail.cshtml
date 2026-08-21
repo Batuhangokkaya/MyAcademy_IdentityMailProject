@@ -1,0 +1,62 @@
+﻿@model UserMessage
+@{
+    ViewData["Title"] = "Mail Detayı";
+}
+
+<div class="flex items-center justify-between mb-stack_lg">
+    <a asp-controller="Message" asp-action="Inbox" class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-md text-label-md">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Geri
+    </a>
+    <div class="flex items-center gap-2">
+        <button class="p-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Reply">
+            <span class="material-symbols-outlined text-[20px]">reply</span>
+        </button>
+        <button class="p-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Mark Important">
+            <span class="material-symbols-outlined text-[20px]">label_important</span>
+        </button>
+        <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@Model.ID" method="post">
+            <button type="submit" class="p-2 rounded-lg border border-outline-variant text-error hover:bg-error-container transition-colors" title="Delete">
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+        </form>
+    </div>
+</div>
+<!-- Message Card -->
+<article class="bg-surface border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col max-w-4xl mx-auto">
+    <!-- Header -->
+    <header class="p-stack_lg border-b border-outline-variant flex flex-col gap-4">
+        <div class="flex items-start justify-between gap-4">
+            <h1 class="font-headline-md text-headline-md text-on-surface m-0 leading-tight">@Model.Subject</h1>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm shrink-0">
+                Project Alpha
+            </span>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+            <div class="flex items-center gap-3">
+                <img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A portrait of a male professional in his 30s with short dark hair, wearing a navy blazer, smiling slightly, shot against a light grey studio background, high quality lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNX1HCSck87k8TsHz-HfgGIgVAu1Dlk_ciCX9XXkc1tzYQ4LipORlTwZifvDkdVETNGyxzgAlR6EGWqDEcaQBYgLMontLTeubmpZLtfTFm0XArwpwMh2eq2pqDJmQFP_ObPtfpkLy8P9HYZWIZ74yeTZ74c0ZvLJFA2z33dwTY5C2-pZyPg8rxaeFrx0FIt6-pUPFJf2SiICHdf6bdk4t2jf7mVi5gWUpjmvtI4X377OYdeC49Zc2n" />
+                <div>
+                    <p class="font-label-md text-label-md text-on-surface mb-0.5">@Model.Sender.FirstName @Model.Sender.LastName <span class="font-body-md text-on-surface-variant ml-1">&lt;@Model.Sender.Email&gt;</span></p>
+                    <p class="font-body-sm text-label-sm text-on-surface-variant">to me, sarah.m, engineering-team</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="font-label-md text-label-md text-on-surface-variant">@Model.SendDate.ToString("dd MMM, yyyy")</p>
+                <p class="font-body-sm text-label-sm text-on-surface-variant">@Model.SendDate.ToString("HH:mm")</p>
+            </div>
+        </div>
+    </header>
+    <!-- Body -->
+    <div class="p-stack_lg font-body-lg text-body-lg text-on-surface whitespace-pre-line leading-relaxed">@Model.Body</div>
+    <!-- Footer / Actions -->
+    <footer class="p-stack_lg bg-surface-container-low border-t border-outline-variant flex gap-3">
+        <button class="bg-primary-container text-on-primary-container font-label-md text-label-md py-2 px-6 rounded-lg hover:bg-secondary transition-colors shadow-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">reply</span>
+            Yanıtla
+        </button>
+        <button class="bg-surface border border-outline-variant text-on-surface font-label-md text-label-md py-2 px-6 rounded-lg hover:bg-surface-container transition-colors shadow-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">forward</span>
+            İlet
+        </button>
+    </footer>
+</article>

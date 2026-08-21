@@ -1,0 +1,99 @@
+﻿@model List<UserMessage>
+@{
+    ViewData["Title"] = "Taslaklar";
+}
+
+<div class="flex justify-between items-end mb-stack_lg">
+    <div>
+        <h1 class="font-headline-md text-headline-md font-bold text-on-surface">
+            Taslaklar
+        </h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+            @Model.Count Taslak
+        </p>
+    </div>
+    <div class="flex gap-2">
+        <button class="px-4 py-2 bg-surface border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">
+                filter_list
+            </span>
+            Filtre
+        </button>
+        <button class="p-2 bg-surface border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-low transition-colors flex items-center justify-center">
+            <span class="material-symbols-outlined">
+                more_vert
+            </span>
+        </button>
+    </div>
+</div>
+<div class="bg-surface rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.1),0_1px_2px_-1px_rgb(0,0,0,0.1)] border border-outline-variant flex flex-col overflow-hidden">
+    <div class="flex items-center px-4 py-3 border-b border-outline-variant bg-surface-container-lowest font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">
+        <div class="w-12 pl-2">
+            <input class="rounded text-primary focus:ring-primary border-outline-variant bg-transparent cursor-pointer"type="checkbox" />
+        </div>
+        <div class="w-10"></div>
+        <div class="w-48 xl:w-56">Taslak</div>
+        <div class="flex-1">Mail</div>
+        <div class="w-24 text-right pr-4">Tarih</div>
+    </div>
+    @foreach (var message in Model)
+    {
+        <div onclick="openDraft(@message.ID)" class="group flex items-center px-4 py-3 border-b border-outline-variant bg-surface border-l-4 border-l-transparent hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] hover:bg-surface-container hover:z-10 relative transition-all duration-200 cursor-pointer">
+            <div class="w-6 shrink-0 flex items-center justify-center">
+                <input class="rounded text-primary focus:ring-primary border-outline-variant bg-transparent cursor-pointer" type="checkbox" onclick="event.preventDefault(); event.stopPropagation();" />
+            </div>
+            <div class="w-48 xl:w-56 font-label-md text-label-md opacity-80 text-on-surface truncate pr-4">
+                @if (message.Receiver != null)
+                {
+                    @message.Receiver.FirstName @message.Receiver.LastName
+                }
+                else
+                {
+                    <span class="text-on-surface-variant">Alıcı yok</span>
+                }
+            </div>
+            <div class="flex-1 flex items-center gap-3 overflow-hidden pr-4">
+                <span class="px-2 py-0.5 rounded-full bg-error-container/20 text-on-error-container font-label-sm text-[10px] uppercase tracking-wider shrink-0 border border-error-container/30">
+                    Taslak
+                </span>
+                <div class="truncate">
+                    @if (!string.IsNullOrWhiteSpace(message.Subject))
+                    {
+                        <span class="font-body-md text-body-md opacity-80 text-on-surface">
+                            @message.Subject
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="font-body-md text-body-md text-on-surface-variant italic">
+                            Konu yok
+                        </span>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(message.Body))
+                    {
+                        <span class="font-body-md text-body-md text-on-surface-variant font-normal ml-1">
+                            -
+                            @(message.Body.Length > 70 ? message.Body.Substring(0, 70) : message.Body)
+                        </span>
+                    }
+                </div>
+            </div>
+            <div class="w-24 text-right pr-4 font-label-md text-label-md opacity-80 text-on-surface">
+
+                @if (message.SendDate.Date == DateTime.Today)
+                {
+                    @message.SendDate.ToString("HH:mm")
+                }
+                else if (message.SendDate.Year == DateTime.Now.Year)
+                {
+                    @message.SendDate.ToString("dd MMM")
+                }
+                else
+                {
+                    @message.SendDate.ToString("dd.MM.yyyy")
+                }
+            </div>
+        </div>
+    }
+</div>

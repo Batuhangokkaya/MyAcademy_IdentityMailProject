@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>B-Mail - Message Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#b4c5ff",
+                        "secondary-container": "#4069f2",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "outline": "#737686",
+                        "surface-container": "#e5eeff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-primary-container": "#eeefff",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#0b1c30",
+                        "secondary-fixed-dim": "#b7c4ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary": "#525657",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary": "#004ac6",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary-container": "#6b6e70",
+                        "on-tertiary-container": "#eff1f3",
+                        "on-secondary-fixed": "#001551",
+                        "tertiary-fixed": "#e0e3e5",
+                        "secondary-fixed": "#dce1ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "background": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#00174b",
+                        "on-background": "#0b1c30",
+                        "surface-variant": "#d3e4fe",
+                        "on-secondary-fixed-variant": "#0039b5",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-container": "#2563eb",
+                        "on-secondary-container": "#fffbff",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#1d4ed8",
+                        "surface": "#f8f9ff",
+                        "surface-bright": "#f8f9ff",
+                        "inverse-surface": "#213145",
+                        "outline-variant": "#c3c6d7",
+                        "surface-tint": "#0053db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack_lg": "1.5rem",
+                        "sidebar_width": "260px",
+                        "stack_sm": "0.5rem",
+                        "navbar_height": "64px",
+                        "stack_md": "1rem",
+                        "gutter": "1.5rem",
+                        "margin_page": "2rem"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.0", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1.0", "fontWeight": "500" }],
+                        "headline-sm-mobile": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background h-full font-body-md text-body-md flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex justify-between items-center px-gutter w-full sticky top-0 z-50 h-navbar_height flex-shrink-0">
+<div class="flex items-center gap-4">
+<span class="font-display-lg text-display-lg font-bold text-primary dark:text-inverse-primary">B-Mail</span>
+</div>
+<div class="flex-1 max-w-md mx-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-surface-variant">search</span>
+<input class="w-full bg-surface-container-low dark:bg-surface-variant border border-outline-variant dark:border-outline rounded-lg pl-10 pr-4 py-2 font-body-md text-body-md text-on-surface dark:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors duration-200 cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors duration-200 cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary" data-icon="settings">settings</span>
+</button>
+</div>
+<img alt="Employee Profile Avatar" class="w-8 h-8 rounded-full object-cover" data-alt="A small circular profile avatar of a professional employee, well-lit studio portrait against a neutral white background, conveying a clean and modern corporate identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsFqGAw9f7dTxT8wFaWiD4pb2s5F3KKx0TlMOoKAuC6KVD5YC-nliwESMLQwxUFmviIaW2ypjDgRQCe8mDHkql8TzFfHgZnz3MARHnuqkTAo85yxtVK1vJvYoaOTb3yRsiwTwsfSt-5epXCsm7MFOk0kBG0dC-bG7_Zvo2BA35XiXuLmX0KaIvRvRA65-G_XPNj77DdPRNY1acyTrmjzE2LYIEIy8fhLdnxKrF7mV5MtHtXWagXeIt"/>
+</div>
+</nav>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline w-sidebar_width p-stack_md gap-stack_sm overflow-y-auto flex-shrink-0">
+<div class="mb-6 flex flex-col items-center">
+<img alt="System Logo" class="w-12 h-12 mb-2" data-alt="A minimalist logo for a workspace system, featuring abstract geometric shapes in shades of blue, set against a pristine white background, representing structured communication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYfCs3tyfnxEGS6dJByKnnA1XhUr1KIBqAd1g9IXAzl5tpFdtK8GgqrLxXn7lhz3b5ZuqAZaVeVIx4KxxaEb0eBp2Wv4hd53LbrNAWwpmkt7WfFk-MMO7tKxtbwaFKfLLlSzTd-2uhUIZMVMxajw1xXC_yCNYhvpHhxefUoWHo-NwmiFBP8DJ5JyrL36BT9WR-jukpzTEF8jgycYO0yQ6Q4Ribo-bHOBQ890L46_RG1g-MkSxxcKcX"/>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">B-Mail Workspace</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Internal Communications</p>
+<button class="mt-4 w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-2 px-4 rounded-lg hover:bg-secondary transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                    New Message
+                </button>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 p-2 bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-lg font-label-md text-label-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="inbox">inbox</span>
+<span>Inbox</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant dark:text-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+<span>Sent</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant dark:text-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="drafts">drafts</span>
+<span>Drafts</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant dark:text-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="label_important">label_important</span>
+<span>Important</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant dark:text-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+<span>Trash</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant dark:text-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="folder">folder</span>
+<span>Categories</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 p-2 text-on-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Users</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="shield_person">shield_person</span>
+<span>Roles</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span>Stats</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto p-margin_page bg-surface-container-lowest">
+<!-- Toolbar -->
+<div class="flex items-center justify-between mb-stack_lg">
+<button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Back
+                </button>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Reply">
+<span class="material-symbols-outlined text-[20px]">reply</span>
+</button>
+<button class="p-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Mark Important">
+<span class="material-symbols-outlined text-[20px]">label_important</span>
+</button>
+<button class="p-2 rounded-lg border border-outline-variant text-error hover:bg-error-container transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Message Card -->
+<article class="bg-surface border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col max-w-4xl mx-auto">
+<!-- Header -->
+<header class="p-stack_lg border-b border-outline-variant flex flex-col gap-4">
+<div class="flex items-start justify-between gap-4">
+<h1 class="font-headline-md text-headline-md text-on-surface m-0 leading-tight">Project Q3 Deliverables Overview and Final Check</h1>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm shrink-0">
+                            Project Alpha
+                        </span>
+</div>
+<div class="flex items-center justify-between mt-2">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A portrait of a male professional in his 30s with short dark hair, wearing a navy blazer, smiling slightly, shot against a light grey studio background, high quality lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNX1HCSck87k8TsHz-HfgGIgVAu1Dlk_ciCX9XXkc1tzYQ4LipORlTwZifvDkdVETNGyxzgAlR6EGWqDEcaQBYgLMontLTeubmpZLtfTFm0XArwpwMh2eq2pqDJmQFP_ObPtfpkLy8P9HYZWIZ74yeTZ74c0ZvLJFA2z33dwTY5C2-pZyPg8rxaeFrx0FIt6-pUPFJf2SiICHdf6bdk4t2jf7mVi5gWUpjmvtI4X377OYdeC49Zc2n"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface mb-0.5">Alex Johnson <span class="font-body-md text-on-surface-variant ml-1">&lt;alex.j@b-corp.com&gt;</span></p>
+<p class="font-body-sm text-label-sm text-on-surface-variant">to me, sarah.m, engineering-team</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface-variant">Oct 24, 2023</p>
+<p class="font-body-sm text-label-sm text-on-surface-variant">10:45 AM (2 hours ago)</p>
+</div>
+</div>
+</header>
+<!-- Body -->
+<div class="p-stack_lg font-body-lg text-body-lg text-on-surface whitespace-pre-line leading-relaxed">
+Hi Team,
+
+I wanted to quickly loop back on the progress for the Q3 deliverables. Everything is looking solid, but we need to ensure the final security audit is signed off before the deployment window opens on Thursday.
+
+Sarah, could you please confirm the status of the secondary database migration? 
+
+Attached are the final specifications for review. Let's aim to have all comments resolved by EOD tomorrow.
+
+Best regards,
+Alex
+
+-- 
+Alex Johnson
+Lead Technical Project Manager
+B-Corp Technologies
+                </div>
+<!-- Footer / Actions -->
+<footer class="p-stack_lg bg-surface-container-low border-t border-outline-variant flex gap-3">
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md py-2 px-6 rounded-lg hover:bg-secondary transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">reply</span>
+                        Reply
+                    </button>
+<button class="bg-surface border border-outline-variant text-on-surface font-label-md text-label-md py-2 px-6 rounded-lg hover:bg-surface-container transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">forward</span>
+                        Forward
+                    </button>
+</footer>
+</article>
+</main>
+</div>
+</body></html>

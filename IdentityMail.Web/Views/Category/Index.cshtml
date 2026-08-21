@@ -1,0 +1,52 @@
+﻿@model List<Category>
+
+<div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-on-surface">Kategoriler</h1>
+            <p class="text-sm text-on-surface-variant mt-1">Mesajlarınızı kategoriler halinde düzenleyin.</p>
+        </div>
+        <a asp-action="Create" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary hover:opacity-90 transition">
+            <span class="material-symbols-outlined">add</span>
+            Yeni Kategori
+        </a>
+    </div>
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant">
+        <div class="px-5 py-4 border-b border-outline-variant">
+            <h2 class="font-medium text-on-surface">Kategorileriniz</h2>
+        </div>
+        <div class="divide-y divide-outline-variant">
+
+            @if (Model.Any())
+            {
+                foreach (var category in Model)
+                {
+                    <div class="flex items-center justify-between px-5 py-4 hover:bg-surface-container-low transition">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">label</span>
+                            <span class="text-sm font-medium text-on-surface">@category.Name</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a asp-action="Edit" asp-route-id="@category.ID"
+                               class="p-2 rounded-lg hover:bg-surface-container text-on-surface-variant">
+                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                            </a>
+                            <form asp-action="Delete" asp-route-id="@category.ID" method="post">
+                                <button type="submit" class="p-2 rounded-lg hover:bg-error-container text-error">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="py-12 text-center">
+                    <span class="material-symbols-outlined text-4xl text-outline">label_off</span>
+                    <p class="mt-3 text-sm text-on-surface-variant">Henüz bir kategoriniz bulunmuyor.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

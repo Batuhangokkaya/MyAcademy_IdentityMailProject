@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+@await Component.InvokeAsync("_LayoutHead")
+<body class="bg-background text-on-background min-h-screen antialiased flex flex-col">
+    <!-- TopNavBar -->
+    @await Component.InvokeAsync("_LayoutTopNavbar")
+    <div class="flex flex-1 overflow-hidden relative">
+        <!-- SideNavBar -->
+        @await Component.InvokeAsync("_LayoutSideNavbar")
+        <!-- Main Content Area -->
+        <main class="flex-1 w-full md:ml-sidebar_width p-margin_page flex flex-col h-[calc(100vh-theme(spacing.navbar_height))] overflow-y-auto">
+            @RenderBody()
+            @await Component.InvokeAsync("_LayoutComposeMessage")
+        </main>
+    </div>
+    @await Component.InvokeAsync("_LayoutScript")
+</body>
+</html>

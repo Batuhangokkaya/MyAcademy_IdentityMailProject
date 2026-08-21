@@ -1,0 +1,99 @@
+﻿@model List<UserMessage>
+
+<div class="flex flex-col h-full bg-surface">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+        <div>
+            <h1 class="text-2xl font-semibold text-on-surface">Çöp Kutusu</h1>
+            <p class="text-sm text-on-surface-variant mt-1">
+                Silinen mesajlar burada tutulur.
+            </p>
+        </div>
+
+        <span class="text-sm text-on-surface-variant">
+            @Model.Count mesaj
+        </span>
+    </div>
+
+    <!-- Messages -->
+    <div class="flex-1 overflow-y-auto">
+
+        @if (Model.Any())
+        {
+            foreach (var message in Model)
+            {
+                var userId = (int)ViewBag.UserId;
+                <div class="group flex items-center px-6 py-4 border-b border-outline-variant hover:bg-surface-container-high cursor-pointer transition-colors" onclick="showTrashWarning()">
+                    <!-- Checkbox -->
+                    <div class="w-10 shrink-0">
+                        <input type="checkbox" class="rounded border-outline-variant text-primary" onclick="event.stopPropagation();" />
+                    </div>
+                    <!-- Sender -->
+                    <div class="w-56 shrink-0">
+                        @if (message.SenderID == userId)
+                        {
+                            <span>@message.Receiver.FirstName @message.Receiver.LastName</span>
+                        }
+                        else
+                        {
+                            <span>@message.Sender.FirstName @message.Sender.LastName</span>
+                        }
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="flex-1 min-w-0">
+                        <span class="text-on-surface font-medium">@message.Subject</span>
+
+                        @if (!string.IsNullOrEmpty(message.Body))
+                        {
+                            <span class="text-on-surface-variant ml-2">- @message.Body</span>
+                        }
+                    </div>
+
+                    <!-- Date -->
+                    <div class="w-32 text-right text-sm text-on-surface-variant">@message.SendDate</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="flex flex-col items-center justify-center h-full text-center">
+                <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">delete</span>
+                <h2 class="text-xl font-medium text-on-surface">Çöp Kutusu boş</h2>
+                <p class="text-sm text-on-surface-variant mt-2">Silinen mesajlar burada görünecek.</p>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    function showTrashWarning() {
+
+        Swal.fire({
+
+            title: "Mesaj Çöp Kutusunda",
+            text: "Mesajı görüntülemek için lütfen Çöp Kutusu'ndan çıkarın.",
+
+            icon: "warning",
+
+            showConfirmButton: false,
+
+            showClass: {
+                popup: `
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
+                `
+            },
+
+            hideClass: {
+                popup: `
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
+                `
+            }
+
+        });
+
+    }
+</script>
