@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>B-Mail - Login</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config from Guidelines -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#003ea8",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#eef0ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-container": "#eeefff",
+                        "secondary-container": "#d0e1fb",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary": "#4d556b",
+                        "tertiary-fixed": "#dae2fd",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-fixed": "#d3e4fe",
+                        "surface-dim": "#d8dadc",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-error": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-container": "#54647a",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "on-primary-fixed": "#00174b",
+                        "secondary": "#505f76",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "on-surface": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-fixed": "#131b2e",
+                        "surface-tint": "#0053db",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "outline": "#737686",
+                        "on-background": "#191c1e",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#656d84",
+                        "surface-bright": "#f7f9fb",
+                        "surface": "#f7f9fb",
+                        "primary": "#004ac6",
+                        "background": "#f7f9fb",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-container-highest": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "container-margin": "24px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom Input Ring Override for modern feel */
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+            border-color: #2563EB !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Main Layout Container (Two Columns on Desktop) -->
+<div class="flex w-full min-h-screen">
+<!-- Left Side: Branding & Decorative UI (Hidden on Mobile) -->
+<div class="hidden lg:flex w-1/2 bg-on-primary-fixed-variant text-on-primary flex-col justify-between p-xl relative overflow-hidden">
+<!-- Background Decorative Elements -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 20% 30%, #ffffff 1px, transparent 1px); background-size: 24px 24px;"></div>
+<div class="absolute -top-40 -left-40 w-96 h-96 bg-primary-container rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-duration: 8s;"></div>
+<div class="absolute -bottom-40 -right-40 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-duration: 12s; animation-delay: 2s;"></div>
+<!-- Brand Header -->
+<div class="relative z-10 flex items-center gap-sm">
+<div class="w-10 h-10 bg-on-primary text-primary flex items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mail</span>
+</div>
+<h1 class="font-headline-sm text-headline-sm">B-Mail</h1>
+</div>
+<!-- Hero Content -->
+<div class="relative z-10 flex flex-col gap-md max-w-lg mt-auto mb-auto">
+<h2 class="font-display text-display leading-tight">Mesajlaşmanın daha sade hali.</h2>
+<p class="font-body-lg text-body-lg text-primary-fixed-dim">Mesajlarını güvenli, hızlı ve kolay bir şekilde yönet. Odaklanman gereken tek şey içeriğin kendisi.</p>
+<!-- Decorative Abstract UI Card -->
+<div class="mt-lg bg-surface-container-lowest/10 backdrop-blur-md border border-surface-container-lowest/20 rounded-xl p-md shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration-500 w-full max-w-sm">
+<div class="flex items-center gap-sm mb-md">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-label-sm text-label-sm">AY</div>
+<div class="flex-1">
+<div class="h-3 w-24 bg-surface-container-lowest/30 rounded mb-xs"></div>
+<div class="h-2 w-16 bg-surface-container-lowest/20 rounded"></div>
+</div>
+<div class="h-2 w-10 bg-surface-container-lowest/20 rounded"></div>
+</div>
+<div class="space-y-sm">
+<div class="h-2 w-full bg-surface-container-lowest/20 rounded"></div>
+<div class="h-2 w-5/6 bg-surface-container-lowest/20 rounded"></div>
+<div class="h-2 w-4/6 bg-surface-container-lowest/20 rounded"></div>
+</div>
+</div>
+</div>
+<!-- Footer Graphic/Text -->
+<div class="relative z-10 text-primary-fixed-dim font-label-sm text-label-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+                Kurumsal Sınıf Güvenlik
+            </div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="w-full lg:w-1/2 flex items-center justify-center p-md sm:p-lg bg-surface-container-lowest relative z-10">
+<div class="w-full max-w-md flex flex-col gap-lg">
+<!-- Mobile Brand Header (Visible only on small screens) -->
+<div class="flex lg:hidden items-center gap-sm mb-md justify-center">
+<div class="w-10 h-10 bg-primary text-on-primary flex items-center justify-center rounded-lg shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mail</span>
+</div>
+<h1 class="font-headline-sm text-headline-sm text-primary">B-Mail</h1>
+</div>
+<!-- Form Header -->
+<div class="text-center sm:text-left">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Tekrar Hoş Geldin</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Hesabına giriş yaparak mesajlarına ulaş.</p>
+</div>
+<!-- Form -->
+<form class="flex flex-col gap-md" onsubmit="event.preventDefault();">
+<!-- Email Field (with Error State Example) -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="email">E-posta Adresi</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+<!-- Error state classes applied: border-error, text-error -->
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-lowest border border-error text-on-surface rounded-lg font-body-md text-body-md placeholder-outline-variant focus:border-error focus:ring-1 focus:ring-error transition-colors" id="email" placeholder="ornek@sirket.com" type="email" value="hatali-mail-adresi"/>
+<div class="absolute inset-y-0 right-0 pr-sm flex items-center pointer-events-none text-error">
+<span class="material-symbols-outlined text-[20px]">error</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-error text-[12px] mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                            Geçerli bir e-posta adresi giriniz.
+                        </p>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="password">Şifre</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-sm flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<input class="w-full pl-xl pr-xl py-sm bg-surface-container-lowest border border-outline-variant text-on-surface rounded-lg font-body-md text-body-md placeholder-outline-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-sm flex items-center text-outline hover:text-on-surface transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Form Actions (Remember Me & Forgot Password) -->
+<div class="flex items-center justify-between mt-xs">
+<label class="flex items-center gap-sm cursor-pointer group">
+<div class="relative flex items-center">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-4 h-4 border border-outline-variant rounded bg-surface-container-lowest peer-checked:bg-primary-container peer-checked:border-primary-container transition-colors flex items-center justify-center group-hover:border-primary-container">
+<span class="material-symbols-outlined text-[14px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1; font-weight: 700;">check</span>
+</div>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Beni Hatırla</span>
+</label>
+<a class="font-label-md text-label-md text-primary hover:text-on-primary-fixed-variant transition-colors" href="#">Şifremi Unuttum?</a>
+</div>
+<!-- Submit Button -->
+<button class="mt-md w-full py-sm px-lg bg-[#2563EB] text-on-primary rounded-lg font-label-md text-label-md hover:bg-on-primary-fixed-variant focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:ring-offset-surface-container-lowest transition-all active:scale-[0.98] flex items-center justify-center gap-sm" type="submit">
+                        Giriş Yap
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<!-- Registration Link -->
+<div class="text-center mt-lg">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Hesabın yok mu? <a class="font-label-md text-label-md text-primary hover:text-on-primary-fixed-variant transition-colors ml-1" href="#">Kayıt Ol</a>
+</p>
+</div>
+<!-- Simple Footer links -->
+<div class="mt-xl text-center flex justify-center gap-md font-body-md text-body-md text-outline text-[12px]">
+<a class="hover:text-on-surface-variant transition-colors" href="#">Gizlilik Politikası</a>
+<span>•</span>
+<a class="hover:text-on-surface-variant transition-colors" href="#">Kullanım Şartları</a>
+</div>
+</div>
+</div>
+</div>
+</body></html>

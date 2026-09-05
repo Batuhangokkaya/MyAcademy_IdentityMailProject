@@ -20,6 +20,12 @@ namespace IdentityMail.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterDTO registerDTO)
         {
+            if (string.IsNullOrEmpty(registerDTO.Password) || string.IsNullOrEmpty(registerDTO.ConfirmPassword))
+            {
+                ModelState.AddModelError(string.Empty, "Şifre ve Şifre Tekrar alanı zorunludur!");
+                return View(registerDTO);
+            }
+
             if (registerDTO.Password != registerDTO.ConfirmPassword)
             {
                 ModelState.AddModelError(string.Empty, "Şifreler birbiriyle uyumlu değil!");
@@ -57,6 +63,12 @@ namespace IdentityMail.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
+            if (string.IsNullOrEmpty(loginDTO.Email) || string.IsNullOrEmpty(loginDTO.Password))
+            {
+                ModelState.AddModelError(string.Empty, "Lütfen E-Posta ve Şifre alanlarını doldurun.");
+                return View(loginDTO);
+            }
+
             var user = await _userManager.FindByEmailAsync(loginDTO.Email);
 
             if (user == null)
@@ -116,19 +128,14 @@ namespace IdentityMail.Web.Controllers
                 },
                 Request.Scheme);
 
-            var emailAddress = _configuration["GmailSettings:Email"];
+            var emailAddress  = _configuration["GmailSettings:Email"];
             var emailPassword = _configuration["GmailSettings:Password"];
-            var emailHost = _configuration["GmailSettings:Host"];
-            var emailPort = int.Parse(_configuration["GmailSettings:Port"]);
+            var emailHost     = _configuration["GmailSettings:Host"];
+            var emailPort     = int.Parse(_configuration["GmailSettings:Port"]);
 
             var email = new MimeMessage();
-
-            email.From.Add(new MailboxAddress(
-                "B-Mail",
-                emailAddress));
-
+            email.From.Add(new MailboxAddress("B-Mail",emailAddress));
             email.To.Add(MailboxAddress.Parse(user.Email));
-
             var bodyBuilder = new BodyBuilder();
 
             bodyBuilder.HtmlBody = $@"
@@ -176,30 +183,17 @@ namespace IdentityMail.Web.Controllers
                         © B-Mail
                     </p>
                 </div>
-
             </body>
             </html>
             ";
 
             email.Body = bodyBuilder.ToMessageBody();
-
             using var smtp = new SmtpClient();
-
-            await smtp.ConnectAsync(
-                "smtp.gmail.com",
-                587,
-                MailKit.Security.SecureSocketOptions.StartTls);
-
-            await smtp.AuthenticateAsync(
-                emailAddress,
-                emailPassword);
-
+            await smtp.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(emailAddress, emailPassword);
             await smtp.SendAsync(email);
-
             await smtp.DisconnectAsync(true);
-
             TempData["SuccessMessage"] = "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.";
-
             return RedirectToAction(nameof(ForgotPassword));
         }
 
@@ -224,16 +218,16 @@ namespace IdentityMail.Web.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
+            {
                 return View(model);
+            }
 
-            var result = await _userManager.ResetPasswordAsync(
-                user,
-                model.Token,
-                model.Password);
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
 
             if (result.Succeeded)
             {
-                return RedirectToAction("Login");
+                ViewBag.PasswordResetSuccess = true;
+                return View(model);
             }
 
             foreach (var error in result.Errors)

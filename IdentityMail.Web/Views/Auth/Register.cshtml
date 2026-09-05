@@ -5,82 +5,120 @@
     Layout                = "/Views/Shared/_AuthLayout.cshtml";
 }
 
-<div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="flex justify-center items-center gap-2 mb-8">
-        <span class="material-symbols-outlined text-primary text-4xl" data-icon="mail" data-weight="fill" style="font-variation-settings: 'FILL' 1;">mail</span>
-        <span class="font-headline-md text-headline-md text-primary">B-Mail</span>
+@section Styles {
+    <link rel="stylesheet" href="~/css/register.css" />
+}
+
+<div class="register-page">
+    <!-- SOL TARAF -->
+    <div class="register-left">
+        <!-- Logo -->
+        <div class="brand">
+            <div class="brand-icon">
+                <span class="material-symbols-outlined">mail</span>
+            </div>
+            <span class="brand-name">B-Mail</span>
+        </div>
+        <!-- Orta içerik -->
+        <div class="hero-content">
+            <h1>Yeni bir başlangıç, tek bir hesap.</h1>
+            <p>B-Mail hesabını oluştur, mesajlarını güvenli ve düzenli bir şekilde yönetmeye başla.</p>
+            <div class="message-preview">
+                <div class="message-header">
+                    <div class="avatar">BG</div>
+                    <div class="message-user">
+                        <div class="message-line line-name"></div>
+                        <div class="message-line line-small"></div>
+                    </div>
+                </div>
+                <div class="message-body">
+                    <div class="message-line line-full"></div>
+                    <div class="message-line line-medium"></div>
+                    <div class="message-line line-short"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Alt yazı -->
+        <div class="security-text">
+            <span class="material-symbols-outlined">lock</span>
+            Kurumsal Sınıf Güvenlik
+        </div>
     </div>
-    <h2 class="mt-6 text-center font-display-lg text-display-lg text-on-surface">
-        Hesabını oluştur
-    </h2>
-</div>
-<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-[480px]">
-    <div class="bg-surface-container-lowest py-8 px-4 shadow-level-2 sm:rounded-xl sm:px-10 border border-outline-variant">
-        <form action="#" class="space-y-6" method="POST">
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-label-md text-label-md text-on-surface-variant mb-1" for="firstName">Ad</label>
-                    <div class="mt-1">
-                        <input class="appearance-none block w-full px-3 py-2 border border-outline-variant rounded-lg shadow-sm placeholder-outline-variant focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-surface-bright text-on-surface transition-colors duration-200" id="firstName" name="firstName" type="text" asp-for="FirstName" />
+    <!-- SAĞ TARAF -->
+    <div class="register-right">
+        <div class="register-form-container">
+            <div class="form-header">
+                <h2>Hesap Oluştur</h2>
+                <p>Hesabını oluştur ve mesajlaşmaya başla.</p>
+            </div>
+            <form method="post">
+                <div id="validationSummary">
+                    @Html.ValidationSummary(false, "", new { @class = "validation-message" })
+                </div>
+                <!-- AD / SOYAD -->
+                <div class="name-row">
+                    <div class="form-group">
+                        <label asp-for="FirstName">Ad</label>
+                        <div class="input-wrapper">
+                            <span class="material-symbols-outlined input-icon">person</span>
+                            <input asp-for="FirstName" class="form-input" placeholder="Adınız" />
+                        </div>
                     </div>
-                    <p class="mt-1 text-xs text-error h-4" id="firstName-error"></p>
-                </div>
-                <div>
-                    <label class="block font-label-md text-label-md text-on-surface-variant mb-1" for="lastName">Soyad</label>
-                    <div class="mt-1">
-                        <input class="appearance-none block w-full px-3 py-2 border border-outline-variant rounded-lg shadow-sm placeholder-outline-variant focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-surface-bright text-on-surface transition-colors duration-200" id="lastName" name="lastName" type="text" asp-for="LastName" />
+                    <div class="form-group">
+                        <label asp-for="LastName">Soyad</label>
+                        <div class="input-wrapper">
+                            <span class="material-symbols-outlined input-icon">person</span>
+                            <input asp-for="LastName" class="form-input" placeholder="Soyadınız" />
+                        </div>
                     </div>
-                    <p class="mt-1 text-xs text-error h-4" id="lastName-error"></p>
                 </div>
-            </div>
-            <div>
-                <label class="block font-label-md text-label-md text-on-surface-variant mb-1" for="username">Kullanıcı Adı</label>
-                <div class="mt-1">
-                    <input class="appearance-none block w-full px-3 py-2 border border-outline-variant rounded-lg shadow-sm placeholder-outline-variant focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-surface-bright text-on-surface transition-colors duration-200" id="username" name="username" type="text" asp-for="UserName" />
+                <!-- KULLANICI ADI -->
+                <div class="form-group">
+                    <label asp-for="UserName">Kullanıcı Adı</label>
+                    <div class="input-wrapper">
+                        <span class="material-symbols-outlined input-icon">alternate_email</span>
+                        <input asp-for="UserName" class="form-input" placeholder="kullaniciadi" />
+                    </div>
                 </div>
-                <p class="mt-1 text-xs text-error h-4" id="username-error"></p>
-            </div>
-            <div>
-                <label class="block font-label-md text-label-md text-on-surface-variant mb-1" for="email">E-Mail Adres</label>
-                <div class="mt-1">
-                    <input autocomplete="email" class="appearance-none block w-full px-3 py-2 border border-outline-variant rounded-lg shadow-sm placeholder-outline-variant focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-surface-bright text-on-surface transition-colors duration-200" id="email" name="email" type="email" asp-for="Email" />
+                <!-- EMAIL -->
+                <div class="form-group">
+                    <label asp-for="Email">E-posta Adresi</label>
+                    <div class="input-wrapper">
+                        <span class="material-symbols-outlined input-icon">mail</span>
+                        <input asp-for="Email" class="form-input" placeholder="ornek@info.com" type="email" />
+                    </div>
                 </div>
-                <p class="mt-1 text-xs text-error h-4" id="email-error"></p>
-            </div>
-            <div>
-                <label class="block font-label-md text-label-md text-on-surface-variant mb-1" for="password">Şifre</label>
-                <div class="mt-1 relative">
-                    <input autocomplete="new-password" class="appearance-none block w-full px-3 py-2 border border-outline-variant rounded-lg shadow-sm placeholder-outline-variant focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-surface-bright text-on-surface transition-colors duration-200 pr-10" id="password" name="password" type="password" asp-for="Password" />
-                    <button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline-variant hover:text-on-surface-variant focus:outline-none transition-colors" onclick="togglePassword('password', 'togglePasswordIcon1')" type="button">
-                        <span class="material-symbols-outlined text-[20px]" data-icon="visibility" id="togglePasswordIcon1">visibility</span>
-                    </button>
+                <!-- ŞİFRE -->
+                <div class="form-group">
+                    <label asp-for="Password">Şifre</label>
+                    <div class="input-wrapper">
+                        <span class="material-symbols-outlined input-icon">lock</span>
+                        <input asp-for="Password" id="password" class="form-input password-input" placeholder="••••••••" type="password" />
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', 'passwordIcon')">
+                            <span id="passwordIcon" class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
                 </div>
-                <p class="mt-1 text-xs text-error h-4" id="password-error"></p>
-            </div>
-            <div>
-                <label class="block font-label-md text-label-md text-on-surface-variant mb-1" for="confirmPassword">Şifre Tekrar</label>
-                <div class="mt-1 relative">
-                    <input autocomplete="new-password" class="appearance-none block w-full px-3 py-2 border border-outline-variant rounded-lg shadow-sm placeholder-outline-variant focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-surface-bright text-on-surface transition-colors duration-200 pr-10" id="confirmPassword" name="confirmPassword" type="password" asp-for="ConfirmPassword" />
-                    <button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline-variant hover:text-on-surface-variant focus:outline-none transition-colors" onclick="togglePassword('confirmPassword', 'togglePasswordIcon2')" type="button">
-                        <span class="material-symbols-outlined text-[20px]" data-icon="visibility" id="togglePasswordIcon2">visibility</span>
-                    </button>
+                <!-- ŞİFRE TEKRAR -->
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">Şifre Tekrar</label>
+                    <div class="input-wrapper">
+                        <span class="material-symbols-outlined input-icon">lock_reset</span>
+                        <input asp-for="ConfirmPassword" id="confirmPassword" class="form-input password-input" placeholder="••••••••" type="password" />
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', 'confirmPasswordIcon')">
+                            <span id="confirmPasswordIcon"class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
                 </div>
-                <p class="mt-1 text-xs text-error h-4" id="confirmPassword-error"></p>
-            </div>
-            <div id="validationSummary" class="hidden overflow-hidden transition-all duration-300">
-                @Html.ValidationSummary(false, "", new { @class = "text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3" })
-            </div>
-            <div>
-                <button class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm font-label-md text-label-md text-on-primary bg-primary-container hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 ease-in-out" type="submit">
+                <button class="register-button" type="submit">
                     Kayıt Ol
+                    <span class="material-symbols-outlined">arrow_forward</span>
                 </button>
+            </form>
+            <div class="login-area">
+                Zaten hesabın var mı?
+                <a href="/Auth/Login">Giriş Yap</a>
             </div>
-        </form>
-        <div class="mt-6 text-center">
-            <a class="font-body-md text-body-md text-primary hover:text-secondary transition-colors duration-200" href="/Auth/Login">
-                Zaten bir hesabın var mı? Giriş yap
-            </a>
         </div>
     </div>
 </div>

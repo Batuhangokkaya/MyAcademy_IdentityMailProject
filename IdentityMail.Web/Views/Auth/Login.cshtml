@@ -5,58 +5,90 @@
     Layout                = "/Views/Shared/_AuthLayout.cshtml";
 }
 
-<div class="w-full max-w-md bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1)] p-8 sm:p-12 relative overflow-hidden">
-    <!-- Subtle decorative background element -->
-    <div class="absolute -top-24 -right-24 w-48 h-48 bg-surface-container-high rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-    <!-- Header / Logo -->
-    <div class="flex flex-col items-center mb-8 relative z-10">
-        <div class="flex items-center justify-center w-12 h-12 bg-primary rounded-lg shadow-sm mb-4">
-            <span class="material-symbols-outlined text-on-primary font-bold" data-icon="mail">mail</span>
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+}
+
+<div class="login-page">
+    <!-- SOL TARAF -->
+    <div class="login-left">
+        <!-- Logo -->
+        <div class="brand">
+            <div class="brand-icon">
+                <span class="material-symbols-outlined">mail</span>
+            </div>
+            <span class="brand-name">B-Mail</span>
         </div>
-        <h1 class="font-display-lg text-display-lg text-primary tracking-tight">B-Mail</h1>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-2">Tekrar Hoş Geldin</p>
+        <!-- Orta içerik -->
+        <div class="hero-content">
+            <h1>Mesajlaşmanın daha sade hali.</h1>
+            <p>Mesajlarını güvenli, hızlı ve kolay bir şekilde yönet. Odaklanman gereken tek şey içeriğin kendisi.</p>
+            <!-- Dekoratif mesaj kartı -->
+            <div class="message-preview">
+                <div class="message-header">
+                    <div class="avatar">BG</div>
+                    <div class="message-user">
+                        <div class="message-line line-name"></div>
+                        <div class="message-line line-small"></div>
+                    </div>
+                </div>
+                <div class="message-body">
+                    <div class="message-line line-full"></div>
+                    <div class="message-line line-medium"></div>
+                    <div class="message-line line-short"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Alt yazı -->
+        <div class="security-text">
+            <span class="material-symbols-outlined">lock</span>
+            Kurumsal Sınıf Güvenlik
+        </div>
     </div>
-    <!-- Form -->
-    <form class="space-y-6 relative z-10" method="post">
-        <div id="validationSummary" class="hidden overflow-hidden transition-all duration-300">
-            @Html.ValidationSummary(false, "", new { @class = "text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3" })
-        </div>
-        <div class="space-y-stack_sm">
-            <label class="block font-label-md text-label-md text-on-surface" for="email">E-Mail Adres</label>
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-outline">
-                    <span class="material-symbols-outlined" data-icon="person" style="font-size: 20px;">person</span>
-                </span>
-                <input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg font-body-md text-body-md bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary transition-colors placeholder:text-outline-variant" id="email" name="email" placeholder="ornek@mail.com" type="email" asp-for="Email" />
+    <!-- SAĞ TARAF -->
+    <div class="login-right">
+        <div class="login-form-container">
+            <div class="form-header">
+                <h2>Tekrar Hoş Geldin</h2>
+                <p>Hesabına giriş yaparak mesajlarına ulaş.</p>
+            </div>
+            <form method="post">
+                <div id="validationSummary">
+                    @Html.ValidationSummary(false, "", new { @class = "validation-message" })
+                </div>
+                <!-- Email -->
+                <div class="form-group">
+                    <label asp-for="Email">E-posta Adresi</label>
+                    <div class="input-wrapper">
+                        <span class="material-symbols-outlined input-icon">mail</span>
+                        <input asp-for="Email" class="form-input" placeholder="ornek@info.com" type="email" />
+                    </div>
+                </div>
+                <!-- Şifre -->
+                <div class="form-group">
+                    <label asp-for="Password">Şifre</label>
+                    <div class="input-wrapper">
+                        <span class="material-symbols-outlined input-icon">lock</span>
+                        <input asp-for="Password" class="form-input" placeholder="••••••••" type="password" />
+                    </div>
+                </div>
+                <!-- Remember / Forgot -->
+                <div class="form-actions">
+                    <label class="remember-me">
+                        <input asp-for="RememberMe" type="checkbox" />
+                        <span>Beni Hatırla</span>
+                    </label>
+                    <a href="/Auth/ForgotPassword">Şifremi Unuttum?</a>
+                </div>
+                <button class="login-button" type="submit">
+                    Giriş Yap
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </form>
+            <div class="register-area">
+                Hesabın yok mu?
+                <a href="/Auth/Register">Kayıt Ol</a>
             </div>
         </div>
-        <div class="space-y-stack_sm">
-            <div class="flex justify-between items-center">
-                <label class="block font-label-md text-label-md text-on-surface" for="password">Şifre</label>
-                <a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="/Auth/ForgotPassword">Şifremi Unuttum</a>
-            </div>
-            <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-outline">
-                    <span class="material-symbols-outlined" data-icon="lock" style="font-size: 20px;">lock</span>
-                </span>
-                <input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg font-body-md text-body-md bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary transition-colors placeholder:text-outline-variant" id="password" name="password" placeholder="••••••••" required="" type="password" asp-for="Password" />
-            </div>
-        </div>
-        <div class="flex items-center">
-            <input class="h-4 w-4 text-primary focus:ring-primary border-outline-variant rounded transition-colors" id="RememberMe" name="RememberMe" type="checkbox" asp-for="RememberMe" />
-            <label class="ml-2 block font-body-md text-body-md text-on-surface-variant" for="RememberMe" asp-for="RememberMe">
-                Beni Hatırla
-            </label>
-        </div>
-        <button class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm font-label-md text-label-md text-on-primary bg-primary-container hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200" type="submit">
-            Giriş Yap
-        </button>
-    </form>
-    <!-- Footer -->
-    <div class="mt-8 text-center relative z-10">
-        <p class="font-body-md text-body-md text-on-surface-variant">
-            Hesabın yok mu?
-            <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors ml-1" href="/Auth/Register">Buradan kaydol</a>
-        </p>
     </div>
 </div>
