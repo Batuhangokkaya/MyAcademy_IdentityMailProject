@@ -1,5 +1,4 @@
-﻿using IdentityMail.Web.DTOs;
-using IdentityMail.Web.DTOs.UserDTOs;
+﻿using IdentityMail.Web.DTOs.UserDTOs;
 using IdentityMail.Web.Entities;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
@@ -104,15 +103,15 @@ namespace IdentityMail.Web.Controllers
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDTO forgotPasswordDTO)
         {
             if (!ModelState.IsValid)
+            {
                 return View(forgotPasswordDTO);
+            }
 
             var user = await _userManager.FindByEmailAsync(forgotPasswordDTO.Email);
 
             if (user == null)
             {
-                TempData["SuccessMessage"] =
-                    "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.";
-
+                TempData["SuccessMessage"] = "E-posta adresiniz sistemimizde kayıtlıysa, şifre sıfırlama bağlantısı e-posta adresinize gelecektir.";
                 return RedirectToAction(nameof(ForgotPassword));
             }
 
@@ -210,32 +209,58 @@ namespace IdentityMail.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO resetPasswordDTO)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (string.IsNullOrEmpty(resetPasswordDTO.Password) || string.IsNullOrEmpty(resetPasswordDTO.ConfirmPassword))
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Şifre ve Şifre Tekrar alanı zorunludur!");
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
+                return View(resetPasswordDTO);
+            }
+
+            if (resetPasswordDTO.Password != resetPasswordDTO.ConfirmPassword)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Şifreler birbiriyle uyumlu değil!");
+
+                return View(resetPasswordDTO);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(resetPasswordDTO);
+            }
+
+            var user = await _userManager.FindByEmailAsync(resetPasswordDTO.Email);
 
             if (user == null)
             {
-                return View(model);
+                return View(resetPasswordDTO);
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            var result = await _userManager.ResetPasswordAsync(
+                user,
+                resetPasswordDTO.Token,
+                resetPasswordDTO.Password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                ViewBag.PasswordResetSuccess = true;
-                return View(model);
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(
+                        string.Empty,
+                        error.Description);
+                }
+
+                return View(resetPasswordDTO);
             }
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
+            ViewBag.PasswordResetSuccess = true;
 
-            return View(model);
+            return View(resetPasswordDTO);
         }
     }
 }

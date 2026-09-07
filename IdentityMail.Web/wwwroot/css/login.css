@@ -330,6 +330,13 @@
     text-decoration: none;
 }
 
+/* VALIDATION */
+.validation-message {
+    color: #dc2626;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px){
     .login-page {

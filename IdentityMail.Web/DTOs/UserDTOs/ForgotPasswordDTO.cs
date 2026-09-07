@@ -1,7 +1,10 @@
-﻿namespace IdentityMail.Web.DTOs.UserDTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace IdentityMail.Web.DTOs.UserDTOs
 {
     public class ForgotPasswordDTO
     {
-        public string Email { get; set; }
+        [Required(ErrorMessage = "E-posta alanı zorunludur!")]
+        public string? Email { get; set; }
     }
 }
