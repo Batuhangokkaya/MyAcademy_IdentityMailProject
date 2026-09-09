@@ -1,6 +1,9 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-@await Component.InvokeAsync("_LayoutHead")
+<head>
+    @await Component.InvokeAsync("_LayoutHead")
+    @await RenderSectionAsync("Styles", required: false)
+</head>
 <body class="bg-background text-on-background min-h-screen antialiased flex flex-col">
     <!-- TopNavBar -->
     @await Component.InvokeAsync("_LayoutTopNavbar")

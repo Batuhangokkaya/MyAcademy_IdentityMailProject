@@ -1,75 +1,101 @@
 ﻿@model List<UserMessage>
 @{
-    ViewData["Title"] = "Mailler";
+    ViewData["Title"] = "Gelen Kutusu";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/inbox.css" />
 }
 
-<!-- Inbox Header -->
-<div class="flex justify-between items-end mb-stack_lg">
-    <div>
-        <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Gelen Mesaj</h1>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">@ViewBag.UnreadMessages Okunmamış Mesaj</p>
-    </div>
-    <div class="flex gap-2">
-        <button class="px-4 py-2 bg-surface border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">filter_list</span>
-            Filtre
-        </button>
-        <button class="p-2 bg-surface border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-low transition-colors flex items-center justify-center">
-            <span class="material-symbols-outlined">more_vert</span>
-        </button>
-    </div>
-</div>
-<!-- Email List Container -->
-<div class="bg-surface rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.1),0_1px_2px_-1px_rgb(0,0,0,0.1)] border border-outline-variant flex flex-col overflow-hidden">
-    <!-- List Header (Columns) -->
-    <div class="flex items-center px-4 py-3 border-b border-outline-variant bg-surface-container-lowest font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">
-        <div class="w-12 pl-2"><input class="rounded text-primary focus:ring-primary border-outline-variant bg-transparent cursor-pointer" type="checkbox" /></div>
-        <div class="w-10"></div>
-        <div class="w-48 xl:w-56">Gönderen</div>
-        <div class="flex-1">Mail</div>
-        <div class="w-24 text-right pr-4">Tarih</div>
-    </div>
-    @foreach (var message in Model)
-    {
-        <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="group flex items-center px-4 py-3 border-b border-outline-variant @(message.IsRead == false ? "bg-surface-container-low border-l-4 border-l-primary" : "bg-surface border-l-4 border-l-transparent") hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] hover:bg-surface-container hover:z-10 relative transition-all duration-200 cursor-pointer border-l-4 ">
-            <div class="w-6 shrink-0 flex items-center justify-center">
-                <input class="rounded text-primary focus:ring-primary border-outline-variant bg-transparent cursor-pointer" type="checkbox" />
+<div class="inbox-page">
+    <div class="inbox-header">
+        <div class="inbox-title-area">
+            <h1>Gelen Kutusu</h1>
+            <p>@ViewBag.UnreadMessages okunmamış mesaj</p>
+        </div>
+        <div class="inbox-actions">
+            <div class="inbox-tabs">
+                <button type="button" class="tab-button active">Tümü</button>
+                <button type="button" class="tab-button">Okunmamış</button>
+                <button type="button" class="tab-button">Okunan</button>
             </div>
-            <div class="w-12 shrink-0 flex items-center justify-center">
-                <span id="important-@message.ID"
-                      class="material-icons text-[20px] cursor-pointer"
-                      onclick="toggleImportant(event, @message.ID, this); return false;">
-                    @(message.IsImportant ? "star" : "star_border")
-                </span>
-            </div>
-            <div class="w-48 xl:w-56 font-label-md text-label-md @(message.IsRead == false ? "font-bold" : "opacity-80") text-on-surface truncate pr-4">@message.Sender.FirstName @message.Sender.LastName</div>
-            <div class="flex-1 flex items-center gap-3 overflow-hidden pr-4">
-                @if (message.Category != null)
-                {
-                    <span class="px-2 py-0.5 rounded-full bg-secondary-container/20 text-on-secondary-fixed font-label-sm text-[10px] uppercase tracking-wider shrink-0 border border-secondary-container/30">@(message.Category?.Name ?? "")</span>
-                }
-                <div class="truncate">
-                    <span class="font-body-md text-body-md @(message.IsRead == false ? "font-semibold" : "opacity-80") text-on-surface">@message.Subject</span>
-                    <span class="font-body-md text-body-md text-on-surface-variant font-normal ml-1">- @(message.Body.Length > 70 ? message.Body.Substring(0, 70) : message.Body)</span>
+            <button type="button" class="inbox-filter-button">
+                Kategori
+                <span class="material-symbols-outlined">arrow_drop_down</span>
+            </button>
+            <button type="button" class="inbox-filter-button">
+                Sırala: En Yeni
+                <span class="material-symbols-outlined">arrow_drop_down</span>
+            </button>
+        </div>
+    </div>
+    <div class="mail-list">
+        @foreach (var message in Model)
+        {
+            var body = message.Body ?? "";
+            <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="mail-item @(message.IsRead == false ? "unread" : "")">
+                <div class="mail-sender">
+                    <div class="sender-avatar">
+                        <span>@message.Sender.FirstName.Substring(0, 1)</span>
+                    </div>
+                    <div class="sender-info">
+                        <div class="sender-name">
+                            @message.Sender.FirstName
+                            @message.Sender.LastName
+                        </div>
+
+                        @if (message.Category != null)
+                        {
+                            <span class="category-badge">@message.Category.Name</span>
+                        }
                 </div>
             </div>
-            <div class="w-24 text-right pr-4 font-label-md text-label-md @(message.IsRead == false ? "font-bold" : "opacity-80") text-on-surface">
-                @if (@message.SendDate.Date == DateTime.Today)
-                {
-                    @message.SendDate.ToString("HH:mm")
-                }
-                else if (@message.SendDate.Year == DateTime.Now.Year)
-                {
-                    @message.SendDate.ToString("dd MMM")
-                }
-                else
-                {
-                    @message.SendDate.ToString("dd.MM.yyyy")
-                }
-            </div>
-        </a>
-    }
+            <div class="mail-content">
+                <div class="mail-subject">@message.Subject</div>
+                <div class="mail-preview">@(body.Length > 45 ? body.Substring(0, 45) + "..." : body)</div>
+                </div>
+                <div class="mail-date">
+                @if (message.SendDate.Date == DateTime.Today)
+                    {
+                        @message.SendDate.ToString("HH:mm")
+                    }
+                    else if (message.SendDate.Year == DateTime.Now.Year)
+                    {
+                        @message.SendDate.ToString("dd MMM")
+                    }
+                    else
+                    {
+                        @message.SendDate.ToString("dd.MM.yyyy")
+                    }
+                </div>                
+                <button type="button" class="important-button" title="Önemli mesaj" onclick="toggleImportant(event, @message.ID, this)">
+                    <span class="material-symbols-outlined">@(message.IsImportant ? "star" : "star")</span>
+                </button>
+            </a>
+        }
+    </div>
 </div>
+
+@* @section Scripts {
+    <script>
+        async function toggleImportant(event, id, button) {
+            event.preventDefault();
+            event.stopPropagation();
+            const response = await fetch(`/Message/ToggleImportant?id=${id}`, {
+                method: "POST"
+            });
+            if (!response.ok) {
+                return;
+            }
+            const data = await response.json();
+            button.classList.toggle(
+                "selected",
+                data.isImportant
+            );
+        }
+    </script>
+}
+*@
 
 <script>
         async function toggleImportant(event, id, element) {
