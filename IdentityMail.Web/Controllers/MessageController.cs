@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IdentityMail.Web.Controllers
 {
@@ -12,23 +13,46 @@ namespace IdentityMail.Web.Controllers
     public class MessageController(UserManager<AppUser> _userManager,
                                    AppDbContext _context) : Controller
     {
-        public async Task<IActionResult> Inbox()
+        public async Task<IActionResult> Inbox(string filter = "all", string sort = "new")
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            var messages = await _context.UserMessages
+            var messages = _context.UserMessages
                 .Include(x => x.Sender)
                 .Include(x => x.Category)
+                .OrderByDescending(x => x.ID)
                 .Where(x => x.ReceiverID == user.Id && x.IsDeletedReceiver == false)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (filter == "unread")
+            {
+                messages = messages.Where(x => x.IsRead == false);
+            }
+            else if (filter == "read")
+            {
+                messages = messages.Where(x => x.IsRead == true);
+            }
+            ViewBag.CurrentFilter = filter;
+
+            if (sort == "new")
+            {
+                messages = messages.OrderByDescending(x => x.SendDate);
+            }
+            else if(sort == "old")
+            {
+                messages = messages.OrderBy(x => x.SendDate);
+            }
+            ViewBag.CurrentSort = sort;
+
+            var query = await messages.ToListAsync();
 
             var unreadMessages = await _context.UserMessages
                 .Include(x => x.Sender)
-                .Where(x => x.ReceiverID == user.Id && x.IsRead == false)
+                .Where(x => x.ReceiverID == user.Id && x.IsRead == false && x.IsDeletedReceiver == false)
                 .CountAsync();
             ViewBag.UnreadMessages = unreadMessages;
 
-            return View(messages);
+            return View(query);
         }
 
         public async Task<IActionResult> SentMails()
@@ -228,7 +252,7 @@ namespace IdentityMail.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Trash", "Message");
+            return RedirectToAction("Inbox", "Message");
         }
 
         public async Task<IActionResult> Trash()

@@ -1,99 +1,92 @@
 ﻿@model List<UserMessage>
+@{
+    ViewData["Title"] = "Silinen Mesajlar";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/trash.css" />
+}
 
-<div class="flex flex-col h-full bg-surface">
-    <!-- Header -->
-    <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
-        <div>
-            <h1 class="text-2xl font-semibold text-on-surface">Çöp Kutusu</h1>
-            <p class="text-sm text-on-surface-variant mt-1">
-                Silinen mesajlar burada tutulur.
-            </p>
+<div class="trash-page">
+    <!-- HEADER -->
+    <div class="trash-header">
+        <div class="trash-header-left">
+            <h1 class="trash-title">Silinen Mesajlar</h1>
+            <p class="trash-subtitle">@Model.Count Silinen Mesaj</p>
         </div>
-
-        <span class="text-sm text-on-surface-variant">
-            @Model.Count mesaj
-        </span>
+        <div class="trash-header-actions">
+            <button type="button" class="trash-filter-button">
+                <span class="material-symbols-outlined">filter_list</span>
+                <span>Filtre</span>
+            </button>
+            <button type="button" class="trash-more-button">
+                <span class="material-symbols-outlined">more_vert</span>
+            </button>
+        </div>
     </div>
-
-    <!-- Messages -->
-    <div class="flex-1 overflow-y-auto">
-
+    <!-- MESAJ LİSTESİ -->
+    <div class="trash-list">
         @if (Model.Any())
         {
+            var userId = (int)ViewBag.UserId;
             foreach (var message in Model)
             {
-                var userId = (int)ViewBag.UserId;
-                <div class="group flex items-center px-6 py-4 border-b border-outline-variant hover:bg-surface-container-high cursor-pointer transition-colors" onclick="showTrashWarning()">
-                    <!-- Checkbox -->
-                    <div class="w-10 shrink-0">
-                        <input type="checkbox" class="rounded border-outline-variant text-primary" onclick="event.stopPropagation();" />
+                <div class="trash-row" onclick="showTrashWarning()">
+                    <!-- CHECKBOX -->
+                    <div class="trash-checkbox" onclick="event.stopPropagation();">
+                        <input type="checkbox" />
                     </div>
-                    <!-- Sender -->
-                    <div class="w-56 shrink-0">
+                    <!-- GÖNDEREN / ALICI -->
+                    <div class="trash-sender">
                         @if (message.SenderID == userId)
                         {
-                            <span>@message.Receiver.FirstName @message.Receiver.LastName</span>
+                            <span>
+                                @message.Receiver.FirstName
+                                @message.Receiver.LastName
+                            </span>
                         }
                         else
                         {
-                            <span>@message.Sender.FirstName @message.Sender.LastName</span>
+                            <span>
+                                @message.Sender.FirstName
+                                @message.Sender.LastName
+                            </span>
                         }
                     </div>
-
-                    <!-- Subject -->
-                    <div class="flex-1 min-w-0">
-                        <span class="text-on-surface font-medium">@message.Subject</span>
-
+                    <!-- KONU + MESAJ -->
+                    <div class="trash-message">
+                        <span class="trash-subject">@message.Subject</span>
                         @if (!string.IsNullOrEmpty(message.Body))
                         {
-                            <span class="text-on-surface-variant ml-2">- @message.Body</span>
+                            <span class="trash-body">- @message.Body</span>
                         }
                     </div>
-
-                    <!-- Date -->
-                    <div class="w-32 text-right text-sm text-on-surface-variant">@message.SendDate</div>
+                    <!-- TARİH -->
+                    <div class="trash-date">
+                        @message.SendDate.ToString("dd.MM.yyyy")
+                    </div>
                 </div>
             }
         }
         else
         {
-            <div class="flex flex-col items-center justify-center h-full text-center">
-                <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">delete</span>
-                <h2 class="text-xl font-medium text-on-surface">Çöp Kutusu boş</h2>
-                <p class="text-sm text-on-surface-variant mt-2">Silinen mesajlar burada görünecek.</p>
+            <!-- ÇÖP KUTUSU BOŞ -->
+            <div class="trash-empty">
+                <span class="material-symbols-outlined trash-empty-icon">delete</span>
+                <h2 class="trash-empty-title">Çöp Kutusu boş</h2>
+                <p class="trash-empty-text">Silinen mesajlar burada görünecek.</p>
             </div>
         }
     </div>
 </div>
-<script>
-    function showTrashWarning() {
 
-        Swal.fire({
-
-            title: "Mesaj Çöp Kutusunda",
-            text: "Mesajı görüntülemek için lütfen Çöp Kutusu'ndan çıkarın.",
-
-            icon: "warning",
-
-            showConfirmButton: false,
-
-            showClass: {
-                popup: `
-                    animate__animated
-                    animate__fadeInUp
-                    animate__faster
-                `
-            },
-
-            hideClass: {
-                popup: `
-                    animate__animated
-                    animate__fadeOutDown
-                    animate__faster
-                `
-            }
-
-        });
-
-    }
-</script>
+<div id="trashModal" class="trash-modal">
+    <div class="trash-modal-box">
+        <div class="trash-modal-icon">
+            <span class="material-symbols-outlined">warning</span>
+        </div>
+        <h2 class="trash-modal-title">Mesaj Çöp Kutusunda</h2>
+        <p class="trash-modal-text">Mesajı görüntülemek için lütfen Çöp Kutusu'ndan çıkarın.</p>
+        <button type="button" class="trash-modal-button" onclick="closeTrashWarning()">Tamam</button>
+    </div>
+</div>

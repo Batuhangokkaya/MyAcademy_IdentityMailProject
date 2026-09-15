@@ -1,0 +1,366 @@
+﻿/* TRASH PAGE */
+.trash-page {
+    width: 100%;
+}
+
+/* HEADER */
+.trash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.trash-header-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.trash-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.trash-subtitle {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* HEADER ACTIONS */
+.trash-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trash-filter-button, .trash-more-button {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #334155;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.trash-filter-button {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.trash-more-button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.trash-filter-button:hover, .trash-more-button:hover {
+    background: #f8fafc;
+}
+
+.trash-filter-button .material-symbols-outlined {
+    font-size: 19px;
+}
+
+.trash-more-button .material-symbols-outlined {
+    font-size: 22px;
+}
+
+/* MESSAGE LIST */
+.trash-list {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* MESSAGE ROW */
+.trash-row {
+    width: 100%;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.trash-row:last-child {
+    border-bottom: none;
+}
+
+.trash-row:hover {
+    background: #f8fafc;
+}
+
+/* CHECKBOX */
+.trash-checkbox {
+    width: 42px;
+    min-width: 42px;
+    display: flex;
+    align-items: center;
+}
+
+.trash-checkbox input {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #2563eb;
+}
+
+/* SENDER */
+.trash-sender {
+    width: 220px;
+    min-width: 220px;
+    padding-right: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+}
+
+/* MESSAGE */
+.trash-message {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.trash-subject {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    flex-shrink: 0;
+}
+
+.trash-body {
+    margin-left: 7px;
+    font-size: 14px;
+    color: #64748b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* DATE */
+.trash-date {
+    width: 130px;
+    min-width: 130px;
+    margin-left: 20px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+/* EMPTY TRASH */
+.trash-empty {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.trash-empty-icon {
+    margin-bottom: 16px;
+    font-size: 64px;
+    color: #94a3b8;
+}
+
+.trash-empty-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.trash-empty-text {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* TRASH WARNING MODAL */
+.trash-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 9999;
+    box-sizing: border-box;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* OPEN MODAL */
+.trash-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* MODAL BOX */
+.trash-modal-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    background: #ffffff;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+    transform: translateY(25px) scale(0.96);
+    transition: transform 0.25s ease;
+}
+
+.trash-modal.show .trash-modal-box {
+    transform: translateY(0) scale(1);
+}
+
+/* WARNING ICON */
+.trash-modal-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #fff7ed;
+    color: #f59e0b;
+}
+
+.trash-modal-icon .material-symbols-outlined {
+    font-size: 36px;
+}
+
+/* MODAL CONTENT */
+.trash-modal-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.trash-modal-text {
+    margin: 12px 0 24px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #64748b;
+}
+
+/* MODAL BUTTON */
+.trash-modal-button {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.trash-modal-button:hover {
+    background: #1d4ed8;
+}
+
+/* RESPONSIVE - TABLET */
+@media (max-width: 900px) {
+
+    .trash-sender {
+        width: 160px;
+        min-width: 160px;
+    }
+
+    .trash-date {
+        width: 105px;
+        min-width: 105px;
+    }
+}
+
+/* RESPONSIVE - MOBILE */
+@media (max-width: 700px) {
+
+    .trash-header {
+        align-items: center;
+    }
+
+    .trash-title {
+        font-size: 24px;
+    }
+
+    .trash-row {
+        padding: 0 14px;
+    }
+
+    .trash-sender {
+        width: 120px;
+        min-width: 120px;
+    }
+
+    .trash-date {
+        display: none;
+    }
+}
+
+/* RESPONSIVE - SMALL MOBILE */
+@media (max-width: 500px) {
+
+    .trash-filter-button span:last-child {
+        display: none;
+    }
+
+    .trash-filter-button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .trash-checkbox {
+        width: 32px;
+        min-width: 32px;
+    }
+
+    .trash-sender {
+        width: 100px;
+        min-width: 100px;
+        font-size: 13px;
+    }
+
+    .trash-subject, .trash-body {
+        font-size: 13px;
+    }
+}

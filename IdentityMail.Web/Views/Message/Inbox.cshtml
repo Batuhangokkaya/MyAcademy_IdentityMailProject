@@ -14,105 +14,124 @@
             <p>@ViewBag.UnreadMessages okunmamış mesaj</p>
         </div>
         <div class="inbox-actions">
-            <div class="inbox-tabs">
-                <button type="button" class="tab-button active">Tümü</button>
-                <button type="button" class="tab-button">Okunmamış</button>
-                <button type="button" class="tab-button">Okunan</button>
+            <div class="bulk-actions">
+                <label class="bulk-select-all" title="Tümünü seç">
+                    <input type="checkbox" id="selectAllCheckbox" />
+                    <span class="material-symbols-outlined">check_box_outline_blank</span>
+                </label>
+                <button type="button"
+                        id="bulkImportantButton"
+                        class="bulk-action-button"
+                        title="Seçilenleri önemli yap"
+                        disabled>
+
+                    <span class="material-symbols-outlined">
+                        star
+                    </span>
+                </button>
+                <button type="button" id="bulkDeleteButton" class="bulk-action-button delete" title="Seçilenleri sil" disabled>
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
             </div>
-            <button type="button" class="inbox-filter-button">
-                Kategori
-                <span class="material-symbols-outlined">arrow_drop_down</span>
-            </button>
-            <button type="button" class="inbox-filter-button">
-                Sırala: En Yeni
-                <span class="material-symbols-outlined">arrow_drop_down</span>
-            </button>
+            <div class="inbox-tabs">
+                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="all" class="tab-button @(ViewBag.CurrentFilter == "all" ? "active" : "")">Tümü</a>
+                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="unread" class="tab-button @(ViewBag.CurrentFilter == "unread" ? "active" : "")">Okunmamış</a>
+                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="read" class="tab-button @(ViewBag.CurrentFilter == "read" ? "active" : "")">Okunan</a>
+            </div>
+            <form asp-controller="Message" asp-action="Inbox" method="get" class="inbox-filter-form">
+                <input type="hidden" name="filter" value="@ViewBag.CurrentFilter" />
+                <div class="inbox-select-wrapper">
+                    <select name="categoryId" class="inbox-filter-select" onchange="this.form.submit()">
+                        <option value="">Kategori</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                if (ViewBag.CurrentCategoryId == category.ID)
+                                {
+                                    <option value="@category.ID" selected>@category.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@category.ID">@category.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                    <span class="material-symbols-outlined inbox-select-arrow">keyboard_arrow_down</span>
+                </div>
+                <div class="inbox-select-wrapper">
+                    <select name="sort" class="inbox-filter-select" onchange="this.form.submit()">
+                        @if (ViewBag.CurrentSort == "old")
+                        {
+                            <option value="new">Sırala: En Yeni</option>
+                            <option value="old" selected>Sırala: En Eski</option>
+                        }
+                        else
+                        {
+                            <option value="new" selected>Sırala: En Yeni</option>
+                            <option value="old">Sırala: En Eski</option>
+                        }
+                    </select>
+                    <span class="material-symbols-outlined inbox-select-arrow">keyboard_arrow_down</span>
+                </div>
+            </form>
         </div>
     </div>
     <div class="mail-list">
         @foreach (var message in Model)
         {
             var body = message.Body ?? "";
-            <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="mail-item @(message.IsRead == false ? "unread" : "")">
-                <div class="mail-sender">
-                    <div class="sender-avatar">
-                        <span>@message.Sender.FirstName.Substring(0, 1)</span>
-                    </div>
-                    <div class="sender-info">
-                        <div class="sender-name">
-                            @message.Sender.FirstName
-                            @message.Sender.LastName
-                        </div>
-
-                        @if (message.Category != null)
-                        {
-                            <span class="category-badge">@message.Category.Name</span>
-                        }
+            <div class="mail-item @(message.IsRead == false ? "unread" : "")">
+                <div class="mail-select">
+                    <input type="checkbox" class="mail-checkbox" value="@message.ID" />
                 </div>
-            </div>
-            <div class="mail-content">
-                <div class="mail-subject">@message.Subject</div>
-                <div class="mail-preview">@(body.Length > 45 ? body.Substring(0, 45) + "..." : body)</div>
-                </div>
-                <div class="mail-date">
-                @if (message.SendDate.Date == DateTime.Today)
-                    {
-                        @message.SendDate.ToString("HH:mm")
-                    }
-                    else if (message.SendDate.Year == DateTime.Now.Year)
-                    {
-                        @message.SendDate.ToString("dd MMM")
-                    }
-                    else
-                    {
-                        @message.SendDate.ToString("dd.MM.yyyy")
-                    }
-                </div>                
-                <button type="button" class="important-button" title="Önemli mesaj" onclick="toggleImportant(event, @message.ID, this)">
-                    <span class="material-symbols-outlined">@(message.IsImportant ? "star" : "star")</span>
+                <button type="button" class="important-button @(message.IsImportant ? "selected" : "")" data-important="@(message.IsImportant ? "true" : "false")" title="Önemli mesaj" onclick="toggleImportant(event, @message.ID, this)">
+                    <span class="material-symbols-outlined">@(message.IsImportant ? "star" : "star_border")</span>
                 </button>
-            </a>
+                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="mail-link">
+                    <div class="mail-sender">
+                        <div class="sender-avatar">
+                            <span>@message.Sender.FirstName.Substring(0, 1)</span>
+                        </div>
+                        <div class="sender-info">
+                            <div class="sender-name">
+                                @message.Sender.FirstName
+                                @message.Sender.LastName
+                            </div>
+                            @if (message.Category != null)
+                            {
+                                <span class="category-badge">@message.Category.Name</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="mail-content">
+                        <div class="mail-subject">@message.Subject</div>
+                        <div class="mail-preview">@(body.Length > 45 ? body.Substring(0, 45) + "..." : body)</div>
+                    </div>
+                    <div class="mail-date">
+                        @if (message.SendDate.Date == DateTime.Today)
+                        {
+                            @message.SendDate.ToString("HH:mm")
+                        }
+                        else if (message.SendDate.Year == DateTime.Now.Year)
+                        {
+                            @message.SendDate.ToString("dd MMM")
+                        }
+                        else
+                        {
+                            @message.SendDate.ToString("dd.MM.yyyy")
+                        }
+                    </div>
+                    <div class="mail-actions">
+                        <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@message.ID" method="post">
+                            <button type="submit" class="delete-mail-button" title="Sil">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </a>
+            </div>
         }
     </div>
 </div>
-
-@* @section Scripts {
-    <script>
-        async function toggleImportant(event, id, button) {
-            event.preventDefault();
-            event.stopPropagation();
-            const response = await fetch(`/Message/ToggleImportant?id=${id}`, {
-                method: "POST"
-            });
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            button.classList.toggle(
-                "selected",
-                data.isImportant
-            );
-        }
-    </script>
-}
-*@
-
-<script>
-        async function toggleImportant(event, id, element) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const response = await fetch(`/Message/ToggleImportant?id=${id}`, {
-            method: 'POST'
-        });
-
-        if (!response.ok)
-        {
-            return;
-        }
-
-        const data = await response.json();
-
-        element.textContent = data.isImportant ? "star" : "star_border";
-    }
-</script>

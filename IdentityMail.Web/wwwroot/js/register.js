@@ -1,7 +1,8 @@
-﻿function togglePassword(inputId, iconId) {
+﻿/* REGISTER */
+function togglePassword(inputId, iconId) {
 
     const input = document.getElementById(inputId);
-    const icon = document.getElementById(iconId);
+    const icon  = document.getElementById(iconId);
 
     if (input.type === "password") {
 

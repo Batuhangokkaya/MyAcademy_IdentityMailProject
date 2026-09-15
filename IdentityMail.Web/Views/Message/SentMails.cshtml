@@ -1,72 +1,101 @@
 ﻿@model List<UserMessage>
 @{
-    ViewData["Title"] = "Mailler";
+    ViewData["Title"] = "Gönderilen Mailler";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/sent-mails.css" />
 }
 
-<!-- Inbox Header -->
-<div class="flex justify-between items-end mb-stack_lg">
-    <div>
-        <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Gelen Mesaj</h1>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">@ViewBag.UnreadMessages Okunmamış Mesaj</p>
-    </div>
-    <div class="flex gap-2">
-        <button class="px-4 py-2 bg-surface border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">filter_list</span>
-            Filtre
-        </button>
-        <button class="p-2 bg-surface border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-low transition-colors flex items-center justify-center">
-            <span class="material-symbols-outlined">more_vert</span>
-        </button>
-    </div>
-</div>
-<!-- Email List Container -->
-<div class="bg-surface rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.1),0_1px_2px_-1px_rgb(0,0,0,0.1)] border border-outline-variant flex flex-col overflow-hidden">
-    <!-- List Header (Columns) -->
-    <div class="flex items-center px-4 py-3 border-b border-outline-variant bg-surface-container-lowest font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">
-        <div class="w-12 pl-2"><input class="rounded text-primary focus:ring-primary border-outline-variant bg-transparent cursor-pointer" type="checkbox" /></div>
-        <div class="w-10"></div>
-        <div class="w-48 xl:w-56">Gönderilenler</div>
-        <div class="flex-1">Mail</div>
-        <div class="w-24 text-right pr-4">Tarih</div>
-    </div>
-    @foreach (var message in Model)
-    {
-        <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="group flex items-center px-4 py-3 border-b border-outline-variant @(message.IsRead == false ? "bg-surface-container-low border-l-4 border-l-primary" : "bg-surface border-l-4 border-l-transparent") hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] hover:bg-surface-container hover:z-10 relative transition-all duration-200 cursor-pointer border-l-4 ">
-            <div class="w-6 shrink-0 flex items-center justify-center">
-                <input class="rounded text-primary focus:ring-primary border-outline-variant bg-transparent cursor-pointer" type="checkbox" />
+<div class="sent-mails-page">
+    <div class="sent-mails-header">
+        <div>
+            <h1 class="sent-mails-title">Gönderilen Mesajlar</h1>
+            <p class="sent-mails-count">@Model.Count Gönderilen Mesaj</p>
+        </div>
+        <div class="sent-mails-actions">
+            <div class="sent-mails-bulk">
+                <label class="sent-mails-bulk-item" title="Tümünü seç"><input type="checkbox" id="sentSelectAll" /></label>
+                <button type="button" class="sent-mails-bulk-item" title="Seçilenleri önemli yap" disabled><span class="material-symbols-outlined">star</span></button>
+                <button type="button" class="sent-mails-bulk-item" title="Seçilenleri sil" disabled><span class="material-symbols-outlined">delete</span></button>
             </div>
-            <div class="w-12 shrink-0 flex items-center justify-center">
-                <span id="important-@message.ID"
-                      class="material-icons text-[20px] cursor-pointer"
-                      onclick="toggleImportant(event, @message.ID, this); return false;">
-                    @(message.IsImportant ? "star" : "star_border")
-                </span>
-            </div>
-            <div class="w-48 xl:w-56 font-label-md text-label-md opacity-80 text-on-surface truncate pr-4">@message.Receiver.FirstName @message.Receiver.LastName</div>
-            <div class="flex-1 flex items-center gap-3 overflow-hidden pr-4">
-                @if (message.Category != null)
+            <select name="categoryId" class="sent-mails-select">
+                <option value="">Kategori</option>
+                @if (ViewBag.Categories != null)
                 {
-                    <span class="px-2 py-0.5 rounded-full bg-secondary-container/20 text-on-secondary-fixed font-label-sm text-[10px] uppercase tracking-wider shrink-0 border border-secondary-container/30">@(message.Category?.Name ?? "")</span>
+                    foreach (var category in ViewBag.Categories)
+                    {
+                        if (ViewBag.CurrentCategoryId == category.ID)
+                        {
+                            <option value="@category.ID" selected>@category.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@category.ID">@category.Name</option>
+                        }
+                    }
                 }
-                <div class="truncate">
-                    <span class="font-body-md text-body-md opacity-80 text-on-surface">@message.Subject</span>
-                    <span class="font-body-md text-body-md text-on-surface-variant font-normal ml-1">- @(message.Body.Length > 70 ? message.Body.Substring(0, 70) : message.Body)</span>
-                </div>
-            </div>
-            <div class="w-24 text-right pr-4 font-label-md text-label-md opacity-80 text-on-surface">
-                @if (@message.SendDate.Date == DateTime.Today)
+            </select>
+            <select name="sort" class="sent-mails-select sent-mails-sort">
+                @if (ViewBag.CurrentSort == "old")
                 {
-                    @message.SendDate.ToString("HH:mm")
-                }
-                else if (@message.SendDate.Year == DateTime.Now.Year)
-                {
-                    @message.SendDate.ToString("dd MMM")
+                    <option value="new">Sırala: En Yeni</option>
+                    <option value="old" selected>Sırala: En Eski</option>
                 }
                 else
                 {
-                    @message.SendDate.ToString("dd.MM.yyyy")
+                    <option value="new" selected>Sırala: En Yeni</option>
+                    <option value="old">Sırala: En Eski</option>
                 }
+            </select>
+        </div>
+    </div>
+    <div class="sent-mails-list">
+        @foreach (var message in Model)
+        {
+            var body = message.Body ?? "";
+            <div class="sent-mails-item">
+                <div class="sent-mails-item-checkbox">
+                    <input type="checkbox" class="sent-mail-checkbox" value="@message.ID" />
+                </div>
+                <div class="sent-mails-item-star">
+                    <span id="important-@message.ID" class="material-icons" onclick="toggleImportant(event, @message.ID, this); return false;">@(message.IsImportant ? "star" : "star_border")</span>
+                </div>
+                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="sent-mails-item-content">
+                    <div class="sent-mails-user">
+                        <div class="sent-mails-avatar">
+                            @if (!string.IsNullOrEmpty(message.Receiver.ProfileImageURL))
+                            {
+                                <img src="@message.Receiver.ProfileImageURL" alt="@message.Receiver.FirstName" />
+                            }
+                            else
+                            {
+                                <span>@message.Receiver.FirstName.Substring(0, 1)</span>
+                            }
+                        </div>
+
+                        <div class="sent-mails-name">@message.Receiver.FirstName @message.Receiver.LastName</div>
+                    </div>
+                    <div class="sent-mails-message">
+                        <div class="sent-mails-subject">@message.Subject</div>
+                        <div class="sent-mails-preview">@(body.Length > 45 ? body.Substring(0, 45) + "..." : body)</div>
+                    </div>
+                    <div class="sent-mails-date">
+                        @if (message.SendDate.Date == DateTime.Today)
+                        {
+                            @message.SendDate.ToString("HH:mm")
+                        }
+                        else if (message.SendDate.Year == DateTime.Now.Year)
+                        {
+                            @message.SendDate.ToString("dd MMM")
+                        }
+                        else
+                        {
+                            @message.SendDate.ToString("dd.MM.yyyy")
+                        }
+                    </div>
+                </a>
             </div>
-        </a>
-    }
+        }
+    </div>
 </div>

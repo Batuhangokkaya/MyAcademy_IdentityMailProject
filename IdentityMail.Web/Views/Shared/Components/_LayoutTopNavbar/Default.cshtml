@@ -3,145 +3,161 @@
 *@
 
 <!-- TopNavBar -->
-<header class="bg-surface text-primary font-body-md text-body-md border-b border-outline-variant flat no shadows flex justify-between items-center px-gutter w-full sticky top-0 z-50 h-navbar_height shrink-0">
-    <div class="flex items-center gap-6 w-full max-w-2xl">
-        <!-- Brand -->
-        <div class="font-display-lg text-display-lg font-bold text-primary shrink-0 cursor-pointer active:opacity-80">B-Mail</div>
-        <!-- Search Bar (on_left) -->
-        <div class="relative w-full max-w-md hidden md:block group">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
-            <input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface transition-all placeholder:text-on-surface-variant" placeholder="Posta ara..." type="text" />
+<header class="top-navbar">
+    <!-- SOL TARAF -->
+    <div class="top-navbar-left">
+        <!-- ARAMA -->
+        <div class="top-navbar-search">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input type="text" class="top-navbar-search-input" placeholder="Posta ara..." />
         </div>
     </div>
-    <!-- Trailing Actions -->
-    <div class="flex items-center gap-4 shrink-0 relative">
-        <div class="relative">
-            <button class="text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 p-2 rounded-full cursor-pointer active:opacity-80 relative flex items-center justify-center" id="notification-bell">
+    <!-- SAĞ TARAF -->
+    <div class="top-navbar-actions">
+        <!-- BİLDİRİMLER -->
+        <div class="top-navbar-item">
+            <button type="button" class="navbar-icon-btn" id="notification-bell">
                 <span class="material-symbols-outlined">notifications</span>
-                <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+                <span class="notification-dot"></span>
             </button>
-            <!-- Notification Dropdown -->
-            <div class="dropdown-menu absolute right-0 mt-2 w-80 bg-surface-container-lowest rounded-lg shadow-lg border border-[#E5E7EB] z-50 flex flex-col" id="notification-dropdown">
-                <div class="px-4 py-3 flex items-center justify-between border-b border-[#E5E7EB]">
-                    <h3 class="font-headline-sm text-headline-sm text-on-surface m-0">Notifications</h3>
-                    <button class="text-primary hover:text-primary-fixed-variant font-body-md text-body-md transition-colors bg-transparent border-none p-0 cursor-pointer">Mark all as read</button>
+            <!-- Bildirim Dropdown -->
+            <div class="navbar-dropdown notification-dropdown" id="notification-dropdown">
+                <div class="notification-header">
+                    <h3>Bildirimler</h3>
+                    <button type="button" class="notification-read-all">Tümünü okundu işaretle</button>
                 </div>
-                <div class="flex flex-col max-h-[300px] overflow-y-auto">
-                    <!-- Notification 1 -->
-                    <div class="px-4 py-3 border-b border-[#E5E7EB] hover:bg-surface-container-low transition-colors cursor-pointer flex gap-3 relative">
-                        <div class="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full"></div>
-                        <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0 text-primary">
-                            <span class="material-symbols-outlined text-[20px]">update</span>
+                <div class="notification-list">
+                    <!-- Bildirim 1 -->
+                    <div class="notification-item unread">
+                        <span class="unread-dot"></span>
+                        <div class="notification-icon primary">
+                            <span class="material-symbols-outlined">update</span>
                         </div>
-                        <div class="flex flex-col flex-1">
-                            <span class="font-label-md text-label-md font-bold text-on-surface">System Update</span>
-                            <span class="font-body-md text-[13px] text-on-surface-variant mt-0.5 line-clamp-2">B-Mail is undergoing scheduled maintenance at 2:00 AM EST.</span>
-                            <span class="font-label-sm text-label-sm text-on-surface-variant mt-1">10 min ago</span>
-                        </div>
-                    </div>
-                    <!-- Notification 2 -->
-                    <div class="px-4 py-3 border-b border-[#E5E7EB] hover:bg-surface-container-low transition-colors cursor-pointer flex gap-3 relative">
-                        <div class="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full"></div>
-                        <div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center shrink-0 text-secondary">
-                            <span class="material-symbols-outlined text-[20px]">mail</span>
-                        </div>
-                        <div class="flex flex-col flex-1">
-                            <span class="font-label-md text-label-md font-bold text-on-surface">New Message</span>
-                            <span class="font-body-md text-[13px] text-on-surface-variant mt-0.5 line-clamp-2">Sarah Jenkins sent you a message regarding Q3 Benefits.</span>
-                            <span class="font-label-sm text-label-sm text-on-surface-variant mt-1">1 hour ago</span>
+                        <div class="notification-content">
+                            <span class="notification-title">Sistem Güncellemesi</span>
+                            <span class="notification-description">B-Mail için planlı bakım çalışması yapılacaktır.</span>
+                            <span class="notification-time">10 dakika önce</span>
                         </div>
                     </div>
-                    <!-- Notification 3 -->
-                    <div class="px-4 py-3 hover:bg-surface-container-low transition-colors cursor-pointer flex gap-3">
-                        <div class="w-10 h-10 rounded-full bg-tertiary-container/20 flex items-center justify-center shrink-0 text-tertiary">
-                            <span class="material-symbols-outlined text-[20px]">event</span>
+                    <!-- Bildirim 2 -->
+                    <div class="notification-item unread">
+                        <span class="unread-dot"></span>
+                        <div class="notification-icon secondary">
+                            <span class="material-symbols-outlined">mail</span>
                         </div>
-                        <div class="flex flex-col flex-1">
-                            <span class="font-label-md text-label-md text-on-surface">Meeting Reminder</span>
-                            <span class="font-body-md text-[13px] text-on-surface-variant mt-0.5 line-clamp-2">Design Sync starts in 15 minutes.</span>
-                            <span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Yesterday</span>
+                        <div class="notification-content">
+                            <span class="notification-title">Yeni Mesaj</span>
+                            <span class="notification-description">Yeni bir mesaj aldınız.</span>
+                            <span class="notification-time">1 saat önce</span></div>
+                    </div>
+                    <!-- Bildirim 3 -->
+                    <div class="notification-item">
+                        <div class="notification-icon tertiary">
+                            <span class="material-symbols-outlined">event</span>
+                        </div>
+                        <div class="notification-content">
+                            <span class="notification-title">Hatırlatma</span>
+                            <span class="notification-description">Yaklaşan etkinliğiniz bulunuyor.</span>
+                            <span class="notification-time">Dün</span>
                         </div>
                     </div>
                 </div>
-                <div class="p-2 border-t border-[#E5E7EB]">
-                    <button class="w-full py-2 text-center text-primary font-label-md text-label-md hover:bg-surface-container-low rounded-md transition-colors bg-transparent border-none cursor-pointer">View all notifications</button>
+                <div class="notification-footer">
+                    <button type="button">Tüm bildirimleri görüntüle</button>
                 </div>
             </div>
         </div>
-        <div class="relative">
-            <button class="text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 p-2 rounded-full cursor-pointer active:opacity-80 flex items-center justify-center" id="settings-icon">
+        <!-- AYARLAR -->
+        <div class="top-navbar-item">
+            <button type="button" class="navbar-icon-btn" id="settings-icon">
                 <span class="material-symbols-outlined">settings</span>
             </button>
-            <!-- Settings Dropdown -->
-            <div class="dropdown-menu absolute right-0 mt-2 w-64 bg-surface-container-lowest rounded-lg shadow-lg border border-[#E5E7EB] z-50 flex flex-col py-2" id="settings-dropdown">
-                <div class="flex flex-col">
-                    <div class="px-4 py-2 hover:bg-surface-container-low transition-colors flex items-center justify-between cursor-pointer">
-                        <div class="flex items-center gap-3 text-on-surface font-body-md text-body-md">
-                            <span class="material-symbols-outlined text-[20px] text-on-surface-variant">dark_mode</span> Appearance
-                        </div>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                            <input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant z-10 transition-all duration-300" id="appearance-toggle" name="appearance-toggle" type="checkbox" />
-                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors duration-300" for="appearance-toggle"></label>
-                        </div>
+            <!-- Ayarlar Dropdown -->
+            <div class="navbar-dropdown settings-dropdown" id="settings-dropdown">
+                <!-- Görünüm -->
+                <div class="settings-item settings-toggle-item">
+                    <div class="settings-label">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                        <span>Görünüm</span>
                     </div>
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-3 cursor-pointer">
-                        <span class="material-symbols-outlined text-[20px] text-on-surface-variant">language</span> Language
-                    </a>
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-3 cursor-pointer">
-                        <span class="material-symbols-outlined text-[20px] text-on-surface-variant">palette</span> Theme Color
-                    </a>
-                    <div class="px-4 py-2 hover:bg-surface-container-low transition-colors flex items-center justify-between cursor-pointer border-b border-[#E5E7EB] pb-3">
-                        <div class="flex items-center gap-3 text-on-surface font-body-md text-body-md">
-                            <span class="material-symbols-outlined text-[20px] text-on-surface-variant">compress</span> Compact Mode
-                        </div>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                            <input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-outline-variant z-10 transition-all duration-300" id="compact-toggle" name="compact-toggle" type="checkbox" />
-                            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-outline-variant cursor-pointer transition-colors duration-300" for="compact-toggle"></label>
-                        </div>
-                    </div>
-                    <a class="px-4 py-2 mt-1 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-3 cursor-pointer">
-                        <span class="material-symbols-outlined text-[20px] text-on-surface-variant">tune</span> Email Preferences
-                    </a>
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-3 cursor-pointer">
-                        <span class="material-symbols-outlined text-[20px] text-on-surface-variant">keyboard</span> Keyboard Shortcuts
-                    </a>
+                    <label class="switch">
+                        <input type="checkbox" id="appearance-toggle">
+                        <span class="slider"></span>
+                    </label>
                 </div>
+                <!-- Dil -->
+                <a href="#" class="settings-item">
+                    <span class="material-symbols-outlined">language</span>
+                    Dil
+                </a>
+                <!-- Tema -->
+                <a href="#" class="settings-item">
+                    <span class="material-symbols-outlined">palette</span>
+                    Tema Rengi
+                </a>
+                <!-- Kompakt Mod -->
+                <div class="settings-item settings-toggle-item settings-divider">
+                    <div class="settings-label">
+                        <span class="material-symbols-outlined">compress</span>
+                        <span>Kompakt Mod</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox"id="compact-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <!-- E-posta Tercihleri -->
+                <a href="#" class="settings-item">
+                    <span class="material-symbols-outlined">tune</span>
+                    E-posta Tercihleri
+                </a>
+                <!-- Klavye Kısayolları -->
+                <a href="#" class="settings-item">
+                    <span class="material-symbols-outlined">keyboard</span>
+                    Klavye Kısayolları
+                </a>
             </div>
         </div>
-        <div class="relative">
-            <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer active:opacity-80 hover:bg-surface-container-high transition-colors duration-200 ml-2" id="profile-avatar">
-                <img alt="Employee Profile Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate employee in a light blue shirt against a neutral gray background, clean and well-lit, functioning as an avatar icon for a business application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiQtpojHQmWgF5SCgMtUzmMjTfNTUHdMb9-ANEROnxQUyx-Pv-ZH5ocG5bt9pwHAmyPqG9ZHWPZsccnc8-ySWz-GM5zENFvO5OQeE_wjiJhL5ebUXovWaTahWWHE5FoIszspUuWt0Rikj6julp4mztY5eSyp7xE5_BaKm0eGmdp-M0BPakqKV0nR51H9si7Wsr5YTyAADffVPn3ZJLkOQSgTNyoYS4-eKCvXbLVe4q75FF50L0lUXg" />
-            </div>
-            <!-- Profile Dropdown -->
-            <div class="dropdown-menu absolute right-0 mt-2 w-64 bg-surface-container-lowest rounded-lg shadow-lg border border-[#E5E7EB] z-50 flex flex-col py-2" id="profile-dropdown">
-                <div class="px-4 py-3 flex items-center gap-3 border-b border-[#E5E7EB]">
-                    <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant shrink-0">
-                        <img alt="Alex Mercer" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiQtpojHQmWgF5SCgMtUzmMjTfNTUHdMb9-ANEROnxQUyx-Pv-ZH5ocG5bt9pwHAmyPqG9ZHWPZsccnc8-ySWz-GM5zENFvO5OQeE_wjiJhL5ebUXovWaTahWWHE5FoIszspUuWt0Rikj6julp4mztY5eSyp7xE5_BaKm0eGmdp-M0BPakqKV0nR51H9si7Wsr5YTyAADffVPn3ZJLkOQSgTNyoYS4-eKCvXbLVe4q75FF50L0lUXg" />
-                    </div>
-                    <div class="flex flex-col overflow-hidden">
-                        <span class="font-label-md text-label-md font-bold text-on-surface truncate">Alex Mercer</span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant truncate">alex.mercer@b-mail.corp</span>
+        <!-- PROFİL -->
+        <div class="top-navbar-item">
+            <button type="button" class="profile-avatar" id="profile-avatar"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiQtpojHQmWgF5SCgMtUzmMjTfNTUHdMb9-ANEROnxQUyx-Pv-ZH5ocG5bt9pwHAmyPqG9ZHWPZsccnc8-ySWz-GM5zENFvO5OQeE_wjiJhL5ebUXovWaTahWWHE5FoIszspUuWt0Rikj6julp4mztY5eSyp7xE5_BaKm0eGmdp-M0BPakqKV0nR51H9si7Wsr5YTyAADffVPn3ZJLkOQSgTNyoYS4-eKCvXbLVe4q75FF50L0lUXg" alt="Profil" /></button>
+            <!-- Profil Dropdown -->
+            <div class="navbar-dropdown profile-dropdown" id="profile-dropdown">
+                <!-- Kullanıcı Bilgileri -->
+                <div class="profile-info">
+                    <div class="profile-dropdown-avatar"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiQtpojHQmWgF5SCgMtUzmMjTfNTUHdMb9-ANEROnxQUyx-Pv-ZH5ocG5bt9pwHAmyPqG9ZHWPZsccnc8-ySWz-GM5zENFvO5OQeE_wjiJhL5ebUXovWaTahWWHE5FoIszspUuWt0Rikj6julp4mztY5eSyp7xE5_BaKm0eGmdp-M0BPakqKV0nR51H9si7Wsr5YTyAADffVPn3ZJLkOQSgTNyoYS4-eKCvXbLVe4q75FF50L0lUXg" alt="Profil" /></div>
+                    <div class="profile-info-text">
+                        <strong>Alex Mercer</strong>
+                        <span>alex.mercer@b-mail.corp</span>
                     </div>
                 </div>
-                <div class="flex flex-col py-1 border-b border-[#E5E7EB]">
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-2" href="#">
-                        <span class="material-symbols-outlined text-[18px]">person</span> My Profile
+                <!-- Profil Menü -->
+                <div class="profile-menu-section">
+                    <a href="#">
+                        <span class="material-symbols-outlined">person</span>
+                        Profilim
                     </a>
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-2" href="#">
-                        <span class="material-symbols-outlined text-[18px]">manage_accounts</span> Account Settings
+                    <a href="#">
+                        <span class="material-symbols-outlined">manage_accounts</span>
+                        Hesap Ayarları
                     </a>
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-2" href="#">
-                        <span class="material-symbols-outlined text-[18px]">key</span> Change Password
+                    <a href="#">
+                        <span class="material-symbols-outlined">key</span>
+                        Şifre Değiştir
                     </a>
                 </div>
-                <div class="flex flex-col py-1 border-b border-[#E5E7EB]">
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-on-surface font-body-md text-body-md flex items-center gap-2" href="#">
-                        <span class="material-symbols-outlined text-[18px]">help</span> Help &amp; Support
+                <!-- Yardım -->
+                <div class="profile-menu-section">
+                    <a href="#">
+                        <span class="material-symbols-outlined">help</span>
+                        Yardım ve Destek
                     </a>
                 </div>
-                <div class="flex flex-col py-1">
-                    <a class="px-4 py-2 hover:bg-surface-container-low transition-colors text-error font-body-md text-body-md flex items-center gap-2" href="/Auth/Logout">
-                        <span class="material-symbols-outlined text-[18px]">logout</span> Çıkış Yap
+                <!-- Çıkış -->
+                <div class="profile-menu-section logout-section">
+                    <a href="/Auth/Logout" class="logout-link">
+                        <span class="material-symbols-outlined">logout</span>
+                        Çıkış Yap
                     </a>
                 </div>
             </div>

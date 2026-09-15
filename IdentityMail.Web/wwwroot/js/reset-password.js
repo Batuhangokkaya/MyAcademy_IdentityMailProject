@@ -1,6 +1,7 @@
-﻿function togglePassword(inputId, button) {
+﻿/* RESET PASSWORD */
+function togglePassword(inputId, button) {
     const input = document.getElementById(inputId);
-    const icon = button.querySelector(".material-symbols-outlined");
+    const icon  = button.querySelector(".material-symbols-outlined");
 
     if (input.type === "password") {
         input.type = "text";
