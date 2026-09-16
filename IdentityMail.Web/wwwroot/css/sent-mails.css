@@ -96,18 +96,31 @@
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.sent-mails-bulk button.sent-mails-bulk-item:hover {
+.sent-mails-bulk-item .material-symbols-outlined {
+    font-size: 19px;
+}
+
+/* DISABLED BULK ACTIONS */
+.sent-mails-bulk button.sent-mails-bulk-item:disabled {
+    color: #cbd5e1;
+    opacity: 1;
+    cursor: default;
+    pointer-events: none;
+}
+
+.sent-mails-bulk button.sent-mails-bulk-item:not(:disabled) {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.sent-mails-bulk button.sent-mails-bulk-item:not(:disabled):hover {
     background: #f1f5f9;
     color: #2563eb;
 }
 
-.sent-mails-bulk button.sent-mails-bulk-item:last-child:hover {
+.sent-mails-bulk button.sent-mails-bulk-item.delete:not(:disabled):hover {
     background: #fee2e2;
     color: #dc2626;
-}
-
-.sent-mails-bulk-item .material-symbols-outlined {
-    font-size: 19px;
 }
 
 /* CATEGORY AND SORT */
@@ -192,17 +205,45 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.sent-mails-important-button {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
     color: #94a3b8;
     cursor: pointer;
 }
 
-.sent-mails-item-star .material-icons {
+.sent-mails-important-button .material-symbols-outlined {
     font-size: 21px;
-    color: #94a3b8;
 }
 
-.sent-mails-item-star:hover .material-icons {
+.sent-mails-important-button:hover {
     color: #64748b;
+}
+
+.sent-mails-important-button.selected {
+    color: #f59e0b;
+}
+
+.sent-mails-important-button.selected .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1;
+}
+
+/* SELECTED BULK STAR */
+#sentBulkImportantButton.selected {
+    color: #f59e0b;
+}
+
+#sentBulkImportantButton.selected .material-symbols-outlined {
+    color: #f59e0b;
+    font-variation-settings: 'FILL' 1;
 }
 
 /* CLICKABLE MAIL AREA */

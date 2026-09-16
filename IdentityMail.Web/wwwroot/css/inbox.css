@@ -275,6 +275,16 @@
     transform: translateY(-1px);
 }
 
+/* CHECKBOX İLE SEÇİLEN MAİL */
+.mail-item.selected-mail {
+    background-color: #eef5ff;
+    border-color: #b7d4ff;
+}
+
+.mail-item.selected-mail:hover {
+    background-color: #e7f0ff;
+}
+
 /* MAIL CHECKBOX */
 .mail-select {
     display: flex;

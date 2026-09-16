@@ -144,15 +144,39 @@ namespace IdentityMail.Web.Controllers
             return RedirectToAction("Inbox", "Message");
         }
 
-        public async Task<IActionResult> Drafts()
+        public async Task<IActionResult> Drafts(string filter = "all", string sort = "new")
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            var drafts = await _context.UserMessages
+            var query = _context.UserMessages
                 .Include(x => x.Receiver)
-                .Where(x => x.SenderID == user.Id && x.IsDraft)
-                .OrderByDescending(x => x.SendDate)
-                .ToListAsync();
+                .Where(x => x.SenderID == user.Id && x.IsDraft);
+
+            switch (filter)
+            {
+                case "withReceiver":
+                    query = query.Where(x => x.ReceiverID != null);
+                    break;
+
+                case "withoutReceiver":
+                    query = query.Where(x => x.ReceiverID == null);
+                    break;
+
+                case "withSubject":
+                    query = query.Where(x => x.Subject != null && x.Subject != "");
+                    break;
+
+                case "withoutSubject":
+                    query = query.Where(x => x.Subject == null || x.Subject == "");
+                    break;
+            }
+
+            query = sort == "old" ? query.OrderBy(x => x.SendDate) : query.OrderByDescending(x => x.SendDate);
+
+            ViewBag.Filter = filter;
+            ViewBag.Sort   = sort;
+
+            var drafts = await query.ToListAsync();
 
             return View(drafts);
         }

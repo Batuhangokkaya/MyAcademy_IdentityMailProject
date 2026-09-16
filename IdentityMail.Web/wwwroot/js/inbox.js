@@ -31,14 +31,21 @@
 
     /* UPDATE TOOLBAR */
     function updateBulkActions() {
-        const checkboxes = [...getCheckboxes()];
-        const selected = [...getSelectedCheckboxes()];
+        const checkboxes    = getCheckboxes();
+        const selected      = [...getSelectedCheckboxes()];
         const selectedCount = selected.length;
         const totalCount    = checkboxes.length;
 
+        /* MAKE THE SELECTED ROWS BLUE */
+        checkboxes.forEach(function (checkbox) {
+            const mailItem = checkbox.closest(".mail-item");
+            mailItem.classList.toggle("selected-mail", checkbox.checked);
+        });
+
         /* BUTTONS */
-        bulkImportant.disabled =selectedCount === 0;
-        bulkDelete.disabled =selectedCount === 0;
+        bulkImportant.disabled = selectedCount === 0;
+        bulkDelete.disabled    = selectedCount === 0;
+
 
         /* SELECT ALL */
         selectAll.checked       = totalCount > 0 && selectedCount === totalCount;
@@ -54,17 +61,13 @@
             selectAllIcon.textContent = "check_box_outline_blank";
         }
 
-        /* TOP STAR STATUS */
+        /* TOP STAR */
         const allImportant = selectedCount > 0 && selected.every(function (checkbox) {
             const button = getImportantButton(checkbox);
             return isImportant(button);
         });
 
-        /*
-            If all the selected ones are starred, the one on top is filled/orange.
-        */
         bulkImportant.classList.toggle("active", allImportant);
-
         bulkImportant.title = allImportant ? "Seçilenlerden yıldızı kaldır" : "Seçilenleri önemli yap";
     }
 

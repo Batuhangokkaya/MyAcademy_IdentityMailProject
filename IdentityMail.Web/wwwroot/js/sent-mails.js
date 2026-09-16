@@ -1,12 +1,13 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
     const selectAllCheckbox   = document.getElementById("sentSelectAll");
     const mailCheckboxes      = Array.from(document.querySelectorAll(".sent-mail-checkbox"));
-    const bulkImportantButton = document.querySelector(".sent-mails-bulk button:nth-of-type(1)");
-    const bulkDeleteButton    = document.querySelector(".sent-mails-bulk button:nth-of-type(2)");
+    const bulkImportantButton = document.getElementById("sentBulkImportantButton");
+    const bulkDeleteButton    = document.getElementById("sentBulkDeleteButton");
     const categorySelect      = document.querySelector(".sent-mails-select:not(.sent-mails-sort)");
     const sortSelect          = document.querySelector(".sent-mails-sort");
 
     /* INITIAL STATE */
+    updateSelectAllState();
     updateBulkActions();
 
     /* SELECT ALL */
@@ -16,6 +17,7 @@
                 checkbox.checked = selectAllCheckbox.checked;
             });
 
+            updateSelectAllState();
             updateBulkActions();
         });
     }
@@ -34,22 +36,54 @@
 
     /* BULK IMPORTANT */
     if (bulkImportantButton) {
-        bulkImportantButton.addEventListener("click", function () {
+        bulkImportantButton.addEventListener("click", async function () {
             const selectedCheckboxes = getSelectedCheckboxes();
 
-            selectedCheckboxes.forEach(function (checkbox) {
-                const row = checkbox.closest(".sent-mails-item");
+            if (selectedCheckboxes.length === 0) {
+                return;
+            }
 
-                if (!row) {
-                    return;
-                }
+            const selectedButtons = selectedCheckboxes
+                .map(function (checkbox) {
+                    const row = checkbox.closest(".sent-mails-item");
 
-                const star = row.querySelector(".sent-mails-item-star .material-icons");
+                    if (!row) {
+                        return null;
+                    }
 
-                if (star) {
-                    star.click();
-                }
+                    return row.querySelector(".sent-mails-important-button");
+                })
+                .filter(Boolean);
+
+            const allImportant = selectedButtons.every(function (button) {
+                return button.classList.contains("selected");
             });
+
+            const targetImportantState = !allImportant;
+
+            bulkImportantButton.disabled = true;
+
+            try {
+                for (let i = 0; i < selectedCheckboxes.length; i++) {
+                    const checkbox = selectedCheckboxes[i];
+                    const button   = selectedButtons[i];
+
+                    if (!button) {
+                        continue;
+                    }
+
+                    const currentState = button.classList.contains("selected");
+
+                    if (currentState !== targetImportantState) {
+                        await toggleImportantRequest(checkbox.value, button);
+                    }
+                }
+            } catch (error) {
+                console.error("Önemli durumu değiştirilirken hata oluştu:", error);
+            }
+
+            updateBulkActions();
+            updateBulkImportantState();
         });
     }
 
@@ -119,8 +153,7 @@
 
     /* UPDATE BULK ACTIONS */
     function updateBulkActions() {
-        const selectedCount = getSelectedCheckboxes().length;
-        const hasSelection = selectedCount > 0;
+        const hasSelection = getSelectedCheckboxes().length > 0;
 
         if (bulkImportantButton) {
             bulkImportantButton.disabled = !hasSelection;
@@ -129,6 +162,36 @@
         if (bulkDeleteButton) {
             bulkDeleteButton.disabled = !hasSelection;
         }
+
+        updateBulkImportantState();
+    }
+
+    /* UPDATE BULK IMPORTANT */
+    function updateBulkImportantState() {
+        if (!bulkImportantButton) {
+            return;
+        }
+
+        const selectedCheckboxes = getSelectedCheckboxes();
+
+        if (selectedCheckboxes.length === 0) {
+            bulkImportantButton.classList.remove("selected");
+            return;
+        }
+
+        const allImportant = selectedCheckboxes.every(function (checkbox) {
+            const row = checkbox.closest(".sent-mails-item");
+
+            if (!row) {
+                return false;
+            }
+
+            const button = row.querySelector(".sent-mails-important-button");
+
+            return button && button.classList.contains("selected");
+        });
+
+        bulkImportantButton.classList.toggle("selected", allImportant);
     }
 
     /* UPDATE SELECT ALL */
@@ -138,34 +201,55 @@
         }
 
         const selectedCount = getSelectedCheckboxes().length;
+        const totalCount    = mailCheckboxes.length;
 
-        selectAllCheckbox.checked       = selectedCount === mailCheckboxes.length && mailCheckboxes.length > 0;
-        selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < mailCheckboxes.length;
+        selectAllCheckbox.checked       = totalCount > 0 && selectedCount === totalCount;
+        selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < totalCount;
+    }
+
+    /* IMPORTANT REQUEST */
+    async function toggleImportantRequest(id, button) {
+        const response = await fetch(`/Message/ToggleImportant?id=${id}`, {
+            method: "POST"
+        });
+
+        if (!response.ok) {
+            throw new Error(`Önemli durumu değiştirilemedi. ID: ${id}`);
+        }
+
+        const data = await response.json();
+        const icon = button.querySelector(".material-symbols-outlined");
+
+        button.classList.toggle("selected", data.isImportant);
+
+        if (icon) {
+            icon.textContent = data.isImportant ? "star" : "star_border";
+        }
+
+        return data;
     }
 
     /* DELETE MAIL */
     async function deleteMail(id) {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        const headers = {};
-
-        if (token) {
-            headers["RequestVerificationToken"] = token;
-        }
-
-        const response = await fetch(`/Message/DeleteMail/${id}`, {
-            method: "POST",
-            headers: headers
+        const response = await fetch(`/Message/DeleteMail?id=${id}`, {
+            method: "POST"
         });
 
         if (!response.ok) {
-            const secondResponse = await fetch(`/Message/DeleteMail?id=${id}`, {
-                method: "POST",
-                headers: headers
-            });
-
-            if (!secondResponse.ok) {
-                throw new Error(`Mail silinemedi. ID: ${id}`);
-            }
+            throw new Error(`Mail silinemedi. ID: ${id}`);
         }
     }
+
+    /* GLOBAL IMPORTANT */
+    window.toggleImportant = async function (event, id, button) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        try {
+            await toggleImportantRequest(id, button);
+            updateBulkImportantState();
+        } catch (error) {
+            console.error("Önemli durumu değiştirilirken hata oluştu:", error);
+        }
+    };
 });

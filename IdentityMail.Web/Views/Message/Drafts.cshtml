@@ -4,39 +4,58 @@
     Layout            = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/drafts.css" />
+    <link rel="stylesheet" href="~/css/drafts.css" asp-append-version="true" />
 }
 
 <div class="drafts-header">
-    <div>
+    <div class="drafts-header-left">
         <h1 class="drafts-title">Taslaklar</h1>
         <p class="drafts-count">@Model.Count Taslak</p>
     </div>
     <div class="drafts-header-actions">
-        <button class="drafts-filter-btn">
-            <span class="material-symbols-outlined">filter_list</span>
-            Filtre
-        </button>
-        <button class="drafts-more-btn">
-            <span class="material-symbols-outlined">more_vert</span>
-        </button>
+        <div class="drafts-action-group">
+            <label class="drafts-action-check" title="Tümünü Seç">
+                <input type="checkbox" id="selectAllDrafts" />
+            </label>
+            <button type="button" class="drafts-action-btn" id="deleteSelectedDrafts" disabled title="Seçilenleri Sil">
+                <span class="material-symbols-outlined">delete</span>
+            </button>
+        </div>
+        <div class="drafts-category-group">
+            <a asp-controller="Message" asp-action="Drafts" asp-route-filter="all" asp-route-sort="@ViewBag.Sort" class="drafts-tab @(ViewBag.Filter == "all" ? "active" : "")">Tümü</a>
+            <a asp-controller="Message" asp-action="Drafts" asp-route-filter="withReceiver" asp-route-sort="@ViewBag.Sort" class="drafts-tab @(ViewBag.Filter == "withReceiver" ? "active" : "")">Alıcısı Olan</a>
+            <a asp-controller="Message" asp-action="Drafts" asp-route-filter="withoutReceiver" asp-route-sort="@ViewBag.Sort" class="drafts-tab @(ViewBag.Filter == "withoutReceiver" ? "active" : "")">Alıcısı Olmayan</a>
+            <a asp-controller="Message" asp-action="Drafts" asp-route-filter="withSubject" asp-route-sort="@ViewBag.Sort" class="drafts-tab @(ViewBag.Filter == "withSubject" ? "active" : "")">Konusu Olan</a>
+            <a asp-controller="Message" asp-action="Drafts" asp-route-filter="withoutSubject" asp-route-sort="@ViewBag.Sort" class="drafts-tab @(ViewBag.Filter == "withoutSubject" ? "active" : "")">Konusu Olmayan</a>
+        </div>
+        <form asp-controller="Message" asp-action="Drafts" method="get" class="drafts-sort-form">
+            <input type="hidden" name="filter" value="@ViewBag.Filter" />
+            <div class="drafts-select-wrapper">
+                <select name="sort" class="drafts-filter-select" onchange="this.form.submit()">
+                    @if (ViewBag.Sort == "old")
+                    {
+                        <option value="new">Sırala: En Yeni</option>
+                        <option value="old" selected>Sırala: En Eski</option>
+                    }
+                    else
+                    {
+                        <option value="new" selected>Sırala: En Yeni</option>
+                        <option value="old">Sırala: En Eski</option>
+                    }
+                </select>
+                <span class="material-symbols-outlined drafts-select-arrow">keyboard_arrow_down</span>
+            </div>
+        </form>
     </div>
 </div>
-<div class="drafts-container">
-    <div class="drafts-table-header">
-        <div class="drafts-checkbox-header">
-            <input type="checkbox" />
-        </div>
-        <div class="drafts-receiver-header">Taslak</div>
-        <div class="drafts-mail-header">Mail</div>
-        <div class="drafts-date-header">Tarih</div>
-    </div>
+<div class="drafts-list">
     @foreach (var message in Model)
     {
         <div class="drafts-row" onclick="openDraft(@message.ID)">
             <div class="drafts-checkbox">
-                <input type="checkbox" onclick="event.preventDefault();event.stopPropagation();" />
+                <input type="checkbox" class="draft-checkbox" value="@message.ID" onclick="event.stopPropagation();" />
             </div>
+
             <div class="drafts-receiver">
                 @if (message.Receiver != null)
                 {
@@ -47,6 +66,7 @@
                     <span class="drafts-empty">Alıcı yok</span>
                 }
             </div>
+
             <div class="drafts-mail">
                 <span class="drafts-badge">Taslak</span>
                 <div class="drafts-mail-content">
@@ -65,20 +85,31 @@
                     }
                 </div>
             </div>
+
             <div class="drafts-date">
-                @if (message.SendDate.Date == DateTime.Today)
-                {
-                    @message.SendDate.ToString("HH:mm")
-                }
-                else if (message.SendDate.Year == DateTime.Now.Year)
-                {
-                    @message.SendDate.ToString("dd MMM")
-                }
-                else
-                {
-                    @message.SendDate.ToString("dd.MM.yyyy")
-                }
+                <span class="drafts-date-text">
+                    @if (message.SendDate.Date == DateTime.Today)
+                    {
+                        @message.SendDate.ToString("HH:mm")
+                    }
+                    else if (message.SendDate.Year == DateTime.Now.Year)
+                    {
+                        @message.SendDate.ToString("dd MMM")
+                    }
+                    else
+                    {
+                        @message.SendDate.ToString("dd.MM.yyyy")
+                    }
+                </span>
+
+                <button type="button" class="drafts-row-delete" onclick="event.stopPropagation();deleteDraft(@message.ID);" title="Taslağı Sil">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
             </div>
         </div>
     }
 </div>
+
+@section Scripts {
+    <script src="~/js/drafts.js" asp-append-version="true"></script>
+}

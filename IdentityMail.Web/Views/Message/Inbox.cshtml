@@ -4,7 +4,7 @@
     Layout            = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/inbox.css" />
+    <link rel="stylesheet" href="~/css/inbox.css" asp-append-version="true" />
 }
 
 <div class="inbox-page">
@@ -19,15 +19,8 @@
                     <input type="checkbox" id="selectAllCheckbox" />
                     <span class="material-symbols-outlined">check_box_outline_blank</span>
                 </label>
-                <button type="button"
-                        id="bulkImportantButton"
-                        class="bulk-action-button"
-                        title="Seçilenleri önemli yap"
-                        disabled>
-
-                    <span class="material-symbols-outlined">
-                        star
-                    </span>
+                <button type="button" id="bulkImportantButton" class="bulk-action-button" title="Seçilenleri önemli yap" disabled>
+                    <span class="material-symbols-outlined">star</span>
                 </button>
                 <button type="button" id="bulkDeleteButton" class="bulk-action-button delete" title="Seçilenleri sil" disabled>
                     <span class="material-symbols-outlined">delete</span>
@@ -135,3 +128,7 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/inbox.js" asp-append-version="true"></script>
+}

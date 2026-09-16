@@ -4,7 +4,7 @@
     Layout            = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/trash.css" />
+    <link rel="stylesheet" href="~/css/trash.css" asp-append-version="true" />
 }
 
 <div class="trash-page">
@@ -90,3 +90,7 @@
         <button type="button" class="trash-modal-button" onclick="closeTrashWarning()">Tamam</button>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/trash.js" asp-append-version="true"></script>
+}
