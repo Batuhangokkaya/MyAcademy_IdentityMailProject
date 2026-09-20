@@ -15,6 +15,12 @@
         selectAllCheckbox.addEventListener("change", function () {
             mailCheckboxes.forEach(function (checkbox) {
                 checkbox.checked = selectAllCheckbox.checked;
+
+                const row = checkbox.closest(".sent-mails-item");
+
+                if (row) {
+                    row.classList.toggle("selected-mail", checkbox.checked);
+                }
             });
 
             updateSelectAllState();
@@ -29,6 +35,12 @@
         });
 
         checkbox.addEventListener("change", function () {
+            const row = checkbox.closest(".sent-mails-item");
+
+            if (row) {
+                row.classList.toggle("selected-mail", checkbox.checked);
+            }
+
             updateSelectAllState();
             updateBulkActions();
         });
@@ -175,7 +187,7 @@
         const selectedCheckboxes = getSelectedCheckboxes();
 
         if (selectedCheckboxes.length === 0) {
-            bulkImportantButton.classList.remove("selected");
+            bulkImportantButton.classList.remove("active");
             return;
         }
 
@@ -188,10 +200,11 @@
 
             const button = row.querySelector(".sent-mails-important-button");
 
-            return button && button.classList.contains("selected");
+            return (button && button.classList.contains("selected")
+            );
         });
 
-        bulkImportantButton.classList.toggle("selected", allImportant);
+        bulkImportantButton.classList.toggle("active", allImportant);
     }
 
     /* UPDATE SELECT ALL */

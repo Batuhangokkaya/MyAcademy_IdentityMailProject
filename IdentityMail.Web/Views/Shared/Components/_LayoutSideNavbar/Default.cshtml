@@ -2,7 +2,7 @@
     Default Side Navbar
 *@
 @{
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentAction     = ViewContext.RouteData.Values["action"]?.ToString();
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
  <!-- SideNavBar -->
@@ -27,27 +27,32 @@
         <a href="/Message/Inbox" class="sidebar-link @(currentAction == "Inbox" ? "active" : "")">
             <span class="material-symbols-outlined">inbox</span>
             <span>Gelen Kutusu</span>
-            <span class="sidebar-badge">123</span>
+            <span class="sidebar-badge">@ViewBag.TotalInbox</span>
         </a>
         <a href="/Message/SentMails" class="sidebar-link @(currentAction == "SentMails" ? "active" : "")">
             <span class="material-symbols-outlined">send</span>
             <span>Gönderilenler</span>
-            <span class="sidebar-badge">123</span>
+            <span class="sidebar-badge">@ViewBag.TotalSentMail</span>
         </a>
         <a href="/Message/Drafts" class="sidebar-link @(currentAction == "Drafts" ? "active" : "")">
             <span class="material-symbols-outlined">draft</span>
             <span>Taslaklar</span>
-            <span class="sidebar-badge">123</span>
+            <span class="sidebar-badge">@ViewBag.TotalDraft</span>
         </a>
-        <a href="/Message/ImportantMessages" class="sidebar-link @(currentAction == "ImportantMessages" ? "active" : "")">
+        <a href="/Message/ImportantMails" class="sidebar-link @(currentAction == "ImportantMails" ? "active" : "")">
             <span class="material-symbols-outlined">star</span>
             <span>Önemli Mesajlar</span>
-            <span class="sidebar-badge">123</span>
+            <span class="sidebar-badge">@ViewBag.TotalImportantMail</span>
         </a>
         <a href="/Message/Trash" class="sidebar-link @(currentAction == "Trash" ? "active" : "")">
             <span class="material-symbols-outlined">delete</span>
             <span>Çöp Kutusu</span>
-            <span class="sidebar-badge">123</span>
+            <span class="sidebar-badge">@ViewBag.TotalDeletedMail</span>
+        </a>
+        <a href="/Category/Index" class="sidebar-link @(currentAction == "Index" ? "active" : "")">
+            <span class="material-symbols-outlined">label</span>
+            <span>Kategoriler</span>
+            <span class="sidebar-badge">@ViewBag.TotalCategory</span>
         </a>
     </nav>
     <!-- Kategoriler -->

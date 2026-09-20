@@ -1,0 +1,243 @@
+﻿/* CATEGORY PAGE */
+.category-page {
+    width: 100%;
+}
+
+/* CATEGORY HEADER */
+.category-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+/* HEADER LEFT */
+.category-header-left {
+    flex: 1;
+}
+
+/* PAGE TITLE */
+.category-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* PAGE SUBTITLE */
+.category-subtitle {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+/* HEADER RIGHT */
+.category-header-right {
+    display: flex;
+    align-items: revert;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* ADD BUTTON */
+.category-add-button {
+    height: 42px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #0b57d0;
+    color: #ffffff;
+    border: 1px solid #0b57d0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(11, 87, 208, 0.18);
+    transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.category-add-button:hover {
+    background-color: #0848ad;
+    border-color: #0848ad;
+    box-shadow: 0 4px 12px rgba(11, 87, 208, 0.25);
+}
+
+.category-add-button .material-symbols-outlined {
+    font-size: 20px;
+    color: #ffffff;
+}
+
+/* MAIN BOX */
+.category-box {
+    background-color: #ffffff;
+    border: 1px solid #b8c4d6;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* BOX HEADER */
+.category-box-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid #b8c4d6;
+    background-color: #ffffff;
+}
+
+/* BOX TITLE */
+.category-box-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* BOX BODY */
+.category-box-body {
+    width: 100%;
+}
+
+/* CATEGORY ROW */
+.category-row {
+    min-height: 76px;
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #b8c4d6;
+    transition: background-color .2s ease;
+}
+
+.category-row:last-child {
+    border-bottom: none;
+}
+
+.category-row:hover {
+    background-color: #f8fbff;
+}
+
+/* ROW LEFT */
+.category-row-left {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* CATEGORY ICON */
+.category-icon {
+    font-size: 22px;
+    color: #2563eb;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* CATEGORY NAME */
+.category-name {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ROW ACTIONS */
+.category-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* DELETE FORM */
+.category-delete-form {
+    margin: 0;
+    padding: 0;
+}
+
+/* ACTION BUTTON */
+.category-action-button {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+.category-action-button .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* EDIT */
+.edit-button {
+    color: #475569;
+}
+
+.edit-button:hover {
+    background-color: #eef4ff;
+    color: #2563eb;
+}
+
+/* DELETE */
+.delete-button {
+    color: #dc2626;
+}
+
+.delete-button:hover {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+
+/* EMPTY STATE */
+.category-empty {
+    min-height: 140px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #64748b;
+    text-align: center;
+}
+
+.category-empty-icon {
+    font-size: 34px;
+    color: #94a3b8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .category-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .category-header-right {
+        justify-content: flex-start;
+    }
+
+    .category-add-button {
+        width: 100%;
+    }
+
+    .category-row {
+        padding: 0 14px;
+    }
+
+    .category-name {
+        font-size: 14px;
+    }
+}

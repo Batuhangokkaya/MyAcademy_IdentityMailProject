@@ -8,35 +8,49 @@
 }
 
 <div class="trash-page">
-    <!-- HEADER -->
     <div class="trash-header">
         <div class="trash-header-left">
             <h1 class="trash-title">Silinen Mesajlar</h1>
             <p class="trash-subtitle">@Model.Count Silinen Mesaj</p>
         </div>
         <div class="trash-header-actions">
-            <button type="button" class="trash-filter-button">
-                <span class="material-symbols-outlined">filter_list</span>
-                <span>Filtre</span>
+            <label class="trash-select-all">
+                <input type="checkbox" id="trashSelectAll" />
+                <span>Tümünü Seç</span>
+            </label>
+            <button type="button" id="trashRestoreButton" class="trash-restore-button" disabled>
+                <span class="material-symbols-outlined">restore_from_trash</span>
+                <span>Geri Yükle</span>
             </button>
-            <button type="button" class="trash-more-button">
-                <span class="material-symbols-outlined">more_vert</span>
+            <div class="trash-filter-wrapper">
+                <button type="button" id="trashFilterButton" class="trash-filter-button">
+                    <span class="material-symbols-outlined">filter_list</span>
+                    <span id="trashFilterText">Tümü</span>
+                    <span class="material-symbols-outlined trash-filter-arrow">keyboard_arrow_down</span>
+                </button>
+                <div id="trashFilterMenu" class="trash-filter-menu">
+                    <button type="button" class="trash-filter-option active" data-filter="all">Tümü</button>
+                    <button type="button" class="trash-filter-option" data-filter="received">Gelen Mesajlar</button>
+                    <button type="button" class="trash-filter-option" data-filter="sent">Gönderilen Mesajlar</button>
+                </div>
+            </div>
+            <button type="button" id="trashEmptyButton" class="trash-empty-button">
+                <span class="material-symbols-outlined">delete_forever</span>
+                <span>Çöp Kutusunu Boşalt</span>
             </button>
+
         </div>
     </div>
-    <!-- MESAJ LİSTESİ -->
     <div class="trash-list">
         @if (Model.Any())
         {
             var userId = (int)ViewBag.UserId;
             foreach (var message in Model)
             {
-                <div class="trash-row" onclick="showTrashWarning()">
-                    <!-- CHECKBOX -->
+                <div class="trash-row" data-type="@(message.SenderID == userId ? "sent" : "received")" onclick="showTrashWarning()">
                     <div class="trash-checkbox" onclick="event.stopPropagation();">
-                        <input type="checkbox" />
+                        <input type="checkbox" class="trash-mail-checkbox" />
                     </div>
-                    <!-- GÖNDEREN / ALICI -->
                     <div class="trash-sender">
                         @if (message.SenderID == userId)
                         {
@@ -53,7 +67,6 @@
                             </span>
                         }
                     </div>
-                    <!-- KONU + MESAJ -->
                     <div class="trash-message">
                         <span class="trash-subject">@message.Subject</span>
                         @if (!string.IsNullOrEmpty(message.Body))
@@ -61,7 +74,6 @@
                             <span class="trash-body">- @message.Body</span>
                         }
                     </div>
-                    <!-- TARİH -->
                     <div class="trash-date">
                         @message.SendDate.ToString("dd.MM.yyyy")
                     </div>
@@ -70,7 +82,6 @@
         }
         else
         {
-            <!-- ÇÖP KUTUSU BOŞ -->
             <div class="trash-empty">
                 <span class="material-symbols-outlined trash-empty-icon">delete</span>
                 <h2 class="trash-empty-title">Çöp Kutusu boş</h2>
@@ -79,7 +90,6 @@
         }
     </div>
 </div>
-
 <div id="trashModal" class="trash-modal">
     <div class="trash-modal-box">
         <div class="trash-modal-icon">

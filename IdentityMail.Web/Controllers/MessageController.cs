@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IdentityMail.Web.Controllers
 {
@@ -88,15 +87,48 @@ namespace IdentityMail.Web.Controllers
             });
         }
 
-        public async Task<IActionResult> ImportantMessages()
+        public async Task<IActionResult> ImportantMails(string filter = "all", string category = "", string sort = "new")
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var user = await _userManager.GetUserAsync(User);
 
-            var messages = await _context.UserMessages
+            var query = _context.UserMessages
                 .Include(x => x.Sender)
                 .Include(x => x.Category)
                 .Where(x => x.ReceiverID == user.Id && x.IsImportant == true)
+                .AsQueryable();
+
+            if (filter == "unread")
+            {
+                query = query.Where(x => x.IsRead == false);
+            }
+            else if (filter == "read")
+            {
+                query = query.Where(x => x.IsRead == true);
+            }
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                query = query.Where(x => x.Category != null && x.Category.Name == category);
+            }
+
+            if (sort == "old")
+            {
+                query = query.OrderBy(x => x.SendDate);
+            }
+            else
+            {
+                query = query.OrderByDescending(x => x.SendDate);
+            }
+
+            ViewBag.CurrentFilter = filter;
+            ViewBag.CurrentCategory = category;
+            ViewBag.CurrentSort = sort;
+
+            ViewBag.Categories = await _context.Categories
+                .OrderBy(x => x.Name)
                 .ToListAsync();
+
+            var messages = await query.ToListAsync();
 
             return View(messages);
         }

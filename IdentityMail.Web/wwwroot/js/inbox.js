@@ -2,7 +2,6 @@
     const selectAll     = document.getElementById("selectAllCheckbox");
     const bulkImportant = document.getElementById("bulkImportantButton");
     const bulkDelete    = document.getElementById("bulkDeleteButton");
-    const selectAllIcon = document.querySelector(".bulk-select-all .material-symbols-outlined");
 
     /* HELPER FUNCTIONS */
     function getCheckboxes() {
@@ -15,55 +14,81 @@
 
     function getImportantButton(checkbox) {
         const mailItem = checkbox.closest(".mail-item");
+
+        if (!mailItem) {
+            return null;
+        }
+
         return mailItem.querySelector(".important-button");
     }
+
+    /* IS IMPORTANT */
     function isImportant(button) {
-        return button.dataset.important === "true";
+        if (!button) {
+            return false;
+        }
+
+        return (
+            button.dataset.important?.toLowerCase() === "true" ||
+            button.classList.contains("selected")
+        );
     }
 
+    /* SET IMPORTANT UI */
     function setImportantUI(button, important) {
+        if (!button) {
+            return;
+        }
+
         button.dataset.important = important ? "true" : "false";
+
         button.classList.toggle("selected", important);
 
-        const icon = button.querySelector(".material-symbols-outlined");
-        icon.textContent = important ? "star" : "star_border";
+        const icon = button.querySelector(
+            ".material-symbols-outlined"
+        );
+
+        if (icon) {
+            icon.textContent = important ? "star" : "star_border";
+        }
     }
 
     /* UPDATE TOOLBAR */
     function updateBulkActions() {
-        const checkboxes    = getCheckboxes();
+        const checkboxes    = [...getCheckboxes()];
         const selected      = [...getSelectedCheckboxes()];
         const selectedCount = selected.length;
         const totalCount    = checkboxes.length;
 
-        /* MAKE THE SELECTED ROWS BLUE */
+        /* SELECTED ROW BLUE */
         checkboxes.forEach(function (checkbox) {
             const mailItem = checkbox.closest(".mail-item");
-            mailItem.classList.toggle("selected-mail", checkbox.checked);
+
+            if (mailItem) {
+                mailItem.classList.toggle("selected-mail", checkbox.checked);
+            }
         });
 
-        /* BUTTONS */
+        /* BUTTON STATUS */
         bulkImportant.disabled = selectedCount === 0;
         bulkDelete.disabled    = selectedCount === 0;
-
 
         /* SELECT ALL */
         selectAll.checked       = totalCount > 0 && selectedCount === totalCount;
         selectAll.indeterminate = selectedCount > 0 && selectedCount < totalCount;
 
-        if (selectAll.checked) {
-            selectAllIcon.textContent = "check_box";
-        }
-        else if (selectAll.indeterminate) {
-            selectAllIcon.textContent = "indeterminate_check_box";
-        }
-        else {
-            selectAllIcon.textContent = "check_box_outline_blank";
-        }
+        /*
+            TOP STAR
 
-        /* TOP STAR */
+            IF ALL SELECTED EMAILS ARE IMPORTANT:  
+            STAR YELLOW + FILLED.  
+
+            IF THERE ARE SOME THAT AREN'T IMPORTANT:  
+            NORMAL STAR.
+        */
         const allImportant = selectedCount > 0 && selected.every(function (checkbox) {
             const button = getImportantButton(checkbox);
+
             return isImportant(button);
         });
 
@@ -71,38 +96,34 @@
         bulkImportant.title = allImportant ? "Seçilenlerden yıldızı kaldır" : "Seçilenleri önemli yap";
     }
 
-
     /* SELECT ALL */
     selectAll.addEventListener("change", function () {
-            getCheckboxes().forEach(function (checkbox) {
-                    checkbox.checked = selectAll.checked;
-                }
-            );
+        getCheckboxes().forEach(function (checkbox) {
+            checkbox.checked = selectAll.checked;
+        });
 
-            updateBulkActions();
+        updateBulkActions();
         }
     );
 
     /* CHECKBOX ONE BY ONE */
-    getCheckboxes().forEach(
-        function (checkbox) {
-            checkbox.addEventListener("change", updateBulkActions);
-        }
-    );
+    getCheckboxes().forEach(function (checkbox) {
+        checkbox.addEventListener("change", updateBulkActions);
+    });
 
-    /* THE ONLY EMAIL STAR */
+    /* SINGLE MAIL STAR */
     window.toggleImportant =
         async function (event, id, button) {
             event.preventDefault();
             event.stopPropagation();
 
-            const response = await fetch(`/Message/ToggleImportant?id=${id}`,
-                {
+            const response = await fetch(`/Message/ToggleImportant?id=${id}`, {
                     method: "POST"
                 }
             );
 
             if (!response.ok) {
+                console.error("Yıldız işlemi başarısız:", id);
                 return;
             }
 
@@ -110,13 +131,10 @@
 
             setImportantUI(button, data.isImportant);
 
-            /*
-                When the single star changes, the top toolbar should update too.
-            */
             updateBulkActions();
         };
 
-    /* BUNCH OF STARS */
+    /* BULK STAR */
     bulkImportant.addEventListener("click", async function () {
             const selected = [...getSelectedCheckboxes()];
 
@@ -124,39 +142,28 @@
                 return;
             }
 
-            /*
-                If the top star is active:
-                ALL are starred.
-                => remove.
-
-                If it's not active:
-                => star it.
-            */
+            /* IF THE TOP STAR IS YELLOW: REMOVE THE STARS. IF IT'S NOT YELLOW: MARK IT AS IMPORTANT. */
             const targetImportant = !bulkImportant.classList.contains("active");
 
             for (const checkbox of selected) {
-                const button = getImportantButton(checkbox);
+                const button           = getImportantButton(checkbox);
                 const currentImportant = isImportant(button);
 
                 /*
-                    If it's already in the target state, don't call ToggleImportant.
+                    IF IT'S ALREADY IN THE DESIRED STATE, DON'T SEND A REQUEST TO THE SERVER AGAIN.
                 */
-                if (
-                    currentImportant === targetImportant
-                ){
+                if (currentImportant === targetImportant) {
                     continue;
                 }
 
-                const id = checkbox.value;
+                const id       = checkbox.value;
 
-                const response = await fetch(`/Message/ToggleImportant?id=${id}`,
-                    {
-                        method: "POST"
-                    }
-                );
+                const response = await fetch(`/Message/ToggleImportant?id=${id}`, {
+                    method: "POST"
+                });
 
                 if (!response.ok) {
-                    console.error("Yıldız işlemi başarısız:",id);
+                    console.error("Yıldız işlemi başarısız:", id);
                     continue;
                 }
 
@@ -165,42 +172,40 @@
                 setImportantUI(button, data.isImportant);
             }
 
-            /*
-                After the batch process is finished, the top star is recalculated.
-            */
             updateBulkActions();
         }
     );
 
-    /* DELETE ALL */
+    /* BULK DELETE */
     bulkDelete.addEventListener("click", async function () {
-            const selected = [...getSelectedCheckboxes()];
+        const selected = [...getSelectedCheckboxes()];
 
-            if (selected.length === 0) {
-                return;
-            }
-
-            for (const checkbox of selected) {
-                const id = checkbox.value;
-
-                const response = await fetch(`/Message/DeleteMail?id=${id}`,
-                    {
-                        method: "POST"
-                    }
-                );
-
-                if (!response.ok) {
-                    continue;
-                }
-
-                checkbox.closest(".mail-item").remove();
-            }
-
-            updateBulkActions();
+        if (selected.length === 0) {
+            return;
         }
-    );
+
+        for (const checkbox of selected) {
+            const id = checkbox.value;
+
+            const response = await fetch(`/Message/DeleteMail?id=${id}`, {
+
+                method: "POST"
+            });
+
+            if (!response.ok) {
+                continue;
+            }
+
+            const mailItem = checkbox.closest(".mail-item");
+
+            if (mailItem) {
+                mailItem.remove();
+            }
+        }
+
+        updateBulkActions();
+    });
 
     /* FIRST STATUS */
     updateBulkActions();
-
 });
