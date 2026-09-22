@@ -5,6 +5,7 @@
     const bulkDeleteButton    = document.getElementById("sentBulkDeleteButton");
     const categorySelect      = document.querySelector(".sent-mails-select:not(.sent-mails-sort)");
     const sortSelect          = document.querySelector(".sent-mails-sort");
+    const bulkCategory        = document.getElementById("sentBulkCategorySelect");
 
     /* INITIAL STATE */
     updateSelectAllState();
@@ -99,33 +100,164 @@
         });
     }
 
+    /* DELETE MODAL */
+    const sentDeleteModal   = document.getElementById("sentDeleteModal");
+    const sentDeleteTitle   = document.getElementById("sentDeleteTitle");
+    const sentDeleteText    = document.getElementById("sentDeleteText");
+    const sentDeleteCancel  = document.getElementById("sentDeleteCancel");
+    const sentDeleteConfirm = document.getElementById("sentDeleteConfirm");
+
+    let pendingDeleteForms = [];
+    let isDeleting = false;
+
+    /* OPEN DELETE MODAL */
+    function openDeleteModal(forms) {
+        if (!forms.length) return;
+
+        pendingDeleteForms = forms;
+
+        if (forms.length === 1) {
+            sentDeleteTitle.textContent = "Mesajı Sil";
+            sentDeleteText.textContent = "Bu mesaj Gönderilen Mesajlar listenizden kaldırılacak.";
+        } else {
+            sentDeleteTitle.textContent = "Seçilen Mesajları Sil";
+            sentDeleteText.textContent = `${forms.length} mesaj Gönderilen Mesajlar listenizden kaldırılacak.`;
+        }
+
+        sentDeleteModal.classList.add("show");
+        sentDeleteModal.setAttribute("aria-hidden", "false");
+        sentDeleteConfirm.focus();
+    }
+
+    /* CLOSE DELETE MODAL */
+    function closeDeleteModal() {
+        if (isDeleting) return;
+
+        sentDeleteModal.classList.remove("show");
+        sentDeleteModal.setAttribute("aria-hidden", "true");
+        pendingDeleteForms = [];
+    }
+
+    /* SINGLE DELETE */
+    document.querySelectorAll(".sent-mails-delete-form").forEach(function (form) {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            openDeleteModal([form]);
+        });
+    });
+
     /* BULK DELETE */
     if (bulkDeleteButton) {
-        bulkDeleteButton.addEventListener("click", async function () {
+        bulkDeleteButton.addEventListener("click", function () {
             const selectedCheckboxes = getSelectedCheckboxes();
 
-            if (selectedCheckboxes.length === 0) {
+            if (!selectedCheckboxes.length) return;
+
+            const forms = selectedCheckboxes.map(function (checkbox) {
+                const row = checkbox.closest(".sent-mails-item");
+                return row?.querySelector(".sent-mails-delete-form");
+            });
+
+            if (forms.some(form => !form)) {
                 return;
             }
 
-            const confirmed = confirm(`${selectedCheckboxes.length} mesaj silinsin mi?`);
+            openDeleteModal(forms);
+        });
+    }
 
-            if (!confirmed) {
+    /* CANCEL DELETE */
+    sentDeleteCancel.addEventListener("click", closeDeleteModal);
+
+    /* CLOSE ON BACKDROP */
+    sentDeleteModal.addEventListener("click", function (event) {
+        if (event.target === sentDeleteModal) {
+            closeDeleteModal();
+        }
+    });
+
+    /* CLOSE ON ESCAPE */
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closeDeleteModal();
+        }
+    });
+
+    /* CONFIRM DELETE */
+    sentDeleteConfirm.addEventListener("click", async function () {
+        if (isDeleting || !pendingDeleteForms.length) return;
+
+        isDeleting                    = true;
+        sentDeleteConfirm.disabled    = true;
+        sentDeleteConfirm.textContent = "Siliniyor...";
+
+        try {
+            for (const form of pendingDeleteForms) {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    credentials: "same-origin"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Mesaj silinemedi.");
+                }
+            }
+
+            window.location.reload();
+        } catch (error) {
+            sentDeleteText.textContent = "İşlem sırasında bir hata oluştu. Lütfen tekrar deneyin.";
+        } finally {
+            isDeleting                    = false;
+            sentDeleteConfirm.disabled    = false;
+            sentDeleteConfirm.textContent = "Sil";
+        }
+    });
+
+    /* BULK CATEGORY */
+    if (bulkCategory) {
+        bulkCategory.addEventListener("change", async function () {
+            const categoryValue = this.value;
+
+            if (!categoryValue) {
                 return;
             }
 
-            bulkDeleteButton.disabled = true;
+            const selected = getSelectedCheckboxes();
+
+            if (selected.length === 0) {
+                this.value = "";
+                return;
+            }
+
+            const formData = new FormData();
+
+            selected.forEach(function (checkbox) {
+                formData.append("messageIds", checkbox.value);
+            });
+
+            if (categoryValue === "remove") {
+                formData.append("categoryId", "");
+            }
+            else {
+                formData.append("categoryId", categoryValue);
+            }
 
             try {
-                for (const checkbox of selectedCheckboxes) {
-                    await deleteMail(checkbox.value);
+                const response = await fetch("/Message/AssignSentCategoryBulk", {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Kategori işlemi başarısız.");
                 }
 
                 window.location.reload();
-            } catch (error) {
-                console.error("Mesajlar silinirken hata oluştu:", error);
-                alert("Mesajlar silinirken bir hata oluştu.");
-                updateBulkActions();
+            }
+            catch (error) {
+                this.value = "";
             }
         });
     }
@@ -175,6 +307,15 @@
             bulkDeleteButton.disabled = !hasSelection;
         }
 
+        /* CATEGORY */
+        if (bulkCategory) {
+            bulkCategory.disabled = !hasSelection;
+
+            if (!hasSelection) {
+                bulkCategory.value = "";
+            }
+        }
+
         updateBulkImportantState();
     }
 
@@ -200,8 +341,7 @@
 
             const button = row.querySelector(".sent-mails-important-button");
 
-            return (button && button.classList.contains("selected")
-            );
+            return (button && button.classList.contains("selected"));
         });
 
         bulkImportantButton.classList.toggle("active", allImportant);
@@ -240,17 +380,6 @@
         }
 
         return data;
-    }
-
-    /* DELETE MAIL */
-    async function deleteMail(id) {
-        const response = await fetch(`/Message/DeleteMail?id=${id}`, {
-            method: "POST"
-        });
-
-        if (!response.ok) {
-            throw new Error(`Mail silinemedi. ID: ${id}`);
-        }
     }
 
     /* GLOBAL IMPORTANT */

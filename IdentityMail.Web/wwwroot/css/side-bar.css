@@ -178,7 +178,7 @@ sidebar-categories {
 .category-dot {
     width: 5px;
     height: 5px;
-    border: 1.5px solid #2678ff;
+    border: 1.5px solid currentColor;
     border-radius: 50%;
     flex-shrink: 0;
 }

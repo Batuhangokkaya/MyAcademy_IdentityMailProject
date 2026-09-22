@@ -1,0 +1,104 @@
+﻿@model List<UserMessage>
+
+@{
+    ViewData["Title"] = ViewBag.CategoryName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/category/category-mails.css" asp-append-version="true" />
+}
+<div class="category-mails-page">
+    <div class="category-mails-header">
+        <div class="category-mails-title-area">
+            <div class="category-mails-title-row">
+                <span class="category-title-dot" style="background-color:@ViewBag.CategoryColor;"></span>
+                <h1>@ViewBag.CategoryName</h1>
+            </div>
+            <p>@Model.Count mesaj</p>
+        </div>
+    </div>
+    <div class="category-mails-list">
+        @if (Model.Count == 0)
+        {
+            <div class="category-mails-empty">
+                <span class="material-symbols-outlined">label</span>
+                <h3>Bu kategoride mesaj yok</h3>
+                <p>Mesajları Gelen Kutusu'ndan bu kategoriye ekleyebilirsiniz.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var message in Model)
+            {
+                var body = message.Body ?? "";
+                <div class="category-mail-item">
+                    <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="category-mail-link">
+                        <div class="category-mail-sender">
+                            <div class="category-mail-avatar">
+                                @message.Sender.FirstName.Substring(0, 1)
+                            </div>
+                            <div class="category-mail-sender-info">
+                                <div class="category-mail-sender-name">
+                                    @message.Sender.FirstName
+                                    @message.Sender.LastName
+                                </div>
+                            </div>
+                        </div>
+                    <div class="category-mail-content">
+                        <div class="category-mail-subject">
+                            @message.Subject
+                        </div>
+                        <div class="category-mail-preview">
+                            @(body.Length > 55 ? body.Substring(0, 55) + "..." : body)
+                        </div>
+                    </div>
+                    <div class="category-mail-date">
+                        @if (message.SendDate.Date == DateTime.Today)
+                        {
+                            @message.SendDate.ToString("HH:mm")
+                        }
+                        else if (message.SendDate.Year == DateTime.Now.Year)
+                        {
+                            @message.SendDate.ToString("dd MMM")
+                        }
+                        else
+                        {
+                            @message.SendDate.ToString("dd.MM.yyyy")
+                        }
+                    </div>
+                    </a>
+                    <div class="category-mail-actions">
+                        <form asp-controller="Message" asp-action="ChangeMailCategory" method="post" class="category-change-form">
+                            <input type="hidden" name="messageId" value="@message.ID" />
+                            <input type="hidden" name="currentCategoryId" value="@ViewBag.ActiveCategoryID" />
+                            <div class="category-select-wrapper">
+                                <select name="categoryId" class="category-select" onchange="this.form.submit()">
+                                    @foreach (var category in ViewBag.Categories)
+                                    {
+                                        if (message.CategoryID == category.ID)
+                                        {
+                                            <option value="@category.ID" selected>@category.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@category.ID">@category.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <span class="material-symbols-outlined">keyboard_arrow_down</span>
+                            </div>
+                        </form>
+                        <form asp-controller="Message" asp-action="RemoveMailCategory" method="post">
+                            <input type="hidden" name="messageId" value="@message.ID" />
+                            <input type="hidden" name="currentCategoryId" value="@ViewBag.ActiveCategoryID" />
+                            <button type="submit" class="category-remove-button" title="Kategoriden kaldır">
+                                <span class="material-symbols-outlined">label_off</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

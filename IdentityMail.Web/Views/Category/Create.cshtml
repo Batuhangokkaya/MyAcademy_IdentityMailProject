@@ -1,21 +1,61 @@
 ﻿@model Category
+@section Styles {
+    <link rel="stylesheet" href="~/css/category/category-create.css" asp-append-version="true" />
+}
 
-<div class="p-6">
-    <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-on-surface">Yeni Kategori</h1>
-        <p class="mt-1 text-sm text-on-surface-variant">Mesajlarınızı düzenlemek için yeni bir kategori oluşturun.</p>
+<div class="category-create-page">
+    <!-- HEADER -->
+    <div class="category-create-header">
+        <h1 class="category-create-title">Yeni Kategori</h1>
+        <p class="category-create-description">Mesajlarınızı düzenlemek için yeni bir kategori oluşturun.</p>
     </div>
-    <div class="max-w-xl bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+    <!-- CARD -->
+    <div class="category-create-card">
         <form asp-action="Create" method="post">
-            <div class="mb-5">
-                <label asp-for="Name" class="block mb-2 text-sm font-medium text-on-surface">Kategori Adı</label>
-                <input asp-for="Name" type="text" placeholder="Örn. Projeler" class="w-full px-4 py-2.5 rounded-lg border border-outline-variant bg-surface text-on-surface outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
-                <span asp-validation-for="Name" class="text-sm text-error"></span>
+            <!-- CATEGORY NAME -->
+            <div class="category-create-form-group">
+                <label asp-for="Name" class="category-create-label">Kategori Adı</label>
+                <input asp-for="Name" type="text" placeholder="Örn. Projeler" class="category-create-input" />
+                <span asp-validation-for="Name" class="category-create-validation"></span>
             </div>
-            <div class="flex items-center justify-end gap-3">
-                <a asp-action="Index" class="px-4 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low">İptal</a>
-                <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-on-primary hover:opacity-90 transition">Kategori Oluştur</button>
+            <!-- CATEGORY COLOR -->
+            <div class="category-color-group">
+                <label class="category-create-label">Kategori Rengi</label>
+                <p class="category-color-description">Kategoriniz için bir renk seçin.</p>
+                <!-- SELECTED COLOR -->
+                <input asp-for="Color" type="hidden" id="categoryColor" value="#2563EB" />
+                <!-- COLORS -->
+                <div class="category-color-list">
+                    @{
+                        var colors = new[]
+                        {
+                            new { Code = "#2563EB", Name = "Mavi" },
+                            new { Code = "#EF4444", Name = "Kırmızı" },
+                            new { Code = "#F97316", Name = "Turuncu" },
+                            new { Code = "#F59E0B", Name = "Sarı" },
+                            new { Code = "#22C55E", Name = "Yeşil" },
+                            new { Code = "#14B8A6", Name = "Turkuaz" },
+                            new { Code = "#13aff0", Name = "Gök Mavi" },
+                            new { Code = "#8B5CF6", Name = "Mor" },
+                            new { Code = "#EC4899", Name = "Pembe" },
+                            new { Code = "#64748B", Name = "Gri" }
+                        };
+                    }
+                    @for (int i = 0; i < 10; i++)
+                    {
+                        <button type="button" class="category-color" data-color="@colors[i].Code" style="--category-color:@colors[i].Code" aria-label="@colors[i].Name"></button>
+                    }
+                </div>
+            </div>
+            <!-- ACTIONS -->
+            <div class="category-create-actions">
+                <a asp-action="Index" class="category-create-cancel">İptal</a>
+                <button type="submit" class="category-create-submit">Kategori Oluştur</button>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/category/category-create.js" asp-append-version="true"></script>
+}

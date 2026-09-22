@@ -55,18 +55,20 @@
             <div class="drafts-checkbox">
                 <input type="checkbox" class="draft-checkbox" value="@message.ID" onclick="event.stopPropagation();" />
             </div>
-
             <div class="drafts-receiver">
                 @if (message.Receiver != null)
                 {
                     <span>@message.Receiver.FirstName @message.Receiver.LastName</span>
+                }
+                else if (!string.IsNullOrWhiteSpace(message.ReceiverMail))
+                {
+                    <span>@message.ReceiverMail</span>
                 }
                 else
                 {
                     <span class="drafts-empty">Alıcı yok</span>
                 }
             </div>
-
             <div class="drafts-mail">
                 <span class="drafts-badge">Taslak</span>
                 <div class="drafts-mail-content">
@@ -85,7 +87,6 @@
                     }
                 </div>
             </div>
-
             <div class="drafts-date">
                 <span class="drafts-date-text">
                     @if (message.SendDate.Date == DateTime.Today)
@@ -101,13 +102,29 @@
                         @message.SendDate.ToString("dd.MM.yyyy")
                     }
                 </span>
-
-                <button type="button" class="drafts-row-delete" onclick="event.stopPropagation();deleteDraft(@message.ID);" title="Taslağı Sil">
-                    <span class="material-symbols-outlined">delete</span>
-                </button>
+                <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@message.ID" asp-route-returnUrl="@Url.Action("Drafts","Message")" asp-antiforgery="false" method="post" class="drafts-delete-form" onclick="event.stopPropagation();">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="drafts-row-delete" title="Taslağı Sil">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </form>
             </div>
         </div>
     }
+</div>
+<div id="draftsDeleteModal" class="drafts-modal" role="dialog" aria-modal="true" aria-labelledby="draftsModalTitle" aria-describedby="draftsModalText" aria-hidden="true">
+    <div class="drafts-modal-box">
+        <div class="drafts-modal-icon">
+            <span class="material-symbols-outlined">delete_forever</span>
+        </div>
+        <h2 class="drafts-modal-title" id="draftsModalTitle">Taslağı Sil</h2>
+        <p class="drafts-modal-text" id="draftsModalText">Bu taslağı silmek istediğinize emin misiniz?</p>
+        <p class="drafts-modal-error" id="draftsModalError" role="alert" hidden></p>
+        <div class="drafts-modal-buttons">
+            <button type="button" class="drafts-modal-cancel" id="draftsModalCancel">Vazgeç</button>
+            <button type="button" class="drafts-modal-confirm" id="draftsModalConfirm">Sil</button>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

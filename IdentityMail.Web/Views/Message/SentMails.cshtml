@@ -18,6 +18,20 @@
                 <label class="sent-mails-bulk-item" title="Tümünü seç"><input type="checkbox" id="sentSelectAll" /></label>
                 <button type="button" id="sentBulkImportantButton" class="sent-mails-bulk-item" title="Seçilenleri önemli yap" disabled><span class="material-symbols-outlined">star</span></button>
                 <button type="button" id="sentBulkDeleteButton" class="sent-mails-bulk-item delete" title="Seçilenleri sil" disabled><span class="material-symbols-outlined">delete</span></button>
+                <div class="sent-bulk-category-wrapper">
+                    <select id="sentBulkCategorySelect" class="sent-bulk-category-select" disabled>
+                        <option value="">Kategoriye Ekle</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.ID">@category.Name</option>
+                            }
+                        }
+                        <option value="remove">Kategoriyi Kaldır</option>
+                    </select>
+                    <span class="material-symbols-outlined sent-bulk-category-arrow">keyboard_arrow_down</span>
+                </div>
             </div>
             <select name="categoryId" class="sent-mails-select">
                 <option value="">Kategori</option>
@@ -66,21 +80,42 @@
                 <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="sent-mails-item-content">
                     <div class="sent-mails-user">
                         <div class="sent-mails-avatar">
-                            @if (!string.IsNullOrEmpty(message.Receiver.ProfileImageURL))
+                            @if (!string.IsNullOrWhiteSpace(message.Receiver?.ProfileImageURL))
                             {
-                                <img src="@message.Receiver.ProfileImageURL" alt="@message.Receiver.FirstName" />
+                                <img src="@message.Receiver.ProfileImageURL" alt="Profil fotoğrafı" />
                             }
                             else
                             {
-                                <span>@message.Receiver.FirstName.Substring(0, 1)</span>
+                                var initial = message.Receiver?.FirstName;
+
+                                if (string.IsNullOrWhiteSpace(initial))
+                                {
+                                    initial = message.ReceiverMail;
+                                }
+
+                                <span>@(string.IsNullOrWhiteSpace(initial) ? "?" : initial.Substring(0, 1).ToUpper())</span>
                             }
                         </div>
-
-                        <div class="sent-mails-name">@message.Receiver.FirstName @message.Receiver.LastName</div>
+                        <div class="sent-mails-name">
+                            @if (message.Receiver != null)
+                            {
+                                @($"{message.Receiver.FirstName} {message.Receiver.LastName}")
+                            }
+                            else
+                            {
+                                @message.ReceiverMail
+                            }
+                        </div>
                     </div>
                     <div class="sent-mails-message">
                         <div class="sent-mails-subject">@message.Subject</div>
                         <div class="sent-mails-preview">@(body.Length > 45 ? body.Substring(0, 45) + "..." : body)</div>
+                    </div>
+                    <div class="mail-category">
+                        @if (message.Category != null)
+                        {
+                            <div class="category-badge" style="color:@message.Category.Color; border-color:@message.Category.Color;">@message.Category.Name</div>
+                        }
                     </div>
                     <div class="sent-mails-date">
                         @if (message.SendDate.Date == DateTime.Today)
@@ -97,8 +132,26 @@
                         }
                     </div>
                 </a>
+                <div class="sent-mails-row-actions">
+                    <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@message.ID" method="post" class="sent-mails-delete-form">
+                        <button type="submit" class="sent-mails-delete-button" title="Sil"><span class="material-symbols-outlined">delete</span></button>
+                    </form>
+                </div>
             </div>
         }
+    </div>
+</div>
+<div id="sentDeleteModal" class="sent-mails-modal" role="dialog" aria-modal="true" aria-labelledby="sentDeleteTitle" aria-hidden="true">
+    <div class="sent-mails-modal-box">
+        <div class="sent-mails-modal-icon">
+            <span class="material-symbols-outlined">delete_forever</span>
+        </div>
+        <h2 id="sentDeleteTitle" class="sent-mails-modal-title">Mesajı Sil</h2>
+        <p id="sentDeleteText" class="sent-mails-modal-text">Bu mesaj Gönderilen Mesajlar listenizden kaldırılacak.</p>
+        <div class="sent-mails-modal-actions">
+            <button type="button" id="sentDeleteCancel" class="sent-mails-modal-cancel">Vazgeç</button>
+            <button type="button" id="sentDeleteConfirm" class="sent-mails-modal-confirm">Sil</button>
+        </div>
     </div>
 </div>
 

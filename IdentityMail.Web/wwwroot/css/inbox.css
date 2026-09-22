@@ -103,9 +103,58 @@
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* BULK CATEGORY */
+.bulk-category-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 38px;
+    border-left: 1px solid #cbd5e1;
+}
+
+/* BULK CATEGORY SELECT */
+.bulk-category-select {
+    height: 100%;
+    min-width: 170px;
+    padding: 0 38px 0 14px;
+    border: none;
+    outline: none;
+    background: #ffffff;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    /* TARAYICININ KENDİ OKUNU KALDIR */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* CATEGORY ARROW */
+.bulk-category-arrow {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #64748b;
+    pointer-events: none;
+}
+
+/* DISABLED ARROW */
+.bulk-category-wrapper:has(.bulk-category-select:disabled) .bulk-category-arrow {
+    color: #cbd5e1;
+}
+
 .bulk-action-button .material-symbols-outlined {
     font-size: 20px;
     font-variation-settings: 'FILL' 0;
+}
+
+.bulk-category-select:disabled {
+    color: #94a3b8;
+    background: #f8fafc;
+    cursor: not-allowed;
 }
 
 /* NORMAL HOVER */
@@ -118,6 +167,11 @@
 .bulk-action-button.delete:not(:disabled):hover {
     background-color: #fef2f2;
     color: #dc2626;
+}
+
+/* CATEGORY HOVER */
+.bulk-category-select:not(:disabled):hover {
+    background: #f8fafc;
 }
 
 /* ACTIVE STAR */
@@ -410,12 +464,33 @@
     white-space: nowrap;
 }
 
-/* DATE */
+/* MAIL CATEGORY */
+.mail-category {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+/* CATEGORY BADGE */
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 9px;
+    background: #ffffff;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+/* MAIL DATE */
 .mail-date {
-    grid-column: 3;
-    grid-row: 1;
-    text-align: right;
-    transition: opacity 0.15s ease;
+    justify-self: end;
+    white-space: nowrap;
 }
 
 .mail-item.unread .mail-date {
@@ -506,9 +581,125 @@
 
 /* MAIL LINK */
 .mail-link {
+    flex: 1;
+    min-width: 0;
     display: grid;
-    grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) 90px;
+    grid-template-columns: 240px 280px auto 1fr auto;
     align-items: center;
+    column-gap: 14px;
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* INBOX DELETE MODAL */
+.inbox-delete-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 9999;
+    transition: opacity .2s ease, visibility .2s ease;
+}
+
+    .inbox-delete-modal.is-open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+/* MODAL BOX */
+.inbox-delete-modal-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    background: #ffffff;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, .18);
+    transform: translateY(25px) scale(.96);
+    transition: transform .25s ease;
+}
+
+.inbox-delete-modal.is-open .inbox-delete-modal-box {
+    transform: translateY(0) scale(1);
+}
+
+/* ICON */
+.inbox-delete-modal-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+    .inbox-delete-modal-icon .material-symbols-outlined {
+        font-size: 30px;
+    }
+
+/* TITLE */
+.inbox-delete-modal-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* TEXT */
+.inbox-delete-modal-text {
+    margin: 12px 0 24px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #64748b;
+}
+
+/* BUTTONS */
+.inbox-delete-modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.inbox-delete-cancel, .inbox-delete-confirm {
+    padding: 11px 20px;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.inbox-delete-cancel {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.inbox-delete-cancel:hover {
+    background: #e2e8f0;
+}
+
+.inbox-delete-confirm {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.inbox-delete-confirm:hover {
+    background: #b91c1c;
+}
+
+.inbox-delete-cancel:disabled, .inbox-delete-confirm:disabled {
+    opacity: .6;
+    cursor: wait;
 }
 
 /* RESPONSIVE */

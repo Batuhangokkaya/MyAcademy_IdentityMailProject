@@ -24,7 +24,6 @@
                 <button id="importantBulkDelete" class="important-bulk-action-button delete" type="button" title="Sil" disabled>
                     <span class="material-symbols-outlined">delete</span>
                 </button>
-
             </div>
             <div class="important-tabs">
                 <a asp-controller="Message" asp-action="ImportantMails" asp-route-filter="all" asp-route-category="@ViewBag.CurrentCategory" asp-route-sort="@ViewBag.CurrentSort" class="important-tab-button @(ViewBag.CurrentFilter == "all" || ViewBag.CurrentFilter == null ? "active" : "")">Tümü</a>
@@ -79,19 +78,29 @@
                     <span class="material-symbols-outlined">star</span>
                 </button>
                 <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="important-mail-link">
+                    <!-- MAIL SENDER -->
                     <div class="important-mail-sender">
-                        <div class="important-sender-avatar">@(message.Sender.FirstName?.Substring(0, 1).ToUpper())</div>
+                        @{
+                            var isSent      = Convert.ToString(message.SenderID) == Convert.ToString((object)ViewBag.CurrentUserId);
+                            var person      = isSent ? message.Receiver : message.Sender;
+                            var personName  = person != null ? $"{person.FirstName} {person.LastName}".Trim() : "";
+                            var displayName = !string.IsNullOrWhiteSpace(personName) ? personName : (isSent ? message.ReceiverMail : null) ?? "Adres kayıtlı değil";
+                            var avatar      = !string.IsNullOrWhiteSpace(displayName) && displayName != "Adres kayıtlı değil" ? displayName.Substring(0, 1).ToUpperInvariant() : "@";
+                        }
+                        <div class="important-sender-avatar">@avatar</div>
                         <div class="important-sender-info">
-                            <div class="important-sender-name">@message.Sender.FirstName @message.Sender.LastName</div>
-                            @if (message.Category != null)
-                            {
-                                <span class="important-category-badge">@message.Category.Name</span>
-                            }
+                            <div class="important-sender-name">@displayName</div>
                         </div>
                     </div>
                     <div class="important-mail-content">
                         <div class="important-mail-subject">@message.Subject</div>
                         <div class="important-mail-preview">@(message.Body?.Length > 70 ? message.Body.Substring(0, 70) : message.Body)</div>
+                    </div>
+                    <div class="mail-category">
+                        @if (message.Category != null)
+                        {
+                            <div class="category-badge" style="color:@message.Category.Color; border-color:@message.Category.Color;">@message.Category.Name</div>
+                        }
                     </div>
                     <div class="important-mail-date">
                         @if (message.SendDate.Date == DateTime.Today)
@@ -109,12 +118,28 @@
                     </div>
                 </a>
                 <div class="important-mail-actions">
-                    <button class="important-delete-mail-button" type="button" title="Sil">
-                        <span class="material-symbols-outlined">delete</span>
-                    </button>
+                    <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@message.ID" asp-route-returnUrl="@Url.Action("ImportantMails", "Message")" asp-antiforgery="true" method="post" class="important-delete-form">
+                        <button class="important-delete-mail-button" type="submit" title="Sil">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         }
+    </div>
+</div>
+<div id="importantDeleteModal" class="important-modal" role="dialog" aria-modal="true" aria-labelledby="importantDeleteTitle" aria-describedby="importantDeleteText" aria-hidden="true">
+    <div class="important-modal-box">
+        <div class="important-modal-icon">
+            <span class="material-symbols-outlined">delete</span>
+        </div>
+        <h2 id="importantDeleteTitle" class="important-modal-title">Mesaj Silinsin mi?</h2>
+        <p id="importantDeleteText" class="important-modal-text">Bu mesaj Çöp Kutusu'na taşınacak.</p>
+        <p id="importantDeleteError" class="important-modal-error" hidden></p>
+        <div class="important-modal-actions">
+            <button id="importantDeleteCancel" class="important-modal-cancel" type="button">Vazgeç</button>
+            <button id="importantDeleteConfirm" class="important-modal-confirm" type="button">Sil</button>
+        </div>
     </div>
 </div>
 

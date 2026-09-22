@@ -2,12 +2,14 @@
 @{
     ViewData["Title"] = "Silinen Mesajlar";
     Layout            = "~/Views/Shared/_Layout.cshtml";
+    var userId        = (int)ViewBag.UserId;
 }
 @section Styles {
     <link rel="stylesheet" href="~/css/trash.css" asp-append-version="true" />
 }
 
-<div class="trash-page">
+@Html.AntiForgeryToken()
+<div class="trash-page" data-restore-url="@Url.Action("RestoreTrash", "Message")" data-remove-url="@Url.Action("RemoveFromTrash", "Message")" data-empty-url="@Url.Action("EmptyTrash", "Message")">    
     <div class="trash-header">
         <div class="trash-header-left">
             <h1 class="trash-title">Silinen Mesajlar</h1>
@@ -20,13 +22,17 @@
             </label>
             <button type="button" id="trashRestoreButton" class="trash-restore-button" disabled>
                 <span class="material-symbols-outlined">restore_from_trash</span>
-                <span>Geri Yükle</span>
+                Geri Yükle
+            </button>
+            <button type="button" id="trashSelectedDeleteButton" class="trash-selected-delete-button" disabled>
+                <span class="material-symbols-outlined">delete</span>
+                Seçilenleri Sil
             </button>
             <div class="trash-filter-wrapper">
                 <button type="button" id="trashFilterButton" class="trash-filter-button">
                     <span class="material-symbols-outlined">filter_list</span>
                     <span id="trashFilterText">Tümü</span>
-                    <span class="material-symbols-outlined trash-filter-arrow">keyboard_arrow_down</span>
+                    <span class="material-symbols-outlined">keyboard_arrow_down</span>
                 </button>
                 <div id="trashFilterMenu" class="trash-filter-menu">
                     <button type="button" class="trash-filter-option active" data-filter="all">Tümü</button>
@@ -34,48 +40,55 @@
                     <button type="button" class="trash-filter-option" data-filter="sent">Gönderilen Mesajlar</button>
                 </div>
             </div>
-            <button type="button" id="trashEmptyButton" class="trash-empty-button">
+            <button type="button" id="trashEmptyButton" class="trash-empty-button" disabled>
                 <span class="material-symbols-outlined">delete_forever</span>
-                <span>Çöp Kutusunu Boşalt</span>
+                Çöp Kutusunu Boşalt
             </button>
-
         </div>
     </div>
     <div class="trash-list">
         @if (Model.Any())
         {
-            var userId = (int)ViewBag.UserId;
             foreach (var message in Model)
             {
-                <div class="trash-row" data-type="@(message.SenderID == userId ? "sent" : "received")" onclick="showTrashWarning()">
-                    <div class="trash-checkbox" onclick="event.stopPropagation();">
-                        <input type="checkbox" class="trash-mail-checkbox" />
+                var isSent = message.SenderID == userId;
+
+                string personName;
+
+                if (isSent)
+                {
+                    if (message.Receiver != null)
+                    {
+                        personName = $"{message.Receiver.FirstName} {message.Receiver.LastName}".Trim();
+                    }
+                    else
+                    {
+                        personName = !string.IsNullOrWhiteSpace(message.ReceiverMail) ? message.ReceiverMail : "Alıcı adresi bilinmiyor";
+                    }
+                }
+                else
+                {
+                    personName = message.Sender != null ? $"{message.Sender.FirstName} {message.Sender.LastName}".Trim() : "Gönderen bulunamadı";
+                }
+                <div class="trash-row" data-id="@message.ID" data-type="@(isSent ? "sent" : "received")" onclick="showTrashWarning()">
+                <div class="trash-checkbox" onclick="event.stopPropagation();">
+                    <input type="checkbox" class="trash-mail-checkbox" value="@message.ID" />
+                </div>
+                <div class="trash-sender">
+                    <span>@personName</span>
+                </div>
+                <div class="trash-message">
+                    <span class="trash-subject">@(string.IsNullOrWhiteSpace(message.Subject) ? "Konu yok" : message.Subject)</span>
+                    @if (!string.IsNullOrWhiteSpace(message.Body))
+                    {
+                        <span class="trash-body">- @message.Body</span>
+                    }
                     </div>
-                    <div class="trash-sender">
-                        @if (message.SenderID == userId)
-                        {
-                            <span>
-                                @message.Receiver.FirstName
-                                @message.Receiver.LastName
-                            </span>
-                        }
-                        else
-                        {
-                            <span>
-                                @message.Sender.FirstName
-                                @message.Sender.LastName
-                            </span>
-                        }
-                    </div>
-                    <div class="trash-message">
-                        <span class="trash-subject">@message.Subject</span>
-                        @if (!string.IsNullOrEmpty(message.Body))
-                        {
-                            <span class="trash-body">- @message.Body</span>
-                        }
-                    </div>
-                    <div class="trash-date">
-                        @message.SendDate.ToString("dd.MM.yyyy")
+                    <div class="trash-date-area">
+                        <span class="trash-date">@message.SendDate.ToString("dd.MM.yyyy")</span>
+                        <button type="button" class="trash-delete-button" data-id="@message.ID" title="Çöp Kutusundan Kaldır" onclick="event.stopPropagation();">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
                     </div>
                 </div>
             }
@@ -84,20 +97,33 @@
         {
             <div class="trash-empty">
                 <span class="material-symbols-outlined trash-empty-icon">delete</span>
-                <h2 class="trash-empty-title">Çöp Kutusu boş</h2>
+                <h2 class="trash-empty-title">Çöp Kutusu Boş</h2>
                 <p class="trash-empty-text">Silinen mesajlar burada görünecek.</p>
             </div>
         }
     </div>
 </div>
-<div id="trashModal" class="trash-modal">
+<div id="trashModal" class="trash-modal" role="dialog" aria-modal="true" aria-labelledby="trashWarningTitle" aria-hidden="true">
     <div class="trash-modal-box">
         <div class="trash-modal-icon">
             <span class="material-symbols-outlined">warning</span>
         </div>
-        <h2 class="trash-modal-title">Mesaj Çöp Kutusunda</h2>
+        <h2 id="trashWarningTitle" class="trash-modal-title">Mesaj Çöp Kutusunda</h2>
         <p class="trash-modal-text">Mesajı görüntülemek için lütfen Çöp Kutusu'ndan çıkarın.</p>
         <button type="button" class="trash-modal-button" onclick="closeTrashWarning()">Tamam</button>
+    </div>
+</div>
+<div id="trashActionModal" class="trash-modal" role="dialog" aria-modal="true" aria-labelledby="trashActionTitle" aria-hidden="true">
+    <div class="trash-modal-box">
+        <div class="trash-modal-icon">
+            <span class="material-symbols-outlined">delete_forever</span>
+        </div>
+        <h2 class="trash-modal-title"id="trashActionTitle">Mesajı Çöp Kutusundan Kaldır</h2>
+        <p class="trash-modal-text"id="trashActionText">Bu mesaj çöp kutunuzdan kaldırılacak. Mesaj kaydı veritabanında kalacak.</p>
+        <div class="trash-action-buttons">
+            <button type="button" class="trash-action-cancel" id="trashActionCancel">Vazgeç</button>
+            <button type="button" class="trash-action-confirm" id="trashActionConfirm">Kaldır</button>
+        </div>
     </div>
 </div>
 

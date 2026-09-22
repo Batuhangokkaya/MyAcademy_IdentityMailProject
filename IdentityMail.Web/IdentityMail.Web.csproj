@@ -17,4 +17,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\js\category\category-create.js" />
+  </ItemGroup>
+
 </Project>

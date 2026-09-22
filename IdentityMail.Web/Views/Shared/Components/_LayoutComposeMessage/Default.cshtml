@@ -17,11 +17,11 @@
         <div class="compose-message-body" id="compose-body">
             <div class="compose-message-field">
                 <span class="compose-message-label">Kime:</span>
-                <input asp-for="ReceiverMail" class="compose-message-input" placeholder="Alıcı ara..." type="text" />
+                <input asp-for="ReceiverMail" type="text"  class="compose-message-input" placeholder="Alıcı ara..." />
             </div>
             <div class="compose-message-field">
                 <span class="compose-message-label">Konu:</span>
-                <input asp-for="Subject" class="compose-message-input" placeholder="Konuyu girin..." type="text" />
+                <input asp-for="Subject" type="text" class="compose-message-input" placeholder="Konuyu girin..." />
             </div>
             <textarea asp-for="Body" class="compose-message-textarea" placeholder=""></textarea>
         </div>

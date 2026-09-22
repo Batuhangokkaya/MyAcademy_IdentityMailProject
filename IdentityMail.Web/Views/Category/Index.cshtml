@@ -7,7 +7,6 @@
 }
 
 <div class="category-page">
-    <!-- PAGE HEADER -->
     <div class="category-header">
         <div class="category-header-left">
             <h1 class="category-title">Kategoriler</h1>
@@ -20,13 +19,10 @@
             </a>
         </div>
     </div>
-    <!-- CATEGORY BOX -->
     <div class="category-box">
-        <!-- BOX HEADER -->
         <div class="category-box-header">
             <h2 class="category-box-title">Kategorileriniz</h2>
         </div>
-        <!-- BOX BODY -->
         <div class="category-box-body">
             @if (Model != null && Model.Any())
             {
@@ -34,7 +30,7 @@
                 {
                     <div class="category-row">
                         <div class="category-row-left">
-                            <span class="material-symbols-outlined category-icon">label</span>
+                            <span class="material-symbols-outlined category-icon" style="color:@category.Color">label</span>
                             <span class="category-name">@category.Name</span>
                         </div>
                         <div class="category-row-actions">
@@ -42,7 +38,7 @@
                                 <span class="material-symbols-outlined">edit</span>
                             </a>
                             <form asp-controller="Category" asp-action="Delete" asp-route-id="@category.ID" method="post" class="category-delete-form">
-                                <button type="submit" class="category-action-button delete-button" title="Sil" onclick="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?');">
+                                <button type="button" class="category-delete-button" data-id="@category.ID" data-name="@category.Name">
                                     <span class="material-symbols-outlined">delete</span>
                                 </button>
                             </form>
@@ -60,3 +56,33 @@
         </div>
     </div>
 </div>
+<div id="categoryModal" class="category-modal" role="dialog" aria-modal="true" aria-labelledby="categoryWarningTitle" aria-hidden="true">
+    <div class="category-modal-box">
+        <div class="category-modal-icon">
+            <span class="material-symbols-outlined">warning</span>
+        </div>
+        <h2 id="categoryWarningTitle" class="category-modal-title">Kategori İşlemi</h2>
+        <p id="categoryWarningText" class="category-modal-text">Kategoriyle ilgili işlem gerçekleştirilemedi.</p>
+        <button type="button" class="category-modal-button" onclick="closeCategoryWarning()">Tamam</button>
+    </div>
+</div>
+<div id="categoryActionModal" class="category-modal" role="dialog" aria-modal="true" aria-labelledby="categoryActionTitle" aria-hidden="true">
+    <div class="category-modal-box">
+        <div class="category-modal-icon category-modal-icon-danger">
+            <span class="material-symbols-outlined">delete_forever</span>
+        </div>
+        <h2 id="categoryActionTitle" class="category-modal-title">Kategoriyi Sil</h2>
+        <p class="category-modal-text"><strong id="categoryDeleteName"></strong>kategorisini silmek istediğinizden emin misiniz?</p>
+        <div class="category-action-buttons">
+            <button type="button" class="category-action-cancel" id="categoryActionCancel">Vazgeç</button>
+            <form id="categoryDeleteForm" asp-controller="Category" asp-action="Delete" method="post">
+                <input type="hidden" name="id" id="categoryDeleteId" />
+                <button type="submit" class="category-action-confirm" id="categoryActionConfirm">Kategoriyi Sil</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/category/category-index.js" asp-append-version="true"></script>
+}

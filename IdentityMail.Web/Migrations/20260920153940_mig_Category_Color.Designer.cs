@@ -4,6 +4,7 @@ using IdentityMail.Web.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityMail.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260920153940_mig_Category_Color")]
+    partial class mig_Category_Color
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,25 +190,16 @@ namespace IdentityMail.Web.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsTrashEmptiedReceiver")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTrashEmptiedSender")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("ParentMessageID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReceiverID")
+                    b.Property<int>("ReceiverID")
                         .HasColumnType("int");
-
-                    b.Property<string>("ReceiverMail")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("SendDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("SenderID")
+                    b.Property<int>("SenderID")
                         .HasColumnType("int");
 
                     b.Property<string>("Subject")
@@ -354,12 +348,14 @@ namespace IdentityMail.Web.Migrations
                     b.HasOne("IdentityMail.Web.Entities.AppUser", "Receiver")
                         .WithMany("ReceivedMessages")
                         .HasForeignKey("ReceiverID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("IdentityMail.Web.Entities.AppUser", "Sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("SenderID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Category");
 

@@ -23,15 +23,15 @@ namespace IdentityMail.Web.ViewComponents.Layout
             ViewBag.TotalSentMail = totalSentMail;
 
             // Taslaklar
-            var totalDrafts = await _context.UserMessages.CountAsync(x => x.SenderID == user.Id && x.IsDraft == true);
+            var totalDrafts = await _context.UserMessages.CountAsync(x => x.SenderID == user.Id && x.IsDraft == true && x.IsDeletedSender == false);
             ViewBag.TotalDraft = totalDrafts;
 
             // Önemli Mailler
-            var totalImportantMail = await _context.UserMessages.CountAsync(x => x.SenderID == user.Id && x.IsImportant == true);
+            var totalImportantMail = await _context.UserMessages.CountAsync(x => x.SenderID == user.Id && x.IsImportant == true && x.IsDeletedSender == false);
             ViewBag.TotalImportantMail = totalImportantMail;
 
             // Silinen Mailler
-            var totalDeletedMails = await _context.UserMessages.CountAsync(x => (x.SenderID == user.Id && x.IsDeletedSender) || (x.ReceiverID == user.Id && x.IsDeletedReceiver));
+            var totalDeletedMails = await _context.UserMessages.CountAsync(x => (x.SenderID == user.Id && x.IsDeletedSender && !x.IsTrashEmptiedSender) || (x.ReceiverID == user.Id && x.IsDeletedReceiver && !x.IsTrashEmptiedReceiver));
             ViewBag.TotalDeletedMail = totalDeletedMails;
 
             // Kategoriler

@@ -24,6 +24,20 @@
                 <button type="button" id="bulkDeleteButton" class="bulk-action-button delete" title="Seçilenleri sil" disabled>
                     <span class="material-symbols-outlined">delete</span>
                 </button>
+                <div class="bulk-category-wrapper">
+                    <select id="bulkCategorySelect" class="bulk-category-select" disabled>
+                        <option value="">Kategoriye Ekle</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.ID">@category.Name</option>
+                            }
+                        }
+                        <option value="remove">Kategoriyi Kaldır</option>
+                    </select>
+                    <span class="material-symbols-outlined bulk-category-arrow">keyboard_arrow_down</span>
+                </div>
             </div>
             <div class="inbox-tabs">
                 <a asp-controller="Message" asp-action="Inbox" asp-route-filter="all" class="tab-button @(ViewBag.CurrentFilter == "all" ? "active" : "")">Tümü</a>
@@ -91,15 +105,17 @@
                                 @message.Sender.FirstName
                                 @message.Sender.LastName
                             </div>
-                            @if (message.Category != null)
-                            {
-                                <span class="category-badge">@message.Category.Name</span>
-                            }
                         </div>
                     </div>
                     <div class="mail-content">
                         <div class="mail-subject">@message.Subject</div>
                         <div class="mail-preview">@(body.Length > 45 ? body.Substring(0, 45) + "..." : body)</div>
+                    </div>
+                    <div class="mail-category">
+                        @if (message.Category != null)
+                        {
+                            <div class="category-badge" style="color:@message.Category.Color; border-color:@message.Category.Color;">@message.Category.Name</div>
+                        }
                     </div>
                     <div class="mail-date">
                         @if (message.SendDate.Date == DateTime.Today)
@@ -116,7 +132,7 @@
                         }
                     </div>
                     <div class="mail-actions">
-                        <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@message.ID" method="post">
+                        <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@message.ID" method="post" class="single-delete-form">
                             <button type="submit" class="delete-mail-button" title="Sil">
                                 <span class="material-symbols-outlined">delete</span>
                             </button>
@@ -125,6 +141,19 @@
                 </a>
             </div>
         }
+    </div>
+</div>
+<div id="inboxDeleteModal" class="inbox-delete-modal" role="dialog" aria-modal="true" aria-labelledby="inboxDeleteTitle" aria-hidden="true">
+    <div class="inbox-delete-modal-box">
+        <div class="inbox-delete-modal-icon">
+            <span class="material-symbols-outlined">delete</span>
+        </div>
+        <h2 class="inbox-delete-modal-title" id="inboxDeleteTitle">Mesajı Sil</h2>
+        <p class="inbox-delete-modal-text" id="inboxDeleteText">Bu mesaj Çöp Kutusu'na taşınacak.</p>
+        <div class="inbox-delete-modal-actions">
+            <button type="button" class="inbox-delete-cancel" id="inboxDeleteCancel">Vazgeç</button>
+            <button type="button" class="inbox-delete-confirm" id="inboxDeleteConfirm">Sil</button>
+        </div>
     </div>
 </div>
 

@@ -12,13 +12,17 @@ namespace IdentityMail.Web.Entities
         public bool IsImportant { get; set; }
         public bool IsDeletedSender { get; set; }
         public bool IsDeletedReceiver { get; set; }
+        public bool IsTrashEmptiedSender { get; set; }
+        public bool IsTrashEmptiedReceiver { get; set; }
         public bool IsDraft { get; set; }
         // Sender
-        public int SenderID { get; set; }
+        public int? SenderID { get; set; }
         public AppUser Sender { get; set; }
         // Sender
-        public int ReceiverID { get; set; }
+        public int? ReceiverID { get; set; }
         public AppUser Receiver { get; set; }
+        // Receiver Mail
+        public string? ReceiverMail { get; set; }
         // Category
         public int? CategoryID { get; set; }
         public Category Category { get; set; }
