@@ -4,20 +4,17 @@
     Layout                = "/Views/Shared/_AuthLayout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/register.css" />
+    <link rel="stylesheet" href="~/css/auth/register.css" />
 }
 
 <div class="register-page">
-    <!-- SOL TARAF -->
     <div class="register-left">
-        <!-- Logo -->
         <div class="brand">
             <div class="brand-icon">
                 <span class="material-symbols-outlined">mail</span>
             </div>
             <span class="brand-name">B-Mail</span>
         </div>
-        <!-- Orta içerik -->
         <div class="hero-content">
             <h1>Yeni bir başlangıç, tek bir hesap.</h1>
             <p>B-Mail hesabını oluştur, mesajlarını güvenli ve düzenli bir şekilde yönetmeye başla.</p>
@@ -36,13 +33,11 @@
                 </div>
             </div>
         </div>
-        <!-- Alt yazı -->
         <div class="security-text">
             <span class="material-symbols-outlined">lock</span>
             Kurumsal Sınıf Güvenlik
         </div>
     </div>
-    <!-- SAĞ TARAF -->
     <div class="register-right">
         <div class="register-form-container">
             <div class="form-header">
@@ -53,7 +48,6 @@
                 <div id="validationSummary">
                     @Html.ValidationSummary(false, "", new { @class = "validation-message" })
                 </div>
-                <!-- AD / SOYAD -->
                 <div class="name-row">
                     <div class="form-group">
                         <label asp-for="FirstName">Ad</label>
@@ -70,7 +64,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- KULLANICI ADI -->
                 <div class="form-group">
                     <label asp-for="UserName">Kullanıcı Adı</label>
                     <div class="input-wrapper">
@@ -78,7 +71,6 @@
                         <input asp-for="UserName" class="form-input" placeholder="kullaniciadi" />
                     </div>
                 </div>
-                <!-- EMAIL -->
                 <div class="form-group">
                     <label asp-for="Email">E-posta Adresi</label>
                     <div class="input-wrapper">
@@ -86,7 +78,6 @@
                         <input asp-for="Email" class="form-input" placeholder="ornek@info.com" type="email" />
                     </div>
                 </div>
-                <!-- ŞİFRE -->
                 <div class="form-group">
                     <label asp-for="Password">Şifre</label>
                     <div class="input-wrapper">
@@ -97,7 +88,6 @@
                         </button>
                     </div>
                 </div>
-                <!-- ŞİFRE TEKRAR -->
                 <div class="form-group">
                     <label asp-for="ConfirmPassword">Şifre Tekrar</label>
                     <div class="input-wrapper">

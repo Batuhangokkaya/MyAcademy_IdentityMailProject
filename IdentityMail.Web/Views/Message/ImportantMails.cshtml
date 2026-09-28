@@ -4,14 +4,14 @@
     Layout            = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/important-mails.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/message/important-mails.css" asp-append-version="true" />
 }
 
 <div class="important-page">    
     <div class="important-header">
         <div class="important-title-area">
             <h1>Önemli Mesajlar</h1>
-            <p>@Model.Count önemli mesaj</p>
+            <p>@ViewBag.TotalMessages önemli mesaj</p>
         </div>
         <div class="important-actions">
             <div class="important-bulk-actions">
@@ -70,24 +70,31 @@
     <div class="important-mail-list">
         @foreach (var message in Model)
         {
+            var isSent       = Convert.ToString(message.SenderID) == Convert.ToString((object)ViewBag.CurrentUserId);
+            var person       = isSent ? message.Receiver : message.Sender;
+            var personName   = person != null ? $"{person.FirstName} {person.LastName}".Trim() : "";
+            var fallbackName = isSent ? message.ReceiverMail : "Gönderen bulunamadı";
+            var displayName  = !string.IsNullOrWhiteSpace(personName) ? personName : (!string.IsNullOrWhiteSpace(fallbackName) ? fallbackName : "Alıcı bulunamadı");
+            var initial      = !string.IsNullOrWhiteSpace(person?.FirstName) ? person.FirstName : displayName;
             <div class="important-mail-item @(message.IsRead == false ? "unread" : "")">
                 <div class="important-mail-select">
                     <input class="important-mail-checkbox" type="checkbox" value="@message.ID" />
                 </div>
-                <button id="important-@message.ID" class="important-button selected" type="button" onclick="toggleImportant(event, @message.ID, this)">
+                <button id="important-@message.ID" class="important-button selected" type="button" data-id="@message.ID" title="Önem İşaretini Kaldır">
                     <span class="material-symbols-outlined">star</span>
                 </button>
                 <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="important-mail-link">
-                    <!-- MAIL SENDER -->
                     <div class="important-mail-sender">
-                        @{
-                            var isSent      = Convert.ToString(message.SenderID) == Convert.ToString((object)ViewBag.CurrentUserId);
-                            var person      = isSent ? message.Receiver : message.Sender;
-                            var personName  = person != null ? $"{person.FirstName} {person.LastName}".Trim() : "";
-                            var displayName = !string.IsNullOrWhiteSpace(personName) ? personName : (isSent ? message.ReceiverMail : null) ?? "Adres kayıtlı değil";
-                            var avatar      = !string.IsNullOrWhiteSpace(displayName) && displayName != "Adres kayıtlı değil" ? displayName.Substring(0, 1).ToUpperInvariant() : "@";
-                        }
-                        <div class="important-sender-avatar">@avatar</div>
+                        <div class="important-sender-avatar">
+                            @if (!string.IsNullOrWhiteSpace(person?.ProfileImageURL))
+                            {
+                                <img src="@person.ProfileImageURL" alt="Profil fotoğrafı" />
+                            }
+                            else
+                            {
+                                <span>@(string.IsNullOrWhiteSpace(initial) ? "?" : initial.Substring(0, 1).ToUpper())</span>
+                            }
+                        </div>
                         <div class="important-sender-info">
                             <div class="important-sender-name">@displayName</div>
                         </div>
@@ -127,6 +134,19 @@
             </div>
         }
     </div>
+    <div class="important-pagination">
+
+        <a asp-controller="Message" asp-action="ImportantMails" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-category="@ViewBag.CurrentCategory" asp-route-sort="@ViewBag.CurrentSort" class="important-pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+        @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+        {
+            <a asp-controller="Message" asp-action="ImportantMails" asp-route-page="@i" asp-route-filter="@ViewBag.CurrentFilter" asp-route-category="@ViewBag.CurrentCategory" asp-route-sort="@ViewBag.CurrentSort" class="important-pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+        }
+        <a asp-controller="Message" asp-action="ImportantMails" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-category="@ViewBag.CurrentCategory" asp-route-sort="@ViewBag.CurrentSort" class="important-pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    </div>
 </div>
 <div id="importantDeleteModal" class="important-modal" role="dialog" aria-modal="true" aria-labelledby="importantDeleteTitle" aria-describedby="importantDeleteText" aria-hidden="true">
     <div class="important-modal-box">
@@ -144,5 +164,5 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/important.js" asp-append-version="true"></script>
+    <script src="~/js/message/important-mails.js" asp-append-version="true"></script>
 }

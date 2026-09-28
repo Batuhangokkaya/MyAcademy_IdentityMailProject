@@ -55,6 +55,18 @@
             }
         </div>
     </div>
+    <div class="category-pagination">
+        <a asp-controller="Category" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" class="category-pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+        @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+        {
+            <a asp-controller="Category" asp-action="Index" asp-route-page="@i" class="category-pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+        }
+        <a asp-controller="Category" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" class="category-pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    </div>
 </div>
 <div id="categoryModal" class="category-modal" role="dialog" aria-modal="true" aria-labelledby="categoryWarningTitle" aria-hidden="true">
     <div class="category-modal-box">

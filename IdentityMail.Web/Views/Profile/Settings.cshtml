@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Hesap Ayarları";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/top-navbar/settings.css" asp-append-version="true" />
+}
+
+<div class="settings-page">
+    <div class="settings-heading">
+        <h1>Hesap Ayarları</h1>
+        <p>Kullanıcı adınızı ve hesap güvenliğinizi yönetin.</p>
+    </div>
+    <div class="settings-card">
+        <section class="settings-section">
+            <div class="settings-section-title">
+                <span class="material-symbols-outlined">manage_accounts</span>
+                <div>
+                    <h2>Kullanıcı Adı</h2>
+                    <p>Hesabınızda kullandığınız adı değiştirin.</p>
+                </div>
+            </div>
+            @if (TempData["UsernameSuccess"] != null)
+            {
+                <div class="settings-success">@TempData["UsernameSuccess"]</div>
+            }
+            @if (TempData["UsernameError"] is string usernameError)
+            {
+                <div class="settings-error">
+                    @foreach (var message in usernameError.Split('|'))
+                    {
+                        <div class="settings-error-item">
+                            <span class="material-symbols-outlined">error</span>
+                            <span>@message</span>
+                        </div>
+                    }
+                </div>
+            }
+            <form asp-controller="Profile" asp-action="ChangeUsername" method="post">
+                @Html.AntiForgeryToken()
+                <div class="settings-field">
+                    <label for="UserName">Kullanıcı Adı</label>
+                    <input id="UserName" name="UserName" value="@ViewBag.CurrentUserName" maxlength="30" autocomplete="username" />
+                </div>
+                <div class="settings-actions">
+                    <button type="submit">Kullanıcı Adını Güncelle</button>
+                </div>
+            </form>
+        </section>
+        <div class="settings-divider"></div>
+        <section class="settings-section">
+            <div class="settings-section-title">
+                <span class="material-symbols-outlined">lock</span>
+                <div>
+                    <h2>Şifre Değiştir</h2>
+                    <p>Hesabınızı güvende tutmak için şifrenizi güncelleyin.</p>
+                </div>
+            </div>
+            @if (TempData["PasswordSuccess"] != null)
+            {
+                <div class="settings-success">@TempData["PasswordSuccess"]</div>
+            }
+
+            @if (TempData["PasswordError"] is string error)
+            {
+                <div class="settings-error">
+                    @foreach (var message in error.Split('|'))
+                    {
+                        <div class="settings-error-item">
+                            <span class="material-symbols-outlined">error</span>
+                            <span>@message</span>
+                        </div>
+                    }
+                </div>
+            }
+            <form asp-controller="Profile" asp-action="ChangePassword" method="post">
+                @Html.AntiForgeryToken()
+                <div class="settings-field">
+                    <label for="CurrentPassword">Mevcut Şifre</label>
+                    <input id="CurrentPassword" name="CurrentPassword" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="settings-field">
+                    <label for="NewPassword">Yeni Şifre</label>
+                    <input id="NewPassword" name="NewPassword" type="password" autocomplete="new-password" required />
+                </div>
+                <div class="settings-field">
+                    <label for="ConfirmPassword">Yeni Şifre Tekrar</label>
+                    <input id="ConfirmPassword" name="ConfirmPassword" type="password" autocomplete="new-password" required />
+                </div>
+                <div class="settings-actions">
+                    <button type="submit">Şifreyi Güncelle</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

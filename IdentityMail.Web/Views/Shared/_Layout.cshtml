@@ -5,12 +5,9 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="bg-background text-on-background min-h-screen antialiased flex flex-col">
-    <!-- TopNavBar -->
     @await Component.InvokeAsync("_LayoutTopNavbar")
     <div class="flex flex-1 overflow-hidden relative">
-        <!-- SideNavBar -->
         @await Component.InvokeAsync("_LayoutSideNavbar")
-        <!-- Main Content Area -->
         <main class="main-content">
             @RenderBody()
             @await Component.InvokeAsync("_LayoutComposeMessage")

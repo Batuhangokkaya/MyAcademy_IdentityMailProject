@@ -1,0 +1,110 @@
+﻿@model List<MessageReport>
+@{
+    ViewData["Title"] = "Şikayet Edilenler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/admin-reports.css" asp-append-version="true" />
+}
+
+<div class="admin-reports-page">
+    <div class="admin-reports-header">
+        <div>
+            <h1>Şikayet Edilenler</h1>
+            <p>Kullanıcılar tarafından şikayet edilen mesajları yönetin.</p>
+        </div>
+        <div class="admin-reports-count">
+            <span class="material-symbols-outlined">report</span>
+            <span>@ViewBag.TotalReports Şikayet</span>
+        </div>
+    </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="admin-reports-success">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+    @if (Model.Any())
+    {
+        <div class="admin-reports-list">
+            @foreach (var report in Model)
+            {
+                var message      = report.Message;
+                var senderName   = message?.Sender != null ? $"{message.Sender.FirstName} {message.Sender.LastName}".Trim() : "Kullanıcı bulunamadı";
+                var receiverName = message?.Receiver != null ? $"{message.Receiver.FirstName} {message.Receiver.LastName}".Trim() : message?.ReceiverMail ?? "Alıcı bulunamadı";
+                var reporterName = report.ReporterUser != null ? $"{report.ReporterUser.FirstName} {report.ReporterUser.LastName}".Trim() : "Kullanıcı bulunamadı";
+                <div class="admin-report-card">
+                    <div class="admin-report-main">
+                        <div class="admin-report-icon">
+                            <span class="material-symbols-outlined">report</span>
+                        </div>
+                        <div class="admin-report-content">
+                            <div class="admin-report-title">
+                                @(string.IsNullOrWhiteSpace(message?.Subject) ? "Konu yok" : message.Subject)
+                            </div>
+                            <div class="admin-report-meta">
+                                <span>
+                                    <strong>Gönderen:</strong>
+                                    @senderName
+                                </span>
+                                <span>
+                                    <strong>Alıcı:</strong>
+                                    @receiverName
+                                </span>
+                                <span>
+                                    <strong>Şikayet Eden:</strong>
+                                    @reporterName
+                                </span>
+                            </div>
+                            <div class="admin-report-message">
+                                @(string.IsNullOrWhiteSpace(message?.Body) ? "Mesaj içeriği bulunmuyor." : message.Body)
+                            </div>
+                            <div class="admin-report-date">
+                                <span class="material-symbols-outlined">schedule</span>
+                                @report.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-report-actions">
+                        <form asp-controller="AdminReport" asp-action="RemoveReport" asp-route-id="@report.ID" method="post">
+                            <button type="submit" class="admin-report-remove-button">
+                                <span class="material-symbols-outlined">check</span>
+                                <span>Şikayetten Kaldır</span>
+                            </button>
+                        </form>
+                        <form asp-controller="AdminReport" asp-action="DeleteMessage" asp-route-id="@report.ID" method="post">
+
+                            <button type="submit" class="admin-report-delete-button">
+                                <span class="material-symbols-outlined">delete</span>
+                                <span>Mesajı Sil</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                }
+        </div>
+        <div class="admin-reports-pagination">
+            <a asp-controller="AdminReport" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" class="admin-reports-pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+            {
+                <a asp-controller="AdminReport" asp-action="Index" asp-route-page="@i" class="admin-reports-pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+            }
+            <a asp-controller="AdminReport" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" class="admin-reports-pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="admin-reports-empty">
+            <div class="admin-reports-empty-icon">
+                <span class="material-symbols-outlined">verified</span>
+            </div>
+            <h2>Şikayet bulunmuyor</h2>
+            <p>Şu anda incelenmeyi bekleyen herhangi bir mesaj şikayeti yok.</p>
+        </div>
+    }
+</div>

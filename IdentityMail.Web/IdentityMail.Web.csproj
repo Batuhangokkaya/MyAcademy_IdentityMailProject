@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\css\top-navbar\notifications.css" />
     <None Include="wwwroot\js\category\category-create.js" />
   </ItemGroup>
 

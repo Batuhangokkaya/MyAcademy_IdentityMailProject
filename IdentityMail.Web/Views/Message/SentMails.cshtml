@@ -4,14 +4,15 @@
     Layout            = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/sent-mails.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/message/sent-mails.css" asp-append-version="true" />
 }
 
 <div class="sent-mails-page">
+    @Html.AntiForgeryToken()
     <div class="sent-mails-header">
         <div>
             <h1 class="sent-mails-title">Gönderilen Mesajlar</h1>
-            <p class="sent-mails-count">@Model.Count Gönderilen Mesaj</p>
+            <p class="sent-mails-count">@ViewBag.TotalMessages Gönderilen Mesaj</p>
         </div>
         <div class="sent-mails-actions">
             <div class="sent-mails-bulk">
@@ -32,6 +33,13 @@
                     </select>
                     <span class="material-symbols-outlined sent-bulk-category-arrow">keyboard_arrow_down</span>
                 </div>
+            </div>
+            <div class="sent-mails-tabs">
+                <a asp-controller="Message" asp-action="SentMails" asp-route-filter="all" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryId="@ViewBag.CurrentCategoryId" class="sent-mails-tab @(ViewBag.CurrentFilter == "all" ? "active" : "")">Tümü</a>
+                <a asp-controller="Message" asp-action="SentMails" asp-route-filter="important" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryId="@ViewBag.CurrentCategoryId" class="sent-mails-tab @(ViewBag.CurrentFilter == "important" ? "active" : "")">
+                    <span class="material-symbols-outlined sent-important-filter-icon">star</span>
+                    Önemli
+                </a>
             </div>
             <select name="categoryId" class="sent-mails-select">
                 <option value="">Kategori</option>
@@ -73,8 +81,8 @@
                     <input type="checkbox" class="sent-mail-checkbox" value="@message.ID" />
                 </div>
                 <div class="sent-mails-item-star">
-                    <button type="button" class="sent-mails-important-button @(message.IsImportant ? "selected" : "")" title="Önemli mesaj" onclick="toggleImportant(event, @message.ID, this)">
-                        <span id="important-@message.ID" class="material-symbols-outlined">@(message.IsImportant ? "star" : "star_border")</span>
+                    <button type="button" class="sent-mails-important-button @(message.IsImportant ? "selected" : "")" data-id="@message.ID" title="Önemli mesaj">
+                        <span class="material-symbols-outlined">@(message.IsImportant ? "star" : "star_border")</span>
                     </button>
                 </div>
                 <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="sent-mails-item-content">
@@ -87,24 +95,28 @@
                             else
                             {
                                 var initial = message.Receiver?.FirstName;
-
                                 if (string.IsNullOrWhiteSpace(initial))
                                 {
                                     initial = message.ReceiverMail;
                                 }
-
                                 <span>@(string.IsNullOrWhiteSpace(initial) ? "?" : initial.Substring(0, 1).ToUpper())</span>
                             }
                         </div>
-                        <div class="sent-mails-name">
-                            @if (message.Receiver != null)
-                            {
-                                @($"{message.Receiver.FirstName} {message.Receiver.LastName}")
-                            }
-                            else
-                            {
-                                @message.ReceiverMail
-                            }
+                        <div class="sent-mails-user-info">
+                            <div class="sent-mails-name">
+                                @if (message.Receiver != null)
+                                {
+                                    @($"{message.Receiver.FirstName} {message.Receiver.LastName}")
+                                }
+                                else
+                                {
+                                    @message.ReceiverMail
+                                }
+                            </div>
+                            <div class="sent-mails-read-status @(message.IsRead ? "read" : "unread")">
+                                <span class="material-symbols-outlined">@(message.IsRead ? "done_all" : "check")</span>
+                                <span>@(message.IsRead ? "Okundu" : "Gönderildi")</span>
+                            </div>
                         </div>
                     </div>
                     <div class="sent-mails-message">
@@ -114,7 +126,9 @@
                     <div class="mail-category">
                         @if (message.Category != null)
                         {
-                            <div class="category-badge" style="color:@message.Category.Color; border-color:@message.Category.Color;">@message.Category.Name</div>
+                            <div class="category-badge" style="color:@message.Category.Color; border-color:@message.Category.Color;">
+                                @message.Category.Name
+                            </div>
                         }
                     </div>
                     <div class="sent-mails-date">
@@ -140,6 +154,18 @@
             </div>
         }
     </div>
+    <div class="sent-mails-pagination">
+        <a asp-controller="Message" asp-action="SentMails" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryId="@ViewBag.CurrentCategoryId" class="sent-pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+        @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+        {
+            <a asp-controller="Message" asp-action="SentMails" asp-route-page="@i" asp-route-filter="@ViewBag.CurrentFilter" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryId="@ViewBag.CurrentCategoryId" class="sent-pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+        }
+        <a asp-controller="Message" asp-action="SentMails" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryId="@ViewBag.CurrentCategoryId" class="sent-pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    </div>
 </div>
 <div id="sentDeleteModal" class="sent-mails-modal" role="dialog" aria-modal="true" aria-labelledby="sentDeleteTitle" aria-hidden="true">
     <div class="sent-mails-modal-box">
@@ -156,5 +182,5 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/sent-mails.js" asp-append-version="true"></script>
+    <script src="~/js/message/sent-mails.js" asp-append-version="true"></script>
 }

@@ -32,7 +32,6 @@ function openCategoryDelete(id, name) {
 
 function closeCategoryDelete() {
     const modal = document.getElementById("categoryActionModal");
-
     modal.classList.remove("show");
     modal.setAttribute("aria-hidden", "true");
 }
@@ -42,7 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
     /* CATEGORY DELETE BUTTONS */
     document.querySelectorAll(".category-delete-button").forEach(button => {
         button.addEventListener("click", function (event) {
-
             event.preventDefault();
             event.stopPropagation();
 
@@ -80,11 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     /* DELETE FORM */
-    document.getElementById("categoryDeleteForm")
-        .addEventListener("submit", function () {
-            const button = document.getElementById("categoryActionConfirm");
+    document.getElementById("categoryDeleteForm").addEventListener("submit", function () {
+        const button = document.getElementById("categoryActionConfirm");
 
-            button.disabled = true;
-            button.textContent = "Siliniyor...";
-        });
+        button.disabled = true;
+        button.textContent = "Siliniyor...";
+    });
 });

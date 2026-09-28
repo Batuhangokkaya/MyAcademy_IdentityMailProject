@@ -4,13 +4,13 @@
     Layout            = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/drafts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/message/drafts.css" asp-append-version="true" />
 }
 
 <div class="drafts-header">
     <div class="drafts-header-left">
         <h1 class="drafts-title">Taslaklar</h1>
-        <p class="drafts-count">@Model.Count Taslak</p>
+        <p class="drafts-count">@ViewBag.TotalDrafts Taslak</p>
     </div>
     <div class="drafts-header-actions">
         <div class="drafts-action-group">
@@ -112,6 +112,18 @@
         </div>
     }
 </div>
+<div class="drafts-pagination">
+    <a asp-controller="Message" asp-action="Drafts" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-filter="@ViewBag.Filter" asp-route-sort="@ViewBag.Sort" class="drafts-pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </a>
+    @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+    {
+        <a asp-controller="Message" asp-action="Drafts" asp-route-page="@i" asp-route-filter="@ViewBag.Filter" asp-route-sort="@ViewBag.Sort" class="drafts-pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+    }
+    <a asp-controller="Message" asp-action="Drafts" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-filter="@ViewBag.Filter" asp-route-sort="@ViewBag.Sort" class="drafts-pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+        <span class="material-symbols-outlined">chevron_right</span>
+    </a>
+</div>
 <div id="draftsDeleteModal" class="drafts-modal" role="dialog" aria-modal="true" aria-labelledby="draftsModalTitle" aria-describedby="draftsModalText" aria-hidden="true">
     <div class="drafts-modal-box">
         <div class="drafts-modal-icon">
@@ -128,5 +140,5 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/drafts.js" asp-append-version="true"></script>
+    <script src="~/js/message/drafts.js" asp-append-version="true"></script>
 }

@@ -1,0 +1,75 @@
+﻿@model ProfileDTO
+@{
+    ViewData["Title"] = "Profilim";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/top-navbar/profile.css" asp-append-version="true" />
+}
+
+<div class="profile-page">
+    <div class="profile-header">
+        <h1>Profilim</h1>
+        <p>Kişisel bilgilerinizi ve profil fotoğrafınızı yönetin.</p>
+    </div>
+    @if (TempData["ProfileSuccess"] != null)
+    {
+        <div class="profile-success">
+            @TempData["ProfileSuccess"]
+        </div>
+    }
+    <form asp-controller="Profile" asp-action="Index" method="post" enctype="multipart/form-data" class="profile-card">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="profile-validation"></div>
+        <div class="profile-photo-section">
+            <div class="profile-avatar">
+                @if (!string.IsNullOrEmpty(Model.ProfileImageURL))
+                {
+                    <img id="profilePreview" src="@Model.ProfileImageURL" alt="Profil fotoğrafı" />
+                }
+                else
+                {
+                    <img id="profilePreview" alt="Profil fotoğrafı" style="display:none;" />
+
+                    <span id="profileInitial">@Model.FirstName.Substring(0, 1).ToUpper()</span>
+                }
+            </div>
+            <div class="profile-photo-info">
+                <h3>Profil Fotoğrafı</h3>
+                <p>JPG, PNG veya WEBP. Maksimum 2 MB.</p>
+                <label for="ProfileImage" class="profile-upload-button">Fotoğraf Değiştir</label>
+                <input asp-for="ProfileImage" type="file" accept=".jpg,.jpeg,.png,.webp" hidden />
+                <span asp-validation-for="ProfileImage" class="profile-validation"></span>
+            </div>
+        </div>
+        <div class="profile-divider"></div>
+        <div class="profile-form-grid">
+            <div class="profile-field">
+                <label asp-for="FirstName">Ad</label>
+                <input asp-for="FirstName" placeholder="Adınız" />
+                <span asp-validation-for="FirstName" class="profile-validation"></span>
+            </div>
+            <div class="profile-field">
+                <label asp-for="LastName">Soyad</label>
+                <input asp-for="LastName" placeholder="Soyadınız" />
+                <span asp-validation-for="LastName" class="profile-validation"></span>
+            </div>
+            <div class="profile-field">
+                <label>Kullanıcı Adı</label>
+                <input value="@Model.UserName" readonly />
+                <small>Hesap Ayarları'ndan değiştirebilirsiniz.</small>
+            </div>
+            <div class="profile-field">
+                <label>E-posta</label>
+                <input value="@Model.Email" readonly />
+            </div>
+        </div>
+        <div class="profile-actions">
+            <button type="submit" class="profile-save-button">Değişiklikleri Kaydet</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/js/top-navbar/profile.js" asp-append-version="true"></script>
+}

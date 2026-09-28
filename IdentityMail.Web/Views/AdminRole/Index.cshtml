@@ -1,0 +1,238 @@
+﻿@model List<AppRole>
+@{
+    ViewData["Title"] = "Roller";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+
+    var totalRoles = (int)ViewBag.TotalRoles;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/admin-roles.css" asp-append-version="true" />
+}
+
+<div class="admin-roles-page">
+    <div class="admin-roles-header">
+        <div class="admin-roles-title">
+            <h1>Roller</h1>
+            <p>Sistem rollerini oluşturun ve yönetin.</p>
+        </div>
+        <div class="admin-role-header-actions">
+            <button type="button" class="admin-role-create-button" id="createRoleButton">
+                <span class="material-symbols-outlined">add</span>
+                <span>Yeni Rol</span>
+            </button>
+            <button type="button" class="admin-role-manage-button" id="manageRolesButton">
+                <span class="material-symbols-outlined">manage_accounts</span>
+                <span>Kullanıcı Rolleri</span>
+            </button>
+        </div>
+    </div>
+    <div class="admin-roles-stats">
+        <div class="admin-role-stat-card">
+            <div class="admin-role-stat-icon">
+                <span class="material-symbols-outlined">shield_person</span>
+            </div>
+            <div class="admin-role-stat-info">
+                <span>Toplam Rol</span>
+                <strong>@totalRoles</strong>
+            </div>
+        </div>
+    </div>
+    @if (TempData["RoleSuccess"] != null)
+    {
+        <div class="admin-role-alert success">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span>@TempData["RoleSuccess"]</span>
+        </div>
+    }
+    @if (TempData["RoleError"] != null)
+    {
+        <div class="admin-role-alert error">
+            <span class="material-symbols-outlined">error</span>
+            <span>@TempData["RoleError"]</span>
+        </div>
+    }
+    <div class="admin-roles-list-wrapper">
+        <div class="admin-roles-list-header">
+            <span>Rol Adı</span>
+            <span>Rol ID</span>
+            <span>İşlemler</span>
+        </div>
+        <div class="admin-roles-list-body">
+            @if (Model.Any())
+            {
+                foreach (var role in Model)
+                {
+                    <div class="admin-role-row">
+                        <div class="admin-role-profile">
+                            <div class="admin-role-avatar">
+                                <span class="material-symbols-outlined">shield</span>
+                            </div>
+                            <div class="admin-role-identity">
+                                <strong>@role.Name</strong>
+                                <span>Sistem rolü</span>
+                            </div>
+                        </div>
+                        <div class="admin-role-id">#@role.Id</div>
+                        <div class="admin-role-row-actions">
+                            <button type="button" class="admin-role-edit-button" data-role-id="@role.Id" data-role-name="@role.Name" title="Rolü düzenle">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            @if (role.Name != "Admin" && role.Name != "User")
+                            {
+                                <form asp-controller="AdminRole" asp-action="Delete" method="post" class="admin-role-delete-form" data-role-name="@role.Name">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@role.Id" />
+                                    <button type="submit" class="admin-role-delete-button" title="Rolü sil">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="admin-roles-empty">
+                    <span class="material-symbols-outlined">shield_person</span>
+                    <h3>Henüz rol oluşturulmamış</h3>
+                    <p>Yeni bir rol oluşturarak başlayabilirsiniz.</p>
+                    <button type="button" class="admin-role-create-button" id="createFirstRoleButton">
+                        <span class="material-symbols-outlined">add</span>
+                        Yeni Rol Oluştur
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="admin-roles-pagination">
+        <a asp-controller="AdminRole" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" class="admin-roles-pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+        @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+        {
+            <a asp-controller="AdminRole" asp-action="Index" asp-route-page="@i" class="admin-roles-pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+        }
+        <a asp-controller="AdminRole" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" class="admin-roles-pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    </div>
+</div>
+<div id="createRoleModal" class="admin-role-modal" role="dialog" aria-modal="true" aria-labelledby="createRoleTitle" aria-hidden="true">
+    <div class="admin-role-modal-box">
+        <div class="admin-role-modal-header">
+            <h2 id="createRoleTitle">Yeni Rol Oluştur</h2>
+            <button type="button" class="admin-role-modal-close" data-close-modal="createRoleModal" aria-label="Kapat">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <p class="admin-role-modal-description">Sistemde kullanılacak yeni rolün adını girin.</p>
+        <form asp-controller="AdminRole" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div class="admin-role-form-group">
+                <label for="createRoleName">Rol Adı</label>
+                <input type="text" id="createRoleName" name="roleName" placeholder="Örn: Editor" maxlength="256" required />
+            </div>
+            <div class="admin-role-modal-footer">
+                <button type="button" class="admin-role-cancel-button" data-close-modal="createRoleModal">Vazgeç</button>
+                <button type="submit" class="admin-role-submit-button">Rol Oluştur</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="editRoleModal" class="admin-role-modal" role="dialog" aria-modal="true" aria-labelledby="editRoleTitle" aria-hidden="true">
+    <div class="admin-role-modal-box">
+        <div class="admin-role-modal-header">
+            <h2 id="editRoleTitle">Rolü Düzenle</h2>
+            <button type="button" class="admin-role-modal-close" data-close-modal="editRoleModal" aria-label="Kapat">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <p class="admin-role-modal-description">Seçili rolün adını güncelleyin.</p>
+        <form asp-controller="AdminRole" asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="editRoleId" name="id" />
+            <div class="admin-role-form-group">
+                <label for="editRoleName">Rol Adı</label>
+                <input type="text" id="editRoleName" name="roleName" maxlength="256" required />
+            </div>
+            <div class="admin-role-modal-footer">
+                <button type="button" class="admin-role-cancel-button" data-close-modal="editRoleModal">Vazgeç</button>
+                <button type="submit" class="admin-role-submit-button">Değişiklikleri Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="manageRolesModal" class="admin-role-modal" role="dialog" aria-modal="true" aria-labelledby="manageRolesTitle" aria-hidden="true">
+    <div class="admin-role-modal-box admin-role-manage-modal">
+        <div class="admin-role-modal-header">
+            <h2 id="manageRolesTitle">Kullanıcı Rolleri</h2>
+            <button type="button" class="admin-role-modal-close" data-close-modal="manageRolesModal" aria-label="Kapat">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <p class="admin-role-modal-description">Kullanıcıların mevcut rollerini görüntüleyin ve yönetin.</p>
+        <div class="admin-role-user-search">
+            <span class="material-symbols-outlined">search</span>
+            <input type="search" id="roleUserSearch" placeholder="İsim veya e-posta ile ara..." autocomplete="off" />
+        </div>
+        <div id="roleUsersList" class="admin-role-users-list">
+            <div class="admin-role-loading">Kullanıcılar yükleniyor...</div>
+        </div>
+        <div id="selectedRoleUser" class="admin-role-selected-user" hidden>
+            <div class="admin-role-selected-header">
+                <div>
+                    <h3 id="selectedRoleUserName"></h3>
+                    <p id="selectedRoleUserEmail"></p>
+                </div>
+                <button type="button" id="backToRoleUsers" class="admin-role-back-button">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Geri
+                </button>
+            </div>
+            <div class="admin-role-section">
+                <h4>Mevcut Roller</h4>
+                <div id="selectedUserRoles" class="admin-role-current-list"></div>
+            </div>
+            <div class="admin-role-section">
+                <h4>Yeni Rol Ata</h4>
+                <div class="admin-role-assign-row">
+                    <select id="assignRoleSelect">
+                        <option value="">Rol seçin</option>
+                        @foreach (var role in Model)
+                        {
+                            <option value="@role.Id">@role.Name</option>
+                        }
+                    </select>
+                    <button type="button" id="assignRoleButton" class="admin-role-submit-button">Rol Ata</button>
+                </div>
+            </div>
+        </div>
+        <div id="roleManageMessage" class="admin-role-manage-message" role="status" aria-live="polite" hidden></div>
+    </div>
+</div>
+<div class="admin-role-modal" id="deleteRoleModal" role="dialog" aria-modal="true" aria-labelledby="deleteRoleModalTitle" aria-hidden="true">
+    <div class="admin-role-modal-box admin-role-delete-modal-box">
+        <div class="admin-role-delete-modal-icon">
+            <span class="material-symbols-outlined">delete</span>
+        </div>
+        <h2 id="deleteRoleModalTitle">Rolü Sil</h2>
+        <p class="admin-role-delete-modal-description">
+            <strong id="deleteRoleName"></strong>
+            rolünü silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+        </p>
+        <div class="admin-role-delete-modal-actions">
+            <button type="button" class="admin-role-delete-cancel" data-close-modal="deleteRoleModal">
+                İptal
+            </button>
+            <button type="button" class="admin-role-delete-confirm" id="confirmDeleteRoleButton">
+                <span class="material-symbols-outlined">delete</span>
+                Rolü Sil
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin/admin-roles.js" asp-append-version="true"></script>
+}

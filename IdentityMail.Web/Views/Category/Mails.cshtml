@@ -4,10 +4,10 @@
     ViewData["Title"] = ViewBag.CategoryName;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 @section Styles {
     <link rel="stylesheet" href="~/css/category/category-mails.css" asp-append-version="true" />
 }
+
 <div class="category-mails-page">
     <div class="category-mails-header">
         <div class="category-mails-title-area">
@@ -15,7 +15,7 @@
                 <span class="category-title-dot" style="background-color:@ViewBag.CategoryColor;"></span>
                 <h1>@ViewBag.CategoryName</h1>
             </div>
-            <p>@Model.Count mesaj</p>
+            <p>@ViewBag.TotalMessages mesaj</p>
         </div>
     </div>
     <div class="category-mails-list">
@@ -100,5 +100,17 @@
                 </div>
             }
         }
+    </div>
+    <div class="category-mails-pagination">
+        <a asp-controller="Category" asp-action="Mails" asp-route-id="@ViewBag.ActiveCategoryID" asp-route-page="@(ViewBag.CurrentPage - 1)" class="category-mails-pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+        @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+        {
+            <a asp-controller="Category" asp-action="Mails" asp-route-id="@ViewBag.ActiveCategoryID" asp-route-page="@i" class="category-mails-pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+        }
+        <a asp-controller="Category" asp-action="Mails" asp-route-id="@ViewBag.ActiveCategoryID" asp-route-page="@(ViewBag.CurrentPage + 1)" class="category-mails-pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
     </div>
 </div>

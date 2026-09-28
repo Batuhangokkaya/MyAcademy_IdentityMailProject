@@ -1,6 +1,6 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
     const colorButtons = document.querySelectorAll(".category-color");
-    const colorInput = document.getElementById("categoryColor");
+    const colorInput   = document.getElementById("categoryColor");
 
     colorButtons.forEach(button => {
         button.addEventListener("click", function () {

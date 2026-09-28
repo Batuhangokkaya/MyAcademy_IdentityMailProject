@@ -57,5 +57,14 @@ namespace IdentityMail.Web.CustomValidation
                 Description = $"{userName} Böyle bir kullanıcı adı daha önceden alınmış."
             };
         }
+
+        public override IdentityError PasswordMismatch()
+        {
+            return new IdentityError
+            {
+                Code        = "PasswordMismatch",
+                Description = "Mevcut şifreniz yanlış."
+            };
+        }
     }
 }

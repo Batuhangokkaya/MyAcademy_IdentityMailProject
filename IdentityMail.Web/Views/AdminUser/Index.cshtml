@@ -1,0 +1,284 @@
+﻿@model List<AppUser>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+
+    var currentSearch      = ViewBag.CurrentSearch as string ?? "";
+    var currentFilter      = ViewBag.CurrentFilter as string ?? "all";
+    var totalUsers         = (int)ViewBag.TotalUsers;
+    var activeUsers        = (int)ViewBag.ActiveUsers;
+    var passiveUsers       = (int)ViewBag.PassiveUsers;
+    var currentPage        = (int)ViewBag.CurrentPage;
+    var totalPages         = (int)ViewBag.TotalPages;
+    var totalFilteredUsers = (int)ViewBag.TotalFilteredUsers;
+    var pageSize           = (int)ViewBag.PageSize;
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/admin-users.css" asp-append-version="true" />
+}
+
+<div class="admin-users-page">
+    <div class="admin-users-header">
+        <div class="admin-users-title">
+            <h1>Kullanıcılar</h1>
+            <p>Kayıtlı kullanıcıları görüntüleyin ve yönetin.</p>
+        </div>
+        <div class="admin-users-count">
+            <span class="material-symbols-outlined">group</span>
+            <span>@totalUsers Kullanıcı</span>
+        </div>
+    </div>
+    <div class="admin-users-stats">
+        <div class="admin-stat-card">
+            <div class="admin-stat-icon total">
+                <span class="material-symbols-outlined">groups</span>
+            </div>
+            <div class="admin-stat-info">
+                <span class="admin-stat-label">Toplam Kullanıcı</span>
+                <strong>@totalUsers</strong>
+            </div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="admin-stat-icon active">
+                <span class="material-symbols-outlined">person_check</span>
+            </div>
+            <div class="admin-stat-info">
+                <span class="admin-stat-label">Aktif Kullanıcı</span>
+                <strong>@activeUsers</strong>
+            </div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="admin-stat-icon passive">
+                <span class="material-symbols-outlined">person_off</span>
+            </div>
+            <div class="admin-stat-info">
+                <span class="admin-stat-label">Pasif Kullanıcı</span>
+                <strong>@passiveUsers</strong>
+            </div>
+        </div>
+    </div>
+    <div class="admin-users-toolbar">
+        <form asp-controller="AdminUser" asp-action="Index" method="get" class="admin-users-search">
+            <span class="material-symbols-outlined">search</span>
+            <input type="search" id="adminUserSearch" name="search" value="@currentSearch" placeholder="Ad, soyad veya e-posta ara..." autocomplete="off" />
+            <input type="hidden" name="filter" value="@currentFilter" />
+            <button type="submit" class="admin-search-button">Ara</button>
+        </form>
+        <div class="admin-users-filters">
+            <a asp-controller="AdminUser" asp-action="Index" asp-route-search="@currentSearch" asp-route-filter="all" class="admin-filter-button @(currentFilter == "all" ? "active" : "")">Tümü</a>
+            <a asp-controller="AdminUser" asp-action="Index" asp-route-search="@currentSearch" asp-route-filter="active" class="admin-filter-button @(currentFilter == "active" ? "active" : "")">Aktif</a>
+            <a asp-controller="AdminUser" asp-action="Index" asp-route-search="@currentSearch" asp-route-filter="passive" class="admin-filter-button @(currentFilter == "passive" ? "active" : "")">Pasif</a>
+        </div>
+    </div>
+    <div class="admin-users-list-wrapper">
+        <div class="admin-users-list">
+            <div class="admin-users-list-header">
+                <span>Kullanıcı</span>
+                <span>Kullanıcı Adı</span>
+                <span>E-posta Durumu</span>
+                <span>Hesap Durumu</span>
+                <span>İşlemler</span>
+            </div>
+            <div class="admin-users-list-body">
+                @if (Model.Any())
+                {
+                    foreach (var user in Model)
+                    {
+                        var fullName = $"{user.FirstName} {user.LastName}".Trim();
+                        var initials = $"{(string.IsNullOrWhiteSpace(user.FirstName) ? "" : user.FirstName.Substring(0, 1))}{(string.IsNullOrWhiteSpace(user.LastName) ? "" : user.LastName.Substring(0, 1))}".ToUpperInvariant();
+                        <div class="admin-user-row" data-user-id="@user.Id">
+                            <div class="admin-user-profile">
+                                <div class="admin-user-avatar">
+                                    @if (!string.IsNullOrWhiteSpace(user.ProfileImageURL))
+                                    {
+                                        <img src="@user.ProfileImageURL" alt="@fullName" />
+                                    }
+                                    else
+                                    {
+                                        <span>@initials</span>
+                                    }
+                                </div>
+                                <div class="admin-user-identity">
+                                    <span class="admin-user-name">@fullName</span>
+                                    <span class="admin-user-email">@user.Email</span>
+                                </div>
+                            </div>
+                            <div class="admin-user-username">
+                                <span class="admin-username">@user.UserName</span>
+                            </div>
+                            <div class="admin-user-email-status">
+                                @if (user.EmailConfirmed)
+                                {
+                                    <span class="admin-status-badge verified">
+                                        <span class="material-symbols-outlined">verified</span>
+                                        Doğrulandı
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="admin-status-badge unverified">
+                                        <span class="material-symbols-outlined">error</span>
+                                        Doğrulanmadı
+                                    </span>
+                                }
+                            </div>
+                            <div class="admin-user-account-status">
+                                @if (user.IsActive == true)
+                                {
+                                    <span class="admin-status-badge active">
+                                        <span class="admin-status-dot"></span>
+                                        Aktif
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="admin-status-badge passive">
+                                        <span class="admin-status-dot"></span>
+                                        Pasif
+                                    </span>
+                                }
+                            </div>
+                            <div class="admin-user-actions">
+                                <button type="button" class="admin-user-details-button" data-user-id="@user.Id" title="Kullanıcı detayları">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                                <div class="admin-user-menu-wrapper">
+                                    <button type="button" class="admin-user-menu-toggle" aria-label="Kullanıcı işlemleri" aria-expanded="false">
+                                        <span class="material-symbols-outlined">more_vert</span>
+                                    </button>
+                                    <div class="admin-user-dropdown">
+                                        <button type="button" class="admin-user-dropdown-item admin-user-detail-action" data-user-id="@user.Id">
+                                            <span class="material-symbols-outlined">person</span>
+                                            Detayları Görüntüle
+                                        </button>
+                                        <button type="button" class="admin-user-dropdown-item admin-user-status-action @(user.IsActive == true ? "danger" : "success")" data-user-id="@user.Id" data-user-name="@fullName" data-is-active="@(user.IsActive == true ? "true" : "false")">
+                                            <span class="material-symbols-outlined">@(user.IsActive == true ? "person_off" : "person_check")</span>
+                                            @(user.IsActive == true ? "Pasife Al" : "Aktifleştir")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="admin-users-empty">
+                        <span class="material-symbols-outlined">person_search</span>
+                        <h3>Kullanıcı bulunamadı</h3>
+                        <p>Arama veya filtre kriterlerinize uygun kullanıcı bulunamadı.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="admin-users-pagination">
+        <div class="admin-pagination-info">
+            @if (totalFilteredUsers > 0)
+            {
+                var firstUser = (currentPage - 1) * pageSize + 1;
+                var lastUser  = Math.Min(currentPage * pageSize, totalFilteredUsers);
+                <span>
+                    @totalFilteredUsers kullanıcıdan
+                    @firstUser - @lastUser arası gösteriliyor
+                </span>
+            }
+            else
+            {
+                <span>Gösterilecek kullanıcı yok</span>
+            }
+        </div>
+        <div class="admin-pagination-buttons">
+            @if (currentPage > 1)
+            {
+                <a asp-controller="AdminUser" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-search="@currentSearch" asp-route-filter="@currentFilter" class="admin-page-button" aria-label="Önceki sayfa">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </a>
+            }
+            else
+            {
+                <span class="admin-page-button disabled">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </span>
+            }
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <a asp-controller="AdminUser" asp-action="Index" asp-route-page="@i" asp-route-search="@currentSearch" asp-route-filter="@currentFilter" class="admin-page-button @(i == currentPage ? "active" : "")">@i</a>
+            }
+            @if (currentPage < totalPages)
+            {
+                <a asp-controller="AdminUser" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-search="@currentSearch" asp-route-filter="@currentFilter" class="admin-page-button" aria-label="Sonraki sayfa">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </a>
+            }
+            else
+            {
+                <span class="admin-page-button disabled">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </span>
+            }
+        </div>
+    </div>
+</div>
+<div id="adminUserDetailsModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="adminUserDetailsTitle" aria-hidden="true">
+    <div class="admin-modal-box admin-details-modal-box">
+        <div class="admin-modal-header">
+            <h2 id="adminUserDetailsTitle">Kullanıcı Detayları</h2>
+            <button type="button" class="admin-modal-close" id="adminDetailsClose" aria-label="Kapat">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="admin-user-details-profile">
+            <div id="adminDetailsAvatar" class="admin-details-avatar"></div>
+            <h3 id="adminDetailsFullName"></h3>
+            <p id="adminDetailsEmail"></p>
+            <div id="adminDetailsStatus"></div>
+        </div>
+        <div class="admin-user-details-list">
+            <div class="admin-details-item">
+                <span>Ad</span>
+                <strong id="adminDetailsFirstName"></strong>
+            </div>
+            <div class="admin-details-item">
+                <span>Soyad</span>
+                <strong id="adminDetailsLastName"></strong>
+            </div>
+            <div class="admin-details-item">
+                <span>Kullanıcı Adı</span>
+                <strong id="adminDetailsUsername"></strong>
+            </div>
+            <div class="admin-details-item">
+                <span>E-posta</span>
+                <strong id="adminDetailsEmailAddress"></strong>
+            </div>
+            <div class="admin-details-item">
+                <span>E-posta Doğrulaması</span>
+                <strong id="adminDetailsEmailConfirmed"></strong>
+            </div>
+        </div>
+        <div class="admin-modal-footer">
+            <button type="button" class="admin-modal-cancel" id="adminDetailsCancel">Kapat</button>
+        </div>
+    </div>
+</div>
+<div id="adminUserStatusModal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="adminStatusTitle" aria-hidden="true">
+    <div class="admin-modal-box">
+        <div class="admin-modal-icon">
+            <span class="material-symbols-outlined" id="adminStatusIcon">warning</span>
+        </div>
+        <h2 id="adminStatusTitle">İşlemi Onayla</h2>
+        <p id="adminStatusDescription"></p>
+        <input type="hidden" id="adminStatusUserId" />
+        <div class="admin-modal-footer">
+            <button type="button" class="admin-modal-cancel" id="adminStatusCancel">Vazgeç</button>
+            <button type="button" class="admin-modal-confirm" id="adminStatusConfirm">Onayla</button>
+        </div>
+    </div>
+</div>
+<form id="adminAntiforgeryForm" hidden>
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script src="~/js/admin/admin-users.js" asp-append-version="true"></script>
+}

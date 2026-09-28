@@ -45,5 +45,4 @@
     else {
         selectColor(colorButtons[0]);
     }
-
 });

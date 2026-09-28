@@ -1,7 +1,6 @@
 ﻿using IdentityMail.Web.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace IdentityMail.Web.Context
 {
@@ -30,10 +29,23 @@ namespace IdentityMail.Web.Context
                                          .HasForeignKey(x => x.CategoryID)
                                          .OnDelete(DeleteBehavior.SetNull);
 
+            builder.Entity<MessageReport>().HasOne(x => x.Message)
+                                           .WithMany()
+                                           .HasForeignKey(x => x.MessageID)
+                                           .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<MessageReport>().HasOne(x => x.ReporterUser)
+                                           .WithMany()
+                                           .HasForeignKey(x => x.ReporterUserID)
+                                           .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(builder);
         }
 
         public DbSet<UserMessage> UserMessages { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<MessageAttachment> MessageAttachments { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<MessageReport> MessageReports { get; set; }
     }
 }

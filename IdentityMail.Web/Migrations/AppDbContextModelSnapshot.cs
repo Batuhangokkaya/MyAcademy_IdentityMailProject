@@ -78,6 +78,9 @@ namespace IdentityMail.Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -157,6 +160,96 @@ namespace IdentityMail.Web.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("IdentityMail.Web.Entities.MessageAttachment", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StoredFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserMessageID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserMessageID");
+
+                    b.ToTable("MessageAttachments");
+                });
+
+            modelBuilder.Entity("IdentityMail.Web.Entities.MessageReport", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MessageID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReporterUserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MessageID");
+
+                    b.HasIndex("ReporterUserID");
+
+                    b.ToTable("MessageReports");
+                });
+
+            modelBuilder.Entity("IdentityMail.Web.Entities.Notification", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MessageID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("IdentityMail.Web.Entities.UserMessage", b =>
                 {
                     b.Property<int>("ID")
@@ -170,6 +263,9 @@ namespace IdentityMail.Web.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ConversationId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeletedReceiver")
@@ -339,6 +435,36 @@ namespace IdentityMail.Web.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("IdentityMail.Web.Entities.MessageAttachment", b =>
+                {
+                    b.HasOne("IdentityMail.Web.Entities.UserMessage", "UserMessage")
+                        .WithMany("Attachments")
+                        .HasForeignKey("UserMessageID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserMessage");
+                });
+
+            modelBuilder.Entity("IdentityMail.Web.Entities.MessageReport", b =>
+                {
+                    b.HasOne("IdentityMail.Web.Entities.UserMessage", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IdentityMail.Web.Entities.AppUser", "ReporterUser")
+                        .WithMany()
+                        .HasForeignKey("ReporterUserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("ReporterUser");
+                });
+
             modelBuilder.Entity("IdentityMail.Web.Entities.UserMessage", b =>
                 {
                     b.HasOne("IdentityMail.Web.Entities.Category", "Category")
@@ -431,6 +557,11 @@ namespace IdentityMail.Web.Migrations
             modelBuilder.Entity("IdentityMail.Web.Entities.Category", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("IdentityMail.Web.Entities.UserMessage", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 #pragma warning restore 612, 618
         }

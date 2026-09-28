@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Yardım ve Destek";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/top-navbar/help.css" asp-append-version="true" />
+}
+
+<div class="help-page">
+    <div class="help-header">
+        <h1>Yardım ve Destek</h1>
+        <p>B-Mail hakkında merak ettiklerinize yanıt bulun.</p>
+    </div>
+    <div class="help-search">
+        <span class="material-symbols-outlined">search</span>
+        <input type="search" id="helpSearch" placeholder="Nasıl yardımcı olabiliriz?" autocomplete="off" />
+    </div>
+    <div class="help-section-heading">
+        <h2>Yardım Konuları</h2>
+        <p>Yardım almak istediğiniz konuyu seçin.</p>
+    </div>
+    <div class="help-topics">
+        <a href="#messages" class="help-topic">
+            <div class="help-topic-icon">
+                <span class="material-symbols-outlined">mail</span>
+            </div>
+            <h3>Mesaj İşlemleri</h3>
+            <p>Mesaj gönderme, yanıtlama ve yönlendirme.</p>
+        </a>
+        <a href="#account" class="help-topic">
+            <div class="help-topic-icon">
+                <span class="material-symbols-outlined">shield</span>
+            </div>
+            <h3>Hesap ve Güvenlik</h3>
+            <p>Kullanıcı adı ve şifre değiştirme.</p>
+        </a>
+        <a href="#trash" class="help-topic">
+            <div class="help-topic-icon">
+                <span class="material-symbols-outlined">delete</span>
+            </div>
+            <h3>Silinen Mesajlar</h3>
+            <p>Mesajları geri yükleme ve kalıcı silme.</p>
+        </a>
+        <a href="#categories" class="help-topic">
+            <div class="help-topic-icon">
+                <span class="material-symbols-outlined">label</span>
+            </div>
+            <h3>Kategoriler</h3>
+            <p>Mesajlarınızı kategorilere ayırma.</p>
+        </a>
+    </div>
+    <div class="help-section-heading help-faq-heading">
+        <h2>Sık Sorulan Sorular</h2>
+        <p>En çok merak edilen konuların yanıtları.</p>
+    </div>
+    <div class="help-faq">
+        <div class="help-faq-item" id="messages">
+            <button type="button" class="help-faq-question" aria-expanded="false">
+                <span>Nasıl yeni mesaj gönderebilirim?</span>
+                <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="help-faq-answer" hidden>
+                Sol menüdeki Yeni Mesaj butonuna tıklayın. Alıcı, konu ve mesajınızı yazdıktan sonra Gönder butonuna basın.
+            </div>
+        </div>
+        <div class="help-faq-item" id="account">
+            <button type="button" class="help-faq-question" aria-expanded="false">
+                <span>Şifremi nasıl değiştirebilirim?</span>
+                <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="help-faq-answer" hidden>
+                Sağ üstteki profil fotoğrafınıza tıklayın. Hesap Ayarları bölümünden mevcut şifrenizi girerek yeni şifrenizi oluşturabilirsiniz.
+            </div>
+        </div>
+        <div class="help-faq-item" id="trash">
+            <button type="button" class="help-faq-question" aria-expanded="false">
+                <span>Sildiğim mesajları geri getirebilir miyim?</span>
+                <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="help-faq-answer" hidden>
+                Evet. Çöp Kutusu bölümünden silinen mesajlarınızı geri yükleyebilirsiniz. Kalıcı olarak silinen mesajlar geri getirilemez.
+            </div>
+        </div>
+        <div class="help-faq-item" id="categories">
+            <button type="button" class="help-faq-question" aria-expanded="false">
+                <span>Nasıl kategori oluşturabilirim?</span>
+                <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="help-faq-answer" hidden>
+                Sol menüdeki Kategoriler bölümüne gidin. Yeni kategori oluşturarak adını ve rengini belirleyebilirsiniz.
+            </div>
+        </div>
+        <div class="help-faq-item" id="username">
+            <button type="button" class="help-faq-question" aria-expanded="false">
+                <span>Kullanıcı adımı değiştirebilir miyim?</span>
+                <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="help-faq-answer" hidden>
+                Evet. Hesap Ayarları sayfasından yeni bir  kullanıcı adı belirleyebilirsiniz.
+            </div>
+        </div>
+        <div class="help-faq-empty" hidden>Aramanızla eşleşen bir yardım konusu bulunamadı.</div>
+    </div>
+    <div class="help-support">
+        <div class="help-support-icon">
+            <span class="material-symbols-outlined">support_agent</span>
+        </div>
+        <div>
+            <h2>Hâlâ yardıma mı ihtiyacınız var?</h2>
+            <p>Aradığınız yanıtı bulamadıysanız destek bölümünü kullanabilirsiniz.</p>
+            <span class="help-coming-soon">Destek talepleri yakında</span>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/top-navbar/help.js" asp-append-version="true"></script>
+}

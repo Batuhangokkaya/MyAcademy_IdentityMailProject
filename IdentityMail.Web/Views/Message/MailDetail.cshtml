@@ -2,21 +2,73 @@
 @{
     ViewData["Title"] = "Mail Detayı";
     Layout            = "~/Views/Shared/_Layout.cshtml";
+
+    var canMarkUnread = ViewBag.CanMarkUnread == true;
+    var replyMail     = ViewBag.ReplyMail as string ?? "";
+    var conversation  = ViewBag.Conversation as List<UserMessage> ?? new List<UserMessage> { Model };
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/message-detail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/message/message-detail.css" asp-append-version="true" />
 }
 
 <div class="message-detail-page">
     <div class="message-detail-toolbar">
-        <a asp-controller="Message" asp-action="Inbox" class="back-button"><span class="material-symbols-outlined">arrow_back</span><span>Gelen Kutusuna Dön</span></a>
+        <a asp-controller="Message" asp-action="Inbox" class="back-button">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span>Gelen Kutusuna Dön</span>
+        </a>
         <div class="toolbar-actions">
-            <button type="button" class="toolbar-button important-button"><span class="material-symbols-outlined">star</span><span>Önemli</span></button>
-            <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@Model.ID" method="post">
-                <button type="submit" class="toolbar-button"><span class="material-symbols-outlined">delete</span><span>Çöp Kutusuna Taşı</span></button>
+            <form asp-controller="Message" asp-action="ToggleImportant" asp-route-id="@Model.ID" asp-route-fromDetail="true" method="post">
+                <button type="submit" class="toolbar-button @(Model.IsImportant ? "important-button" : "")">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' @(Model.IsImportant ? 1 : 0);">star</span>
+                    <span>@(Model.IsImportant ? "Önemli" : "Önemli Yap")</span>
+                </button>
             </form>
-            <button type="button" class="toolbar-icon-button" title="Okunmadı olarak işaretle"><span class="material-symbols-outlined">mark_email_unread</span></button>
-            <button type="button" class="toolbar-icon-button" title="Daha Fazla"><span class="material-symbols-outlined">more_vert</span></button>
+            <form asp-controller="Message" asp-action="DeleteMail" asp-route-id="@Model.ID" method="post">
+                <button type="submit" class="toolbar-button delete-button">
+                    <span class="material-symbols-outlined">delete</span>
+                    <span>Çöp Kutusuna Taşı</span>
+                </button>
+            </form>
+            @if (canMarkUnread)
+            {
+                <form asp-controller="Message" asp-action="MarkAsUnread" asp-route-id="@Model.ID" method="post">
+                    <button type="submit" class="toolbar-icon-button" title="Okunmadı olarak işaretle">
+                        <span class="material-symbols-outlined">mark_email_unread</span>
+                    </button>
+                </form>
+            }
+            <div class="detail-menu">
+                <button type="button" class="toolbar-icon-button detail-menu-toggle" aria-label="Daha fazla işlem" aria-expanded="false">
+                    <span class="material-symbols-outlined">more_vert</span>
+                </button>
+                <div class="detail-menu-panel" hidden>
+                    <button type="button" class="detail-menu-item" onclick="replyToMessage()">
+                        <span class="material-symbols-outlined">reply</span>
+                        Yanıtla
+                    </button>
+                    <button type="button" class="detail-menu-item" onclick="forwardMessage()">
+                        <span class="material-symbols-outlined">forward</span>
+                        İlet
+                    </button>
+                    @if (canMarkUnread)
+                    {
+                        <form asp-controller="Message" asp-action="MarkAsUnread" asp-route-id="@Model.ID" method="post">
+                            <button type="submit" class="detail-menu-item">
+                                <span class="material-symbols-outlined">mark_email_unread</span>
+                                Okunmadı olarak işaretle
+                            </button>
+                        </form>
+                    }
+                    <div class="detail-menu-divider"></div>
+                    <form asp-controller="Message" asp-action="ReportMessage" asp-route-id="@Model.ID" method="post">
+                        <button type="submit" class="detail-menu-item detail-report">
+                            <span class="material-symbols-outlined">warning</span>
+                            Şikayet Et
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     <div class="message-detail-divider"></div>
@@ -25,53 +77,119 @@
             <div class="message-title-section">
                 <h1 class="message-title">@Model.Subject</h1>
                 <div class="message-meta">
-                    <span class="message-category"><span class="category-dot"></span>İş</span>
-                    <span class="message-read-status"><span class="material-symbols-outlined">mail</span>Okundu</span>
+                    @if (Model.Category != null)
+                    {
+                        <span class="message-category">
+                            <span class="category-dot" style="background-color:@Model.Category.Color"></span>
+                            @Model.Category.Name
+                        </span>
+                    }
+                    <span class="message-read-status">
+                        <span class="material-symbols-outlined">@(Model.IsRead ? "drafts" : "mail")</span>
+                        @(Model.IsRead ? "Okundu" : "Okunmadı")
+                    </span>
                 </div>
             </div>
             <div class="message-divider"></div>
-            <div class="sender-section">
-                <div class="sender-left">
-                    <div class="sender-avatar">
-                        @{
-                            var senderInitial = !string.IsNullOrEmpty(Model.Sender?.FirstName) ? Model.Sender.FirstName.Substring(0, 1).ToUpper() : "U";
+            <div class="conversation-list">
+                @foreach (var item in conversation)
+                {
+                    var senderInitial = !string.IsNullOrEmpty(item.Sender?.FirstName) ? item.Sender.FirstName.Substring(0, 1).ToUpper() : "U";
+                    var senderName = $"{item.Sender?.FirstName} {item.Sender?.LastName}".Trim();
+                    var receiverEmail = item.Receiver?.Email ?? item.ReceiverMail ?? "";
+                    <section class="thread-message @(item.ID == Model.ID ? "current-message" : "")">
+                        <div class="sender-section">
+                            <div class="sender-left">
+                                <div class="sender-avatar">
+                                    <span>@senderInitial</span>
+                                </div>
+                                <div class="sender-info">
+                                    <div class="sender-main-info">
+                                        <span class="sender-name">@(string.IsNullOrWhiteSpace(senderName) ? "Kullanıcı" : senderName)</span>
+                                        <span class="sender-email">&lt;@item.Sender?.Email&gt;</span>
+                                    </div>
+                                    <div class="sender-sub-info">
+                                        <span>Kime:</span>
+                                        <span class="receiver-badge">@receiverEmail</span>
+                                        <span class="send-date">@item.SendDate.ToString("dd MMMM yyyy, HH:mm")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-body">@item.Body</div>
+                        @if (item.Attachments?.Any() == true)
+                        {
+                            <div class="message-attachments">
+                                @foreach (var attachment in item.Attachments)
+                                {
+                                    var extension = System.IO.Path.GetExtension(attachment.StoredFileName).ToLowerInvariant();
+                                    var isImage = extension is ".jpg" or ".jpeg" or ".png" or ".webp";
+                                    var sizeText = attachment.Size >= 1024 * 1024 ? $"{attachment.Size / 1048576.0:0.##} MB" : $"{attachment.Size / 1024.0:0.#} KB";
+                                    <div class="attachment-card">
+                                        <div class="attachment-left">
+                                            @if (isImage)
+                                            {
+                                                <a asp-controller="Message" asp-action="AttachmentFile" asp-route-id="@attachment.ID" class="attachment-icon" target="_blank" rel="noopener" title="Fotoğrafı görüntüle">
+                                                    <img class="attachment-thumbnail" src="@Url.Action("AttachmentFile", "Message", new { id = attachment.ID })" alt="@attachment.OriginalFileName" />
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <div class="attachment-icon">
+                                                    <span class="material-symbols-outlined">description</span>
+                                                </div>
+                                            }
+                                            <div class="attachment-info">
+                                                <span class="attachment-name">@attachment.OriginalFileName</span>
+                                                <span class="attachment-details">@sizeText • @extension.TrimStart('.').ToUpperInvariant()</span>
+                                            </div>
+                                        </div>
+                                        <a asp-controller="Message" asp-action="AttachmentFile" asp-route-id="@attachment.ID" asp-route-download="true" class="attachment-download">
+                                            <span class="material-symbols-outlined">download</span>
+                                            <span>İndir</span>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
                         }
-                        <span>@senderInitial</span>
-                    </div>
-                    <div class="sender-info">
-                        <div class="sender-main-info">
-                            <span class="sender-name">@Model.Sender?.FirstName @Model.Sender?.LastName</span>
-                            <span class="sender-email">&lt;@Model.Sender?.Email&gt;</span>
-                        </div>
-                        <div class="sender-sub-info">
-                            <span>Kime:</span>
-                            <span class="receiver-badge">Bana</span>
-                            <span class="send-date">@Model.SendDate.ToString("dd MMMM yyyy, HH:mm")</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="sender-actions">
-                    <button type="button" class="sender-action-button important"><span class="material-symbols-outlined">star</span></button>
-                    <button type="button" class="sender-action-button"><span class="material-symbols-outlined">reply</span></button>
-                    <button type="button" class="sender-action-button"><span class="material-symbols-outlined">more_horiz</span></button>
-                </div>
-            </div>
-            <div class="message-body">@Model.Body</div>
-            <div class="attachment-card">
-                <div class="attachment-left">
-                    <div class="attachment-icon"><span class="material-symbols-outlined">description</span></div>
-                    <div class="attachment-info">
-                        <span class="attachment-name">Proje_Ilerleme_Raporu_Q3.pdf</span>
-                        <span class="attachment-details">2.4 MB • PDF Belgesi</span>
-                    </div>
-                </div>
-                <button type="button" class="attachment-download"><span class="material-symbols-outlined">download</span><span>İndir</span></button>
+                    </section>
+                }
             </div>
             <div class="message-bottom-divider"></div>
             <div class="message-footer">
-                <button type="button" class="reply-button"><span class="material-symbols-outlined">reply</span><span>Yanıtla</span></button>
-                <button type="button" class="forward-button"><span class="material-symbols-outlined">forward</span><span>İlet</span></button>
+                <button type="button" class="reply-button" onclick="replyToMessage()">
+                    <span class="material-symbols-outlined">reply</span>
+                    <span>Yanıtla</span>
+                </button>
+                <button type="button" class="forward-button" onclick="forwardMessage()">
+                    <span class="material-symbols-outlined">forward</span>
+                    <span>İlet</span>
+                </button>
             </div>
         </div>
     </article>
 </div>
+
+@{
+    var mailData = new
+    {
+        messageId   = Model.ID,
+        replyMail   = replyMail,
+        subject     = Model.Subject ?? "",
+        body        = Model.Body ?? "",
+        senderName  = $"{Model.Sender?.FirstName} {Model.Sender?.LastName}".Trim(),
+        senderEmail = Model.Sender?.Email ?? "",
+        sendDate    = Model.SendDate.ToString("dd.MM.yyyy HH:mm"),
+        attachments = Model.Attachments?.Select(a => new
+        {
+            name = a.OriginalFileName,
+            size = a.Size
+        }).ToList()
+    };
+}
+@section Scripts {
+    <script>
+        window.mailDetailData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(mailData));
+    </script>
+    <script src="~/js/message/mail-detail.js" asp-append-version="true"></script>
+}

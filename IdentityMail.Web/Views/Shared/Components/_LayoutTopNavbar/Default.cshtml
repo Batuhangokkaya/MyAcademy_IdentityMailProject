@@ -1,159 +1,110 @@
-﻿@*
+﻿@model List<Notification>
+@*
     Default Top Navbar
 *@
 
-<!-- TopNavBar -->
 <header class="top-navbar">
-    <!-- SOL TARAF -->
     <div class="top-navbar-left">
-        <!-- ARAMA -->
         <div class="top-navbar-search">
             <span class="material-symbols-outlined search-icon">search</span>
-            <input type="text" class="top-navbar-search-input" placeholder="Posta ara..." />
+            <input type="text" id="mailSearchInput" class="top-navbar-search-input" placeholder="Posta ara..." autocomplete="off" />
+            <div id="mailSearchResults" class="mail-search-results"></div>
         </div>
     </div>
-    <!-- SAĞ TARAF -->
     <div class="top-navbar-actions">
-        <!-- BİLDİRİMLER -->
         <div class="top-navbar-item">
             <button type="button" class="navbar-icon-btn" id="notification-bell">
                 <span class="material-symbols-outlined">notifications</span>
-                <span class="notification-dot"></span>
+                @if (ViewBag.UnreadNotificationCount > 0)
+                {
+                    <span id="notificationBadge" class="notification-dot" style="@(ViewBag.UnreadNotificationCount > 0 ? "" : "display:none;")"></span>
+                }
             </button>
-            <!-- Bildirim Dropdown -->
             <div class="navbar-dropdown notification-dropdown" id="notification-dropdown">
                 <div class="notification-header">
                     <h3>Bildirimler</h3>
-                    <button type="button" class="notification-read-all">Tümünü okundu işaretle</button>
+                    <button type="button" class="notification-read-all" id="notificationReadAll">Tümünü okundu işaretle</button>
                 </div>
                 <div class="notification-list">
-                    <!-- Bildirim 1 -->
-                    <div class="notification-item unread">
-                        <span class="unread-dot"></span>
-                        <div class="notification-icon primary">
-                            <span class="material-symbols-outlined">update</span>
-                        </div>
-                        <div class="notification-content">
-                            <span class="notification-title">Sistem Güncellemesi</span>
-                            <span class="notification-description">B-Mail için planlı bakım çalışması yapılacaktır.</span>
-                            <span class="notification-time">10 dakika önce</span>
-                        </div>
-                    </div>
-                    <!-- Bildirim 2 -->
-                    <div class="notification-item unread">
-                        <span class="unread-dot"></span>
-                        <div class="notification-icon secondary">
-                            <span class="material-symbols-outlined">mail</span>
-                        </div>
-                        <div class="notification-content">
-                            <span class="notification-title">Yeni Mesaj</span>
-                            <span class="notification-description">Yeni bir mesaj aldınız.</span>
-                            <span class="notification-time">1 saat önce</span></div>
-                    </div>
-                    <!-- Bildirim 3 -->
-                    <div class="notification-item">
-                        <div class="notification-icon tertiary">
-                            <span class="material-symbols-outlined">event</span>
-                        </div>
-                        <div class="notification-content">
-                            <span class="notification-title">Hatırlatma</span>
-                            <span class="notification-description">Yaklaşan etkinliğiniz bulunuyor.</span>
-                            <span class="notification-time">Dün</span>
-                        </div>
-                    </div>
+                    @if (Model.Any())
+                    {
+                        foreach (var notification in Model)
+                        {
+                            <div class="notification-item @(!notification.IsRead ? "unread" : "")" data-id="@notification.ID" data-message-id="@notification.MessageID" role="button" tabindex="0">
+                                @if (!notification.IsRead)
+                                {
+                                    <span class="unread-dot"></span>
+                                }
+                                <div class="notification-icon secondary">
+                                    <span class="material-symbols-outlined">mail</span>
+                                </div>
+                                <div class="notification-content">
+                                    <span class="notification-title">@notification.Title</span>
+                                    <span class="notification-description">@notification.Description</span>
+                                    <span class="notification-time" data-date="@notification.CreatedAt.ToString("O")"></span>
+                                </div>
+                                <button type="button" class="notification-delete" data-id="@notification.ID" title="Bildirimi sil">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="notification-empty">Henüz bildiriminiz bulunmuyor.</div>
+                    }
                 </div>
                 <div class="notification-footer">
-                    <button type="button">Tüm bildirimleri görüntüle</button>
+                    <a asp-controller="Notification" asp-action="Index">Tüm bildirimleri görüntüle</a>
                 </div>
             </div>
-        </div>
-        <!-- AYARLAR -->
+        </div>       
         <div class="top-navbar-item">
-            <button type="button" class="navbar-icon-btn" id="settings-icon">
-                <span class="material-symbols-outlined">settings</span>
+            <button type="button" class="profile-avatar" id="profile-avatar">
+                @if (!string.IsNullOrWhiteSpace(ViewBag.ProfileImage))
+                {
+                    <img src="@ViewBag.ProfileImage" alt="Profil fotoğrafı" />
+                }
+                else
+                {
+                    <span>@ViewBag.ProfileInitial</span>
+                }   
             </button>
-            <!-- Ayarlar Dropdown -->
-            <div class="navbar-dropdown settings-dropdown" id="settings-dropdown">
-                <!-- Görünüm -->
-                <div class="settings-item settings-toggle-item">
-                    <div class="settings-label">
-                        <span class="material-symbols-outlined">dark_mode</span>
-                        <span>Görünüm</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="appearance-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <!-- Dil -->
-                <a href="#" class="settings-item">
-                    <span class="material-symbols-outlined">language</span>
-                    Dil
-                </a>
-                <!-- Tema -->
-                <a href="#" class="settings-item">
-                    <span class="material-symbols-outlined">palette</span>
-                    Tema Rengi
-                </a>
-                <!-- Kompakt Mod -->
-                <div class="settings-item settings-toggle-item settings-divider">
-                    <div class="settings-label">
-                        <span class="material-symbols-outlined">compress</span>
-                        <span>Kompakt Mod</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox"id="compact-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <!-- E-posta Tercihleri -->
-                <a href="#" class="settings-item">
-                    <span class="material-symbols-outlined">tune</span>
-                    E-posta Tercihleri
-                </a>
-                <!-- Klavye Kısayolları -->
-                <a href="#" class="settings-item">
-                    <span class="material-symbols-outlined">keyboard</span>
-                    Klavye Kısayolları
-                </a>
-            </div>
-        </div>
-        <!-- PROFİL -->
-        <div class="top-navbar-item">
-            <button type="button" class="profile-avatar" id="profile-avatar"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiQtpojHQmWgF5SCgMtUzmMjTfNTUHdMb9-ANEROnxQUyx-Pv-ZH5ocG5bt9pwHAmyPqG9ZHWPZsccnc8-ySWz-GM5zENFvO5OQeE_wjiJhL5ebUXovWaTahWWHE5FoIszspUuWt0Rikj6julp4mztY5eSyp7xE5_BaKm0eGmdp-M0BPakqKV0nR51H9si7Wsr5YTyAADffVPn3ZJLkOQSgTNyoYS4-eKCvXbLVe4q75FF50L0lUXg" alt="Profil" /></button>
-            <!-- Profil Dropdown -->
             <div class="navbar-dropdown profile-dropdown" id="profile-dropdown">
-                <!-- Kullanıcı Bilgileri -->
-                <div class="profile-info">
-                    <div class="profile-dropdown-avatar"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiQtpojHQmWgF5SCgMtUzmMjTfNTUHdMb9-ANEROnxQUyx-Pv-ZH5ocG5bt9pwHAmyPqG9ZHWPZsccnc8-ySWz-GM5zENFvO5OQeE_wjiJhL5ebUXovWaTahWWHE5FoIszspUuWt0Rikj6julp4mztY5eSyp7xE5_BaKm0eGmdp-M0BPakqKV0nR51H9si7Wsr5YTyAADffVPn3ZJLkOQSgTNyoYS4-eKCvXbLVe4q75FF50L0lUXg" alt="Profil" /></div>
-                    <div class="profile-info-text">
-                        <strong>Alex Mercer</strong>
-                        <span>alex.mercer@b-mail.corp</span>
+                <div class="profile-dropdown-header">
+                    <div class="profile-dropdown-avatar">
+                        @if (!string.IsNullOrWhiteSpace(ViewBag.ProfileImage))
+                        {
+                            <img src="@ViewBag.ProfileImage"
+                                 alt="Profil fotoğrafı" />
+                        }
+                        else
+                        {
+                            <span>@ViewBag.ProfileInitial</span>
+                        }
                     </div>
+                    <div class="profile-dropdown-user">
+                        <strong>@ViewBag.ProfileName</strong>
+                        <span>@ViewBag.ProfileEmail</span>
+                    </div>
+
                 </div>
-                <!-- Profil Menü -->
                 <div class="profile-menu-section">
-                    <a href="#">
+                    <a href="/Profile/Index">
                         <span class="material-symbols-outlined">person</span>
                         Profilim
                     </a>
-                    <a href="#">
+                    <a href="/Profile/Settings">
                         <span class="material-symbols-outlined">manage_accounts</span>
                         Hesap Ayarları
                     </a>
-                    <a href="#">
-                        <span class="material-symbols-outlined">key</span>
-                        Şifre Değiştir
-                    </a>
                 </div>
-                <!-- Yardım -->
                 <div class="profile-menu-section">
-                    <a href="#">
+                    <a href="/Help/Index">
                         <span class="material-symbols-outlined">help</span>
                         Yardım ve Destek
                     </a>
                 </div>
-                <!-- Çıkış -->
                 <div class="profile-menu-section logout-section">
                     <a href="/Auth/Logout" class="logout-link">
                         <span class="material-symbols-outlined">logout</span>
@@ -164,3 +115,6 @@
         </div>
     </div>
 </header>
+<form id="notificationTokenForm" hidden>
+    @Html.AntiForgeryToken()
+</form>

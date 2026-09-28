@@ -1,0 +1,66 @@
+﻿@model List<Notification>
+@{
+    ViewData["Title"] = "Bildirimler";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+
+    var unreadCount = Model.Count(x => !x.IsRead);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/top-navbar/notifications.css" asp-append-version="true" />
+}
+
+<div class="notifications-page">
+    <div class="notifications-page-header">
+        <div class="notifications-title">
+            <h1>Bildirimler</h1>
+            <p>
+                @Model.Count bildirim ·
+                @unreadCount okunmamış
+            </p>
+        </div>
+        <div class="notifications-actions">
+            <button type="button" class="notifications-read-all" id="pageNotificationReadAll">
+                <span class="material-symbols-outlined">done_all</span>
+                Tümünü Okundu İşaretle
+            </button>
+        </div>
+    </div>
+    <div class="notifications-tabs">
+        <button class="active" data-filter="all">Tümü</button>
+        <button data-filter="unread">Okunmamış</button>
+        <button data-filter="read">Okunan</button>
+    </div>
+    <div class="notifications-list">
+        @foreach (var notification in Model)
+        {
+            <div class="notification-card notification-item @(!notification.IsRead ? "unread" : "")" data-id="@notification.ID" data-message-id="@notification.MessageID" role="button" tabindex="0">
+                <div class="notification-card-icon">
+                    <span class="material-symbols-outlined">mail</span>
+                </div>
+                <div class="notification-card-content">
+                    <div class="notification-card-title">
+                        <strong>@notification.Title</strong>
+                        @if (!notification.IsRead)
+                        {
+                            <span class="unread-dot"></span>
+                        }
+                    </div>
+                    <p>@notification.Description</p>
+                    <span class="notification-time" data-date="@notification.CreatedAt.ToString("O")"></span>
+                </div>
+                <button type="button" class="notification-delete" data-id="@notification.ID" title="Bildirimi sil">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+            </div>
+        }
+        @if (!Model.Any())
+        {
+            <div class="notifications-empty">
+                <span class="material-symbols-outlined">notifications_none</span>
+                <h3>Henüz bildiriminiz yok</h3>
+                <p>Yeni bildirimler burada görüntülenecek.</p>
+            </div>
+        }
+    </div>
+</div>

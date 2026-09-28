@@ -1,0 +1,361 @@
+﻿/* ADMIN REPORTS PAGE */
+.admin-reports-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    min-width: 0;
+    padding-bottom: 40px;
+    color: #0f172a;
+    box-sizing: border-box;
+}
+
+/* PAGE HEADER */
+.admin-reports-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.admin-reports-header h1 {
+    margin: 0 0 7px;
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.admin-reports-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* REPORT COUNT */
+.admin-reports-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    padding: 10px 14px;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    background: #fff7ed;
+    color: #ea580c;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-reports-count .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* SUCCESS MESSAGE */
+.admin-reports-success {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 16px;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    background: #f0fdf4;
+    color: #15803d;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.admin-reports-success .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* REPORT LIST */
+.admin-reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* REPORT CARD */
+.admin-report-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+/* REPORT MAIN */
+.admin-report-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
+}
+
+/* REPORT ICON */
+.admin-report-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 11px;
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.admin-report-icon .material-symbols-outlined {
+    font-size: 24px;
+}
+
+/* REPORT CONTENT */
+.admin-report-content {
+    min-width: 0;
+}
+
+.admin-report-title {
+    margin-bottom: 9px;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* REPORT META */
+.admin-report-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-bottom: 13px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.admin-report-meta strong {
+    color: #475569;
+    font-weight: 600;
+}
+
+/* REPORT MESSAGE */
+.admin-report-message {
+    max-width: 700px;
+    margin-bottom: 12px;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* REPORT DATE */
+.admin-report-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.admin-report-date .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* REPORT ACTIONS */
+.admin-report-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+}
+
+.admin-report-actions form {
+    margin: 0;
+}
+
+/* REMOVE REPORT BUTTON */
+.admin-report-remove-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 13px;
+    border: 1px solid #bfdbfe;
+    border-radius: 9px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-report-remove-button:hover {
+    background: #dbeafe;
+}
+
+.admin-report-remove-button .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* DELETE MESSAGE BUTTON */
+.admin-report-delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 13px;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-report-delete-button:hover {
+    background: #fee2e2;
+}
+
+.admin-report-delete-button .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* EMPTY STATE */
+.admin-reports-empty {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 320px;
+    padding: 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    text-align: center;
+}
+
+.admin-reports-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 18px;
+    border-radius: 50%;
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.admin-reports-empty-icon .material-symbols-outlined {
+    font-size: 30px;
+}
+
+.admin-reports-empty h2 {
+    margin: 0 0 8px;
+    color: #0f172a;
+    font-size: 18px;
+}
+
+.admin-reports-empty p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* PAGINATION */
+.admin-reports-pagination {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 24px;
+    padding-right: 4px;
+    box-sizing: border-box;
+}
+
+/* PAGINATION BUTTON */
+.admin-reports-pagination-button {
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    background-color: #ffffff;
+    border: 1px solid #dbe3ee;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* PAGINATION BUTTON HOVER */
+.admin-reports-pagination-button:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #2563eb;
+}
+
+/* ACTIVE PAGE */
+.admin-reports-pagination-button.active {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* DISABLED PAGE */
+.admin-reports-pagination-button.disabled {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+    pointer-events: none;
+}
+
+/* PAGINATION ICON */
+.admin-reports-pagination-button .material-symbols-outlined {
+    font-size: 19px;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 900px) {
+    .admin-report-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-report-actions {
+        width: 100%;
+    }
+}
+
+@media (max-width: 650px) {
+    .admin-reports-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-report-card {
+        padding: 18px;
+    }
+
+    .admin-report-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-report-actions form {
+        width: 100%;
+    }
+
+    .admin-report-remove-button, .admin-report-delete-button {
+        width: 100%;
+    }
+}

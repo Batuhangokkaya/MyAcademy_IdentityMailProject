@@ -4,27 +4,21 @@
 }
 
 <div class="category-create-page">
-    <!-- HEADER -->
     <div class="category-create-header">
         <h1 class="category-create-title">Yeni Kategori</h1>
         <p class="category-create-description">Mesajlarınızı düzenlemek için yeni bir kategori oluşturun.</p>
     </div>
-    <!-- CARD -->
     <div class="category-create-card">
         <form asp-action="Create" method="post">
-            <!-- CATEGORY NAME -->
             <div class="category-create-form-group">
                 <label asp-for="Name" class="category-create-label">Kategori Adı</label>
                 <input asp-for="Name" type="text" placeholder="Örn. Projeler" class="category-create-input" />
                 <span asp-validation-for="Name" class="category-create-validation"></span>
             </div>
-            <!-- CATEGORY COLOR -->
             <div class="category-color-group">
                 <label class="category-create-label">Kategori Rengi</label>
                 <p class="category-color-description">Kategoriniz için bir renk seçin.</p>
-                <!-- SELECTED COLOR -->
                 <input asp-for="Color" type="hidden" id="categoryColor" value="#2563EB" />
-                <!-- COLORS -->
                 <div class="category-color-list">
                     @{
                         var colors = new[]
@@ -47,7 +41,6 @@
                     }
                 </div>
             </div>
-            <!-- ACTIONS -->
             <div class="category-create-actions">
                 <a asp-action="Index" class="category-create-cancel">İptal</a>
                 <button type="submit" class="category-create-submit">Kategori Oluştur</button>

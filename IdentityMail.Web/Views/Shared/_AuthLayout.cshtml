@@ -2,11 +2,10 @@
 <html class="light" lang="tr">
 <head>
     @await RenderSectionAsync("Styles", required: false)
-    
-    @await Component.InvokeAsync("_AuthLayoutHead");
+    @await Component.InvokeAsync("_AuthLayoutHead")
 </head>
 <body>
     @RenderBody()
-    @await Component.InvokeAsync("_AuthLayoutScript");
+    @await Component.InvokeAsync("_AuthLayoutScript")
 </body>
 </html>

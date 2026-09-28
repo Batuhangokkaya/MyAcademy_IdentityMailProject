@@ -5,9 +5,8 @@
     var currentAction     = ViewContext.RouteData.Values["action"]?.ToString();
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
- <!-- SideNavBar -->
+
 <aside class="sidebar">
-    <!-- Logo -->
     <div class="sidebar-brand">
         <div class="sidebar-logo">
             <span>B</span>
@@ -17,12 +16,10 @@
             <small>Productivity Messaging</small>
         </div>
     </div>
-    <!-- Yeni Mail -->
     <button id="compose-btn" class="compose-button">
         <span class="material-symbols-outlined">edit</span>
         <span>+ Yeni Mesaj</span>
     </button>
-    <!-- Menü -->
     <nav class="sidebar-menu">
         <a href="/Message/Inbox" class="sidebar-link @(currentAction == "Inbox" ? "active" : "")">
             <span class="material-symbols-outlined">inbox</span>
@@ -49,36 +46,44 @@
             <span>Çöp Kutusu</span>
             <span class="sidebar-badge">@ViewBag.TotalDeletedMail</span>
         </a>
-        <a href="/Category/Index" class="sidebar-link @(currentAction == "Index" ? "active" : "")">
+        <a href="/Category/Index" class="sidebar-link @(currentController == "Category" && currentAction == "Index" ? "active" : "")">
             <span class="material-symbols-outlined">label</span>
             <span>Kategoriler</span>
             <span class="sidebar-badge">@ViewBag.TotalCategory</span>
         </a>
     </nav>
-    <!-- Kategoriler -->
     <div class="sidebar-categories">
         <p class="sidebar-section-title">KATEGORİLER</p>
         @foreach (var category in Model.Categories)
         {
-            <a asp-controller="Category" asp-action="Mails" asp-route-id="@category.ID" class="category-link @(ViewBag.ActiveCategoryID == category.ID ? "active-category" : "")">
+            <a href="/Category/Mails/@category.ID" class="category-link @(ViewBag.ActiveCategoryID == category.ID ? "active-category" : "")">
                 <span class="category-dot" style="color: @category.Color;"></span>
                 <span>@category.Name</span>
             </a>
         }
     </div>
-    <!-- Alt Menü -->
     <div class="sidebar-footer">
-        <a href="#" class="sidebar-link">
-            <span class="material-symbols-outlined">group</span>
-            <span>Kullanıcılar</span>
-        </a>
-        <a href="#" class="sidebar-link">
-            <span class="material-symbols-outlined">shield_person</span>
-            <span>Roller</span>
-        </a>
-        <a href="#" class="sidebar-link">
-            <span class="material-symbols-outlined">bar_chart</span>
-            <span>İstatistikler</span>
-        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/AdminUser/Index" class="sidebar-link @(currentController == "AdminUser" && currentAction == "Index" ? "active" : "")">
+                <span class="material-symbols-outlined">group</span>
+                <span>Kullanıcılar</span>
+            </a>
+            <a href="/AdminRole/Index" class="sidebar-link @(currentController == "AdminRole" ? "active" : "")">
+                <span class="material-symbols-outlined">shield_person</span>
+                <span>Roller</span>
+            </a>
+        }
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <a href="/Statistics/Index" class="sidebar-link @(currentController == "Statistics" ? "active" : "")">
+                <span class="material-symbols-outlined">bar_chart</span>
+                <span>İstatistikler</span>
+            </a>
+            <a href="/AdminReport/Index" class="sidebar-link @(currentController == "AdminReport" ? "active" : "")">
+                <span class="material-symbols-outlined">report</span>
+                <span>Şikayet Edilenler</span>
+            </a>
+        }
     </div>
 </aside>

@@ -1,0 +1,175 @@
+﻿@using System.Text.Json
+@{
+    ViewData["Title"] = "İstatistikler";
+    Layout            = "~/Views/Shared/_Layout.cshtml";
+
+    int totalUsers         = ViewBag.TotalUsers ?? 0;
+    int activeUsers        = ViewBag.ActiveUsers ?? 0;
+    int passiveUsers       = ViewBag.PassiveUsers ?? 0;
+    int totalMessages      = ViewBag.TotalMessages ?? 0;
+    int todayMessages      = ViewBag.TodayMessages ?? 0;
+    int unreadMessages     = ViewBag.UnreadMessages ?? 0;
+    int totalDrafts        = ViewBag.TotalDrafts ?? 0;
+    int totalRoles         = ViewBag.TotalRoles ?? 0;
+    int trashMessages      = ViewBag.TrashMessages ?? 0;
+    string topSenderName   = ViewBag.TopSenderName ?? "Yok";
+    int topSenderCount     = ViewBag.TopSenderCount ?? 0;
+    string topCategoryName = ViewBag.TopCategoryName ?? "Yok";
+    int topCategoryCount   = ViewBag.TopCategoryCount ?? 0;
+    var chartLabels        = (List<string>)(ViewBag.ChartLabels ?? new List<string>());
+    var chartValues        = (List<int>)(ViewBag.ChartValues ?? new List<int>());
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin/statistics.css" asp-append-version="true" />
+}
+
+<div class="statistics-page">
+    <div class="statistics-header">
+        <div class="statistics-title">
+            <h1>İstatistikler</h1>
+            <p>B-Mail sisteminin genel durumunu ve mesaj trafiğini görüntüleyin.</p>
+        </div>
+        <div class="statistics-date">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span>@DateTime.Today.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</span>
+        </div>
+    </div>
+    <div class="statistics-grid">
+        <div class="statistics-card">
+            <div class="statistics-card-icon blue">
+                <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Toplam Kullanıcı</span>
+                <strong>@totalUsers.ToString("N0")</strong>
+                <p>Sisteme kayıtlı kullanıcılar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon green">
+                <span class="material-symbols-outlined">person_check</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Aktif Kullanıcı</span>
+                <strong>@activeUsers.ToString("N0")</strong>
+                <p>Aktif durumdaki hesaplar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon red">
+                <span class="material-symbols-outlined">person_off</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Pasif Kullanıcı</span>
+                <strong>@passiveUsers.ToString("N0")</strong>
+                <p>Pasif durumdaki hesaplar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon purple">
+                <span class="material-symbols-outlined">mail</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Toplam Mesaj</span>
+                <strong>@totalMessages.ToString("N0")</strong>
+                <p>Gönderilmiş mesajlar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon orange">
+                <span class="material-symbols-outlined">send</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Bugünkü Mesaj</span>
+                <strong>@todayMessages.ToString("N0")</strong>
+                <p>Bugün gönderilen mesajlar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon cyan">
+                <span class="material-symbols-outlined">mark_email_unread</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Okunmamış Mesaj</span>
+                <strong>@unreadMessages.ToString("N0")</strong>
+                <p>Henüz okunmamış mesajlar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon yellow">
+                <span class="material-symbols-outlined">draft</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Toplam Taslak</span>
+                <strong>@totalDrafts.ToString("N0")</strong>
+                <p>Kaydedilmiş taslak mesajlar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon red">
+                <span class="material-symbols-outlined">delete</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Çöp Kutusundaki Mesajlar</span>
+                <strong>@trashMessages.ToString("N0")</strong>
+                <p>Kullanıcıların çöp kutularındaki mesajlar</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon indigo">
+                <span class="material-symbols-outlined">admin_panel_settings</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>Toplam Rol</span>
+                <strong>@totalRoles.ToString("N0")</strong>
+                <p>Sistemde tanımlı roller</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon blue">
+                <span class="material-symbols-outlined">trophy</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>En Fazla Mesaj Gönderen</span>
+                <strong>@topSenderName</strong>
+                <p>@topSenderCount.ToString("N0") mesaj gönderdi</p>
+            </div>
+        </div>
+        <div class="statistics-card">
+            <div class="statistics-card-icon purple">
+                <span class="material-symbols-outlined">category</span>
+            </div>
+            <div class="statistics-card-content">
+                <span>En Çok Kullanılan Kategori</span>
+                <strong>@topCategoryName</strong>
+                <p>@topCategoryCount.ToString("N0") mesajda kullanıldı</p>
+            </div>
+        </div>
+    </div>
+    <div class="statistics-chart-card">
+        <div class="statistics-chart-header">
+            <div>
+                <h2>Mesaj Trafiği</h2>
+                <p>Son 7 gün içerisinde gönderilen mesajlar</p>
+            </div>
+            <div class="statistics-chart-period">
+                <span class="material-symbols-outlined">date_range</span>
+                Son 7 Gün
+            </div>
+        </div>
+        <div class="statistics-chart-container">
+            <div id="messageTrafficChart" class="statistics-chart" role="img" aria-label="Son 7 günün mesaj trafiği grafiği"></div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="statisticsChartData">
+    @Html.Raw(JsonSerializer.Serialize(new
+    {
+        labels = chartLabels,
+        values = chartValues
+    }))
+</script>
+@section Scripts {
+    <script src="~/js/admin/statistics.js" asp-append-version="true"></script>
+}

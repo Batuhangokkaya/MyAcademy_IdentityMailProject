@@ -2,8 +2,11 @@
 @*
     Default Compose Message
 *@
+@{
+    var composeError = TempData["ComposeError"] as string;
+}
 
-<div class="compose-message hidden" id="compose-window">
+<div class="compose-message @(composeError == null ? "hidden" : "")" id="compose-window">
     <div class="compose-message-header" id="compose-header">
         <span class="compose-message-title">Yeni Mail</span>
         <div class="compose-message-header-actions">
@@ -12,25 +15,41 @@
             <button type="button" class="compose-message-header-button" id="compose-close"><span class="material-symbols-outlined">close</span></button>
         </div>
     </div>
-    <form method="post" asp-controller="Message" asp-action="SendMail" class="compose-message-form">
+    <form method="post"asp-controller="Message" asp-action="SendMail" enctype="multipart/form-data" class="compose-message-form">
         <input type="hidden" id="DraftID" name="DraftID" value="" />
+        <input type="hidden" id="ReplyToMessageID" name="ReplyToMessageID" />
+        <input type="hidden" id="ForwardFromMessageID" name="ForwardFromMessageID" />
+
         <div class="compose-message-body" id="compose-body">
+            @if (composeError != null)
+            {
+                <div class="compose-validation-error">@composeError</div>
+            }
             <div class="compose-message-field">
                 <span class="compose-message-label">Kime:</span>
-                <input asp-for="ReceiverMail" type="text"  class="compose-message-input" placeholder="Alıcı ara..." />
+                <input asp-for="ReceiverMail" type="text" class="compose-message-input" placeholder="Alıcı ara..." />
             </div>
             <div class="compose-message-field">
                 <span class="compose-message-label">Konu:</span>
                 <input asp-for="Subject" type="text" class="compose-message-input" placeholder="Konuyu girin..." />
             </div>
-            <textarea asp-for="Body" class="compose-message-textarea" placeholder=""></textarea>
+            <textarea asp-for="Body" class="compose-message-textarea"></textarea>
+            <div class="compose-selected-files" id="compose-selected-files" aria-live="polite"></div>
+            <div id="forwarded-files" class="forwarded-files" aria-live="polite"></div>
         </div>
         <div class="compose-message-footer" id="compose-footer">
             <div class="compose-message-footer-actions">
                 <button type="submit" class="compose-message-send-button">Gönder</button>
-                <button type="button" onclick="saveDraft()" class="compose-message-draft-button">Taslağı Kaydet</button>
+                <button type="button" onclick="saveDraft()" class="compose-message-draft-button"> Taslağı Kaydet</button>
+                <label for="compose-files" class="compose-message-attachment-button" title="Dosya veya fotoğraf ekle">
+                    <span class="material-symbols-outlined">attach_file</span>
+                    <span>Dosya Ekle</span>
+                </label>
+                <input type="file" id="compose-files" name="Attachments" accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.txt" multiple hidden />
             </div>
-            <button type="button" class="compose-message-delete-button"><span class="material-symbols-outlined">delete</span></button>
+            <button type="button" class="compose-message-delete-button" id="compose-clear" title="Alanları temizle">
+                <span class="material-symbols-outlined">delete</span>
+            </button>
         </div>
     </form>
 </div>

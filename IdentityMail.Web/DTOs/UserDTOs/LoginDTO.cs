@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace IdentityMail.Web.DTOs.UserDTOs
+﻿namespace IdentityMail.Web.DTOs.UserDTOs
 {
     public class LoginDTO
     {

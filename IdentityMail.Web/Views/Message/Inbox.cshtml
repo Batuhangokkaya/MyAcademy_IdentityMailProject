@@ -4,7 +4,7 @@
     Layout            = "~/Views/Shared/_Layout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/inbox.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/message/inbox.css" asp-append-version="true" />
 }
 
 <div class="inbox-page">
@@ -25,24 +25,45 @@
                     <span class="material-symbols-outlined">delete</span>
                 </button>
                 <div class="bulk-category-wrapper">
-                    <select id="bulkCategorySelect" class="bulk-category-select" disabled>
-                        <option value="">Kategoriye Ekle</option>
+
+                    <select id="bulkCategorySelect"
+                            class="bulk-category-select"
+                            disabled>
+
+                        <option value="">
+                            Kategoriye Ekle
+                        </option>
+
                         @if (ViewBag.Categories != null)
                         {
                             foreach (var category in ViewBag.Categories)
                             {
-                                <option value="@category.ID">@category.Name</option>
+                                <option value="@category.ID">
+                                    @category.Name
+                                </option>
                             }
                         }
-                        <option value="remove">Kategoriyi Kaldır</option>
+
+                        <option value="remove">
+                            Kategoriyi Kaldır
+                        </option>
+
                     </select>
-                    <span class="material-symbols-outlined bulk-category-arrow">keyboard_arrow_down</span>
+
+                    <span class="material-symbols-outlined bulk-category-arrow">
+                        keyboard_arrow_down
+                    </span>
+
                 </div>
             </div>
             <div class="inbox-tabs">
-                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="all" class="tab-button @(ViewBag.CurrentFilter == "all" ? "active" : "")">Tümü</a>
-                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="unread" class="tab-button @(ViewBag.CurrentFilter == "unread" ? "active" : "")">Okunmamış</a>
-                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="read" class="tab-button @(ViewBag.CurrentFilter == "read" ? "active" : "")">Okunan</a>
+                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="all" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryID="@ViewBag.CurrentCategoryId" class="tab-button @(ViewBag.CurrentFilter == "all" ? "active" : "")">Tümü</a>
+                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="unread" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryID="@ViewBag.CurrentCategoryId" class="tab-button @(ViewBag.CurrentFilter == "unread" ? "active" : "")">Okunmamış</a>
+                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="read" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryID="@ViewBag.CurrentCategoryId" class="tab-button @(ViewBag.CurrentFilter == "read" ? "active" : "")">Okunan</a>
+                <a asp-controller="Message" asp-action="Inbox" asp-route-filter="important" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryID="@ViewBag.CurrentCategoryId" class="tab-button @(ViewBag.CurrentFilter == "important" ? "active" : "")">
+                    <span class="material-symbols-outlined inbox-important-filter-icon">star</span>
+                    Önemli
+                </a>
             </div>
             <form asp-controller="Message" asp-action="Inbox" method="get" class="inbox-filter-form">
                 <input type="hidden" name="filter" value="@ViewBag.CurrentFilter" />
@@ -98,7 +119,21 @@
                 <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="mail-link">
                     <div class="mail-sender">
                         <div class="sender-avatar">
-                            <span>@message.Sender.FirstName.Substring(0, 1)</span>
+                            @if (!string.IsNullOrWhiteSpace(message.Receiver?.ProfileImageURL))
+                            {
+                                <img src="@message.Receiver.ProfileImageURL" alt="Profil fotoğrafı" />
+                            }
+                            else
+                            {
+                                var initial = message.Receiver?.FirstName;
+
+                                if (string.IsNullOrWhiteSpace(initial))
+                                {
+                                    initial = message.ReceiverMail;
+                                }
+
+                                <span>@(string.IsNullOrWhiteSpace(initial) ? "?" : initial.Substring(0, 1).ToUpper())</span>
+                            }
                         </div>
                         <div class="sender-info">
                             <div class="sender-name">
@@ -142,6 +177,18 @@
             </div>
         }
     </div>
+    <div class="inbox-pagination">
+        <a asp-controller="Message" asp-action="Inbox" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryID="@ViewBag.CurrentCategoryId" class="pagination-button @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </a>
+        @for (int i = 1; i <= Math.Max(1, (int)ViewBag.TotalPages); i++)
+        {
+            <a asp-controller="Message" asp-action="Inbox" asp-route-page="@i" asp-route-filter="@ViewBag.CurrentFilter" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryID="@ViewBag.CurrentCategoryId" class="pagination-button @(ViewBag.CurrentPage == i ? "active" : "")">@i</a>
+        }
+        <a asp-controller="Message" asp-action="Inbox" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-filter="@ViewBag.CurrentFilter" asp-route-sort="@ViewBag.CurrentSort" asp-route-categoryID="@ViewBag.CurrentCategoryId" class="pagination-button @(ViewBag.CurrentPage >= Math.Max(1, (int)ViewBag.TotalPages) ? "disabled" : "")">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    </div>
 </div>
 <div id="inboxDeleteModal" class="inbox-delete-modal" role="dialog" aria-modal="true" aria-labelledby="inboxDeleteTitle" aria-hidden="true">
     <div class="inbox-delete-modal-box">
@@ -158,5 +205,5 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/inbox.js" asp-append-version="true"></script>
+    <script src="~/js/message/inbox.js" asp-append-version="true"></script>
 }

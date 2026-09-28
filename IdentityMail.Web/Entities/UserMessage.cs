@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace IdentityMail.Web.Entities
+﻿namespace IdentityMail.Web.Entities
 {
     public class UserMessage
     {
         public int ID { get; set; }
+        public int? ConversationId { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
         public DateTime SendDate { get; set; }
@@ -29,5 +28,7 @@ namespace IdentityMail.Web.Entities
         // Parent Message
         public int? ParentMessageID { get; set; }
         public UserMessage ParentMessage { get; set; }
+        // Message Attachment
+        public ICollection<MessageAttachment> Attachments { get; set; }
     }
 }

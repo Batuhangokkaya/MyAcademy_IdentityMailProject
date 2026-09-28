@@ -51,6 +51,18 @@ namespace IdentityMail.Web.Controllers
                 return View(registerDTO);
             }
 
+            var roleResult = await _userManager.AddToRoleAsync(user, "User");
+
+            if (!roleResult.Succeeded)
+            {
+                foreach (var error in roleResult.Errors)
+                {
+                    ModelState.AddModelError(error.Code, error.Description);
+                }
+
+                return View(registerDTO);
+            }
+
             return RedirectToAction("Login");
         }
 
@@ -73,6 +85,12 @@ namespace IdentityMail.Web.Controllers
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Bu E-Mail sistemde kayıtlı değil.");
+                return View(loginDTO);
+            }
+
+            if (user.IsActive != true)
+            {
+                ModelState.AddModelError(string.Empty, "Hesabınız pasif durumdadır. Lütfen destek ekibiyle iletişime geçin.");
                 return View(loginDTO);
             }
 
@@ -117,9 +135,7 @@ namespace IdentityMail.Web.Controllers
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var resetLink = Url.Action(
-                "ResetPassword",
-                "Auth",
+            var resetLink = Url.Action("ResetPassword", "Auth",
                 new
                 {
                     email = user.Email,
@@ -135,8 +151,8 @@ namespace IdentityMail.Web.Controllers
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress("B-Mail",emailAddress));
             email.To.Add(MailboxAddress.Parse(user.Email));
-            var bodyBuilder = new BodyBuilder();
 
+            var bodyBuilder = new BodyBuilder();
             bodyBuilder.HtmlBody = $@"
             <!DOCTYPE html>
             <html>
@@ -241,10 +257,7 @@ namespace IdentityMail.Web.Controllers
                 return View(resetPasswordDTO);
             }
 
-            var result = await _userManager.ResetPasswordAsync(
-                user,
-                resetPasswordDTO.Token,
-                resetPasswordDTO.Password);
+            var result = await _userManager.ResetPasswordAsync(user, resetPasswordDTO.Token, resetPasswordDTO.Password);
 
             if (!result.Succeeded)
             {
