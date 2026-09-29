@@ -649,7 +649,7 @@ namespace IdentityMail.Web.Controllers
 
             return Json(new
             {
-                success = true,
+                success   = true,
                 messageId = draft.ID
             });
         }
