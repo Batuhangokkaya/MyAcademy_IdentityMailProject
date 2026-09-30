@@ -12,7 +12,7 @@ namespace IdentityMail.Web.Controllers
                                         AppDbContext _context) : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -21,11 +21,35 @@ namespace IdentityMail.Web.Controllers
                 return Challenge();
             }
 
-            var notifications = await _context.Notifications
+            int pageSize = 20;
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            var query = _context.Notifications
                 .AsNoTracking()
                 .Where(x => x.UserID == user.Id)
-                .OrderByDescending(x => x.CreatedAt)
+                .OrderByDescending(x => x.CreatedAt);
+
+            var totalNotifications = await query.CountAsync();
+            var totalPages        = (int)Math.Ceiling(totalNotifications / (double)pageSize);
+
+            if (totalPages > 0 && page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var notifications = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            ViewBag.CurrentPage         = page;
+            ViewBag.TotalPages          = totalPages;
+            ViewBag.TotalNotifications  = totalNotifications;
+            ViewBag.UnreadNotifications = await _context.Notifications.CountAsync(x => x.UserID == user.Id && x.IsRead == false);
 
             return View(notifications);
         }

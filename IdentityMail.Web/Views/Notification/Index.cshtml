@@ -3,7 +3,10 @@
     ViewData["Title"] = "Bildirimler";
     Layout            = "~/Views/Shared/_Layout.cshtml";
 
-    var unreadCount = Model.Count(x => !x.IsRead);
+    var unreadCount        = Model.Count(x => !x.IsRead);
+    var totalNotifications = (int)ViewBag.UnreadNotifications;
+    var currentPage        = (int)ViewBag.CurrentPage;
+    var totalPages         = Math.Max(1, (int)ViewBag.TotalPages);
 }
 
 @section Styles {
@@ -14,10 +17,7 @@
     <div class="notifications-page-header">
         <div class="notifications-title">
             <h1>Bildirimler</h1>
-            <p>
-                @Model.Count bildirim ·
-                @unreadCount okunmamış
-            </p>
+            <p>@totalNotifications bildirim · @unreadCount okunmamış</p>
         </div>
         <div class="notifications-actions">
             <button type="button" class="notifications-read-all" id="pageNotificationReadAll">
@@ -61,6 +61,36 @@
                 <h3>Henüz bildiriminiz yok</h3>
                 <p>Yeni bildirimler burada görüntülenecek.</p>
             </div>
+        }
+    </div>
+    <div class="notifications-pagination">
+        @if (currentPage > 1)
+        {
+            <a asp-controller="Notification" asp-action="Index" asp-route-page="@(currentPage - 1)" class="notifications-pagination-button">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+        }
+        else
+        {
+            <span class="notifications-pagination-button disabled">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </span>
+        }
+        @for (var i = 1; i <= totalPages; i++)
+        {
+            <a asp-controller="Notification" asp-action="Index" asp-route-page="@i" class="notifications-pagination-button @(i == currentPage ? "active" : "")">@i</a>
+        }
+        @if (currentPage < totalPages)
+        {
+            <a asp-controller="Notification" asp-action="Index" asp-route-page="@(currentPage + 1)" class="notifications-pagination-button">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </a>
+        }
+        else
+        {
+            <span class="notifications-pagination-button disabled">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </span>
         }
     </div>
 </div>
