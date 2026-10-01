@@ -292,6 +292,12 @@ namespace IdentityMail.Web.Controllers
             if (sendMailDTO == null || string.IsNullOrWhiteSpace(sendMailDTO.ReceiverMail) || string.IsNullOrWhiteSpace(sendMailDTO.Subject) || string.IsNullOrWhiteSpace(sendMailDTO.Body))
             {
                 TempData["ComposeError"] = "Lütfen gerekli alanları doldurun.";
+
+                if (!string.IsNullOrWhiteSpace(sendMailDTO.ReturnUrl) && Url.IsLocalUrl(sendMailDTO.ReturnUrl))
+                {
+                    return LocalRedirect(sendMailDTO.ReturnUrl);
+                }
+
                 return RedirectToAction("SentMails");
             }
 
@@ -302,6 +308,18 @@ namespace IdentityMail.Web.Controllers
 
             var receiverMail = sendMailDTO.ReceiverMail.Trim();
             var receiver     = await _userManager.FindByEmailAsync(receiverMail);
+
+            if (receiver == null)
+            {
+                TempData["ComposeError"] = "Bu e-posta adresine kayıtlı bir kullanıcı bulunamadı.";
+
+                if (!string.IsNullOrWhiteSpace(sendMailDTO.ReturnUrl) && Url.IsLocalUrl(sendMailDTO.ReturnUrl))
+                {
+                    return LocalRedirect(sendMailDTO.ReturnUrl);
+                }
+
+                return RedirectToAction("SentMails");
+            }
 
             UserMessage originalReply   = null;
             UserMessage originalForward = null;
@@ -361,6 +379,12 @@ namespace IdentityMail.Web.Controllers
             if (totalCount > 5 || totalSize > 25L * 1024 * 1024)
             {
                 TempData["ComposeError"] = "En fazla 5 dosya ve toplam 25 MB ekleyebilirsiniz.";
+
+                if (!string.IsNullOrWhiteSpace(sendMailDTO.ReturnUrl) && Url.IsLocalUrl(sendMailDTO.ReturnUrl))
+                {
+                    return LocalRedirect(sendMailDTO.ReturnUrl);
+                }
+
                 return RedirectToAction("SentMails");
             }
 
@@ -371,6 +395,12 @@ namespace IdentityMail.Web.Controllers
                 if (file.Length == 0 || file.Length > 10L * 1024 * 1024 || !allowedTypes.ContainsKey(extension))
                 {
                     TempData["ComposeError"] = "Geçersiz dosya türü veya boyutu.";
+
+                    if (!string.IsNullOrWhiteSpace(sendMailDTO.ReturnUrl) && Url.IsLocalUrl(sendMailDTO.ReturnUrl))
+                    {
+                        return LocalRedirect(sendMailDTO.ReturnUrl);
+                    }
+
                     return RedirectToAction("SentMails");
                 }
             }
@@ -401,7 +431,7 @@ namespace IdentityMail.Web.Controllers
             var message = new UserMessage
             {
                 SenderID       = sender.Id,
-                ReceiverID     = receiver?.Id,
+                ReceiverID     = receiver.Id,
                 ReceiverMail   = receiverMail,
                 Subject        = sendMailDTO.Subject,
                 Body           = sendMailDTO.Body,
@@ -490,21 +520,18 @@ namespace IdentityMail.Web.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                if (receiver != null)
+                var notification = new Notification
                 {
-                    var notification = new Notification
-                    {
-                        UserID      = receiver.Id,
-                        MessageID   = message.ID,
-                        Title       = "Yeni Mesaj",
-                        Description = $"{sender.FirstName} {sender.LastName} size yeni bir mesaj gönderdi.",
-                        IsRead      = false,
-                        CreatedAt   = DateTime.UtcNow
-                    };
+                    UserID      = receiver.Id,
+                    MessageID   = message.ID,
+                    Title       = "Yeni Mesaj",
+                    Description = $"{sender.FirstName} {sender.LastName} size yeni bir mesaj gönderdi.",
+                    IsRead      = false,
+                    CreatedAt   = DateTime.UtcNow
+                };
 
-                    _context.Notifications.Add(notification);
-                    await _context.SaveChangesAsync();
-                }
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
             }
             catch
             {
@@ -675,7 +702,7 @@ namespace IdentityMail.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MailDetail(int id)
+        public async Task<IActionResult> MailDetail(int id, string? returnUrl = null, string? returnText = null)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -717,6 +744,8 @@ namespace IdentityMail.Web.Controllers
 
             ViewBag.CanMarkUnread = message.ReceiverID != null && message.ReceiverID == user.Id;
             ViewBag.ReplyMail     = message.SenderID == user.Id ? (message.Receiver?.Email ?? message.ReceiverMail ?? "") : (message.Sender?.Email ?? "");
+            ViewBag.ReturnUrl     = returnUrl;
+            ViewBag.ReturnText    = returnText;
 
             return View(message);
         }

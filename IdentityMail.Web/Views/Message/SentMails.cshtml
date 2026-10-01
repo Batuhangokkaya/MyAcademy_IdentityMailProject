@@ -85,7 +85,7 @@
                         <span class="material-symbols-outlined">@(message.IsImportant ? "star" : "star_border")</span>
                     </button>
                 </div>
-                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="sent-mails-item-content">
+                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)" asp-route-returnText="Gönderilenlere Dön" class="sent-mails-item-content">
                     <div class="sent-mails-user">
                         <div class="sent-mails-avatar">
                             @if (!string.IsNullOrWhiteSpace(message.Receiver?.ProfileImageURL))

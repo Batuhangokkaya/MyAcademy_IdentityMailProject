@@ -9,5 +9,6 @@
         public List<IFormFile> Attachments { get; set; }
         public int? ReplyToMessageID { get; set; }
         public int? ForwardFromMessageID { get; set; }
+        public string? ReturnUrl { get; set; }
     }
 }

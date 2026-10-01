@@ -19,6 +19,7 @@
         <input type="hidden" id="DraftID" name="DraftID" value="" />
         <input type="hidden" id="ReplyToMessageID" name="ReplyToMessageID" />
         <input type="hidden" id="ForwardFromMessageID" name="ForwardFromMessageID" />
+        <input type="hidden" name="ReturnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
 
         <div class="compose-message-body" id="compose-body">
             @if (composeError != null)

@@ -25,15 +25,8 @@
                     <span class="material-symbols-outlined">delete</span>
                 </button>
                 <div class="bulk-category-wrapper">
-
-                    <select id="bulkCategorySelect"
-                            class="bulk-category-select"
-                            disabled>
-
-                        <option value="">
-                            Kategoriye Ekle
-                        </option>
-
+                    <select id="bulkCategorySelect" class="bulk-category-select" disabled>
+                        <option value="">Kategoriye Ekle</option>
                         @if (ViewBag.Categories != null)
                         {
                             foreach (var category in ViewBag.Categories)
@@ -43,17 +36,11 @@
                                 </option>
                             }
                         }
-
                         <option value="remove">
                             Kategoriyi Kaldır
                         </option>
-
                     </select>
-
-                    <span class="material-symbols-outlined bulk-category-arrow">
-                        keyboard_arrow_down
-                    </span>
-
+                    <span class="material-symbols-outlined bulk-category-arrow">keyboard_arrow_down</span>
                 </div>
             </div>
             <div class="inbox-tabs">
@@ -116,7 +103,7 @@
                 <button type="button" class="important-button @(message.IsImportant ? "selected" : "")" data-important="@(message.IsImportant ? "true" : "false")" title="Önemli mesaj" onclick="toggleImportant(event, @message.ID, this)">
                     <span class="material-symbols-outlined">@(message.IsImportant ? "star" : "star_border")</span>
                 </button>
-                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="mail-link">
+                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)" asp-route-returnText="Gelen Kutusuna Dön" class="mail-link">
                     <div class="mail-sender">
                         <div class="sender-avatar">
                             @if (!string.IsNullOrWhiteSpace(message.Receiver?.ProfileImageURL))

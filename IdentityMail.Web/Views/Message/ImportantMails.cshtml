@@ -83,7 +83,7 @@
                 <button id="important-@message.ID" class="important-button selected" type="button" data-id="@message.ID" title="Önem İşaretini Kaldır">
                     <span class="material-symbols-outlined">star</span>
                 </button>
-                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" class="important-mail-link">
+                <a asp-controller="Message" asp-action="MailDetail" asp-route-id="@message.ID" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)" asp-route-returnText="Önemli Mesajlara Dön" class="important-mail-link">
                     <div class="important-mail-sender">
                         <div class="important-sender-avatar">
                             @if (!string.IsNullOrWhiteSpace(person?.ProfileImageURL))

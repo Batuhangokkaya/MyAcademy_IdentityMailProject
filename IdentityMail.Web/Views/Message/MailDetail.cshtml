@@ -6,6 +6,8 @@
     var canMarkUnread = ViewBag.CanMarkUnread == true;
     var replyMail     = ViewBag.ReplyMail as string ?? "";
     var conversation  = ViewBag.Conversation as List<UserMessage> ?? new List<UserMessage> { Model };
+    var returnUrl     = ViewBag.ReturnUrl as string;
+    var returnText    = ViewBag.ReturnText as string ?? "Gelen Kutusuna Dön";
 }
 @section Styles {
     <link rel="stylesheet" href="~/css/message/message-detail.css" asp-append-version="true" />
@@ -13,10 +15,20 @@
 
 <div class="message-detail-page">
     <div class="message-detail-toolbar">
-        <a asp-controller="Message" asp-action="Inbox" class="back-button">
-            <span class="material-symbols-outlined">arrow_back</span>
-            <span>Gelen Kutusuna Dön</span>
-        </a>
+        @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            <a href="@returnUrl" class="back-button">
+                <span class="material-symbols-outlined">arrow_back</span>
+                <span>@returnText</span>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Message" asp-action="Inbox" class="back-button">
+                <span class="material-symbols-outlined">arrow_back</span>
+                <span>Gelen Kutusuna Dön</span>
+            </a>
+        }
         <div class="toolbar-actions">
             <form asp-controller="Message" asp-action="ToggleImportant" asp-route-id="@Model.ID" asp-route-fromDetail="true" method="post">
                 <button type="submit" class="toolbar-button @(Model.IsImportant ? "important-button" : "")">
