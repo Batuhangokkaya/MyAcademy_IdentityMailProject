@@ -4,7 +4,7 @@
     Layout                = "/Views/Shared/_AuthLayout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/auth/register.css" />
+    <link rel="stylesheet" href="~/css/auth/register.css" asp-append-version="true" />
 }
 
 <div class="register-page">
@@ -83,7 +83,7 @@
                     <div class="input-wrapper">
                         <span class="material-symbols-outlined input-icon">lock</span>
                         <input asp-for="Password" id="password" class="form-input password-input" placeholder="••••••••" type="password" />
-                        <button type="button" class="password-toggle" onclick="togglePassword('password', 'passwordIcon')">
+                        <button type="button" class="password-toggle" onclick="toggleRegisterPassword('password', 'passwordIcon')">
                             <span id="passwordIcon" class="material-symbols-outlined">visibility</span>
                         </button>
                     </div>
@@ -93,8 +93,8 @@
                     <div class="input-wrapper">
                         <span class="material-symbols-outlined input-icon">lock_reset</span>
                         <input asp-for="ConfirmPassword" id="confirmPassword" class="form-input password-input" placeholder="••••••••" type="password" />
-                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', 'confirmPasswordIcon')">
-                            <span id="confirmPasswordIcon"class="material-symbols-outlined">visibility</span>
+                        <button type="button" class="password-toggle" onclick="toggleRegisterPassword('confirmPassword', 'confirmPasswordIcon')">
+                            <span id="confirmPasswordIcon" class="material-symbols-outlined">visibility</span>
                         </button>
                     </div>
                 </div>
@@ -110,3 +110,25 @@
         </div>
     </div>
 </div>
+@if (ViewBag.EmailSent == true)
+{
+    <div class="register-success-modal">
+        <div class="register-success-overlay"></div>
+        <div class="register-success-box">
+            <div class="register-success-icon">
+                <span class="material-symbols-outlined">mark_email_read</span>
+            </div>
+            <h2>E-postanı Kontrol Et</h2>
+            <p>Doğrulama bağlantısını <strong>@ViewBag.RegisterEmail</strong> adresine gönderdik.</p>
+            <div class="register-success-note">
+                Hesabını aktifleştirmek için e-postadaki
+                <strong>E-postamı Doğrula</strong>
+                butonuna tıkla. E-postayı göremiyorsan spam veya gereksiz klasörünü de kontrol et.
+            </div>
+            <a asp-controller="Auth" asp-action="Login" class="register-success-button">
+                Giriş Sayfasına Dön
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+}

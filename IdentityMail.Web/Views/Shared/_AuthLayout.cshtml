@@ -7,5 +7,6 @@
 <body>
     @RenderBody()
     @await Component.InvokeAsync("_AuthLayoutScript")
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

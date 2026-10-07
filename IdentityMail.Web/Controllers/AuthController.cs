@@ -11,6 +11,7 @@ namespace IdentityMail.Web.Controllers
     [AllowAnonymous]
     public class AuthController(UserManager<AppUser> _userManager, SignInManager<AppUser> _signInManager, IConfiguration _configuration) : Controller
     {
+        [HttpGet]
         public IActionResult Register()
         {
             return View();
@@ -19,33 +20,28 @@ namespace IdentityMail.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterDTO registerDTO)
         {
-            if (string.IsNullOrEmpty(registerDTO.Password) || string.IsNullOrEmpty(registerDTO.ConfirmPassword))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, "Şifre ve Şifre Tekrar alanı zorunludur!");
-                return View(registerDTO);
-            }
-
-            if (registerDTO.Password != registerDTO.ConfirmPassword)
-            {
-                ModelState.AddModelError(string.Empty, "Şifreler birbiriyle uyumlu değil!");
                 return View(registerDTO);
             }
 
             var user = new AppUser
             {
-                Email     = registerDTO.Email,
-                FirstName = registerDTO.FirstName,
-                LastName  = registerDTO.LastName,
-                UserName  = registerDTO.UserName,
+                Email          = registerDTO.Email,
+                FirstName      = registerDTO.FirstName,
+                LastName       = registerDTO.LastName,
+                UserName       = registerDTO.UserName,
+                EmailConfirmed = false,
+                IsActive       = true
             };
 
-            var result = await _userManager.CreateAsync(user, registerDTO.Password);
+            var result = await _userManager.CreateAsync(user, registerDTO.Password!);
 
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(error.Code, error.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
 
                 return View(registerDTO);
@@ -57,12 +53,92 @@ namespace IdentityMail.Web.Controllers
             {
                 foreach (var error in roleResult.Errors)
                 {
-                    ModelState.AddModelError(error.Code, error.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
 
                 return View(registerDTO);
             }
 
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var confirmationLink = Url.Action("ConfirmEmail", "Auth",
+                new {
+                    userId = user.Id,
+                    token  = token
+                },
+                Request.Scheme
+            );
+
+            var emailAddress  = _configuration["GmailSettings:Email"];
+            var emailPassword = _configuration["GmailSettings:Password"];
+            var emailHost     = _configuration["GmailSettings:Host"];
+            var emailPort     = int.Parse(_configuration["GmailSettings:Port"]!);
+
+            var email = new MimeMessage();
+
+            email.From.Add(new MailboxAddress("B-Mail", emailAddress));
+            email.To.Add(MailboxAddress.Parse(user.Email));
+            email.Subject = "B-Mail E-posta Doğrulama";
+
+            var bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = $@"
+            <!DOCTYPE html>
+            <html>
+            <body style='margin:0;padding:0;background:#f5f7fb;'>
+                <div style=' max-width:600px; margin:40px auto; background:#ffffff; border-radius:16px; padding:40px; font-family:Arial,sans-serif; text-align:center; border:1px solid #e5e7eb;'>
+                    <h1 style='margin-bottom:25px; color:#0757C9;'>B-Mail</h1>
+                    <h2 style='color:#111827; margin-bottom:15px;'>E-posta adresini doğrula</h2>
+                    <p style='color:#64748b; line-height:1.6;'>Merhaba {user.FirstName}, B-Mail hesabını kullanmaya başlamak için e-posta adresini doğrulaman gerekiyor.</p>
+                    <a href='{confirmationLink}' style=' display:inline-block; padding:14px 28px; margin:25px 0; background:#2563EB; color:#ffffff; text-decoration:none; border-radius:8px; font-weight:bold;'>E-postamı Doğrula</a>
+                    <p style=' color:#94a3b8; font-size:13px; line-height:1.6;'>Eğer bu hesabı sen oluşturmadıysan, bu e-postayı dikkate almayabilirsin.</p>
+                    <hr style=' border:none; border-top:1px solid #e5e7eb;margin:25px 0;'>
+                    <p style='color:#94a3b8; font-size:12px;'>© B-Mail</p>
+                </div>
+
+            </body>
+            </html>";
+            email.Body = bodyBuilder.ToMessageBody();
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(emailHost, emailPort, MailKit.Security.SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(emailAddress, emailPassword);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+
+            ViewBag.EmailSent     = true;
+            ViewBag.RegisterEmail = user.Email;
+
+            ModelState.Clear();
+
+            return View(new RegisterDTO());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            {
+                TempData["EmailConfirmError"] = "E-posta doğrulama bağlantısı geçersiz.";
+                return RedirectToAction("Login");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                TempData["EmailConfirmError"] = "Kullanıcı bulunamadı.";
+                return RedirectToAction("Login");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (!result.Succeeded)
+            {
+                TempData["EmailConfirmError"] = "E-posta doğrulama bağlantısı geçersiz veya süresi dolmuş.";
+                return RedirectToAction("Login");
+            }
+
+            TempData["EmailConfirmedSuccess"] = true;
             return RedirectToAction("Login");
         }
 
@@ -88,9 +164,15 @@ namespace IdentityMail.Web.Controllers
                 return View(loginDTO);
             }
 
-            if (user.IsActive != true)
+            if (user.IsActive == null)
             {
                 ModelState.AddModelError(string.Empty, "Hesabınız pasif durumdadır. Lütfen destek ekibiyle iletişime geçin.");
+                return View(loginDTO);
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                ModelState.AddModelError(string.Empty, "E-posta adresiniz henüz doğrulanmamış. Lütfen e-postanıza gönderilen doğrulama bağlantısına tıklayın.");
                 return View(loginDTO);
             }
 
@@ -151,52 +233,21 @@ namespace IdentityMail.Web.Controllers
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress("B-Mail",emailAddress));
             email.To.Add(MailboxAddress.Parse(user.Email));
+            email.Subject = "B-Mail Şifre Sıfırlama";
 
             var bodyBuilder = new BodyBuilder();
             bodyBuilder.HtmlBody = $@"
             <!DOCTYPE html>
             <html>
             <body>
-                <div style='
-                    max-width: 600px;
-                    margin: 40px auto;
-                    background: #ffffff;
-                    border-radius: 12px;
-                    padding: 40px;
-                    font-family: Arial, sans-serif;
-                    text-align: center;
-                    border: 1px solid #e5e7eb;'>
-                    <h1 style='color:#0757C9;'>
-                        B-Mail
-                    </h1>
-                    <h2>
-                        Şifreni mi unuttun?
-                    </h2>
-                    <p style='color:#555;'>
-                        Hesabının şifresini sıfırlamak için
-                        aşağıdaki butona tıklayabilirsin.
-                    </p>
-                    <a href='{resetLink}'
-                       style='
-                           display:inline-block;
-                           padding:14px 28px;
-                           background:#2563EB;
-                           color:white;
-                           text-decoration:none;
-                           border-radius:8px;
-                           font-weight:bold;
-                           margin:20px 0;
-                       '>
-                        Şifremi Sıfırla
-                    </a>
-                    <p style='color:#777; font-size:13px;'>
-                        Bu isteği sen yapmadıysan bu e-postayı
-                        dikkate almayabilirsin.
-                    </p>
+                <div style='max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; padding: 40px; font-family: Arial, sans-serif; text-align: center; border: 1px solid #e5e7eb;'>
+                    <h1 style='color:#0757C9;'>B-Mail</h1>
+                    <h2>Şifreni mi unuttun?</h2>
+                    <p style='color:#555;'>Hesabının şifresini sıfırlamak için aşağıdaki butona tıklayabilirsin.</p>
+                    <a href='{resetLink}' style='display:inline-block; padding:14px 28px; background:#2563EB; color:white; text-decoration:none; border-radius:8px; font-weight:bold; margin:20px 0;'>Şifremi Sıfırla</a>
+                    <p style='color:#777; font-size:13px;'>Bu isteği sen yapmadıysan bu e-postayı dikkate almayabilirsin.</p>
                     <hr style='border:none;border-top:1px solid #eee;'>
-                    <p style='color:#999; font-size:12px;'>
-                        © B-Mail
-                    </p>
+                    <p style='color:#999; font-size:12px;'>© B-Mail</p>
                 </div>
             </body>
             </html>
@@ -204,7 +255,7 @@ namespace IdentityMail.Web.Controllers
 
             email.Body = bodyBuilder.ToMessageBody();
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+            await smtp.ConnectAsync(emailHost, emailPort, MailKit.Security.SecureSocketOptions.StartTls);
             await smtp.AuthenticateAsync(emailAddress, emailPassword);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);

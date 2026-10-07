@@ -4,7 +4,7 @@
     Layout                = "/Views/Shared/_AuthLayout.cshtml";
 }
 @section Styles {
-    <link rel="stylesheet" href="~/css/auth/login.css" />
+    <link rel="stylesheet" href="~/css/auth/login.css" asp-append-version="true"/>
 }
 
 <div class="login-page">
@@ -59,7 +59,10 @@
                     <label asp-for="Password">Şifre</label>
                     <div class="input-wrapper">
                         <span class="material-symbols-outlined input-icon">lock</span>
-                        <input asp-for="Password" class="form-input" placeholder="••••••••" type="password" />
+                        <input asp-for="Password" id="loginPassword" class="form-input password-input" placeholder="••••••••" type="password" />
+                        <button type="button" class="password-toggle" onclick="toggleLoginPassword('loginPassword', 'loginPasswordIcon')">
+                            <span id="loginPasswordIcon" class="material-symbols-outlined">visibility</span>
+                        </button>
                     </div>
                 </div>
                 <div class="form-actions">
@@ -81,3 +84,20 @@
         </div>
     </div>
 </div>
+@if (TempData["EmailConfirmedSuccess"] != null)
+{
+    <div class="email-confirm-modal">
+        <div class="email-confirm-overlay"></div>
+        <div class="email-confirm-box">
+            <div class="email-confirm-icon">
+                <span class="material-symbols-outlined">verified</span>
+            </div>
+            <h2>Hesabın Aktif!</h2>
+            <p>E-posta adresin başarıyla doğrulandı. Artık B-Mail hesabına giriş yapabilirsin.</p>
+            <button type="button" class="email-confirm-button" onclick="closeEmailConfirmModal()">
+                Giriş Yap
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+        </div>
+    </div>
+}

@@ -1,5 +1,13 @@
-﻿/* REGISTER */
-function toggleRegisterPassword(inputId, iconId) {
+﻿/* LOGIN */
+function closeEmailConfirmModal() {
+    const modal = document.querySelector(".email-confirm-modal");
+
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function toggleLoginPassword(inputId, iconId) {
     const input = document.getElementById(inputId);
     const icon = document.getElementById(iconId);
 
